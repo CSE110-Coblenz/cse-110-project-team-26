@@ -69,7 +69,7 @@ class App implements ScreenSwitcher {
 	 */
 	switchToScreen(screen: Screen): void {
 		// Hide all screens first by setting their Groups to invisible
-
+		console.log(screen !== null);
 		/*
 		this.menuController.hide();
 		this.gameController.hide();
