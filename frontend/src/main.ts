@@ -1,8 +1,8 @@
 import Konva from "konva";
 import type { ScreenSwitcher, Screen } from "./types.ts";
-import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController.ts";
-import { GameScreenController } from "./screens/GameScreen/GameScreenController.ts";
-import { ResultsScreenController } from "./screens/ResultsScreen/ResultsScreenController.ts";
+// import { TitleScreenController } from "./screens/TitleScreen/TitleScreenController.ts";
+// import { GameScreenController } from "./screens/GameScreen/GameScreenController.ts";
+// import { ResultsScreenController } from "./screens/ResultsScreen/ResultsScreenController.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
 
 /**
@@ -19,9 +19,11 @@ class App implements ScreenSwitcher {
 	private stage: Konva.Stage;
 	private layer: Konva.Layer;
 
-	private menuController: MenuScreenController;
+	/*
+	private menuController: TitleScreenController;
 	private gameController: GameScreenController;
 	private resultsController: ResultsScreenController;
+	*/
 
 	constructor(container: string) {
 		// Initialize Konva stage (the main canvas)
@@ -37,7 +39,8 @@ class App implements ScreenSwitcher {
 
 		// Initialize all screen controllers
 		// Each controller manages a Model, View, and handles user interactions
-		this.menuController = new MenuScreenController(this);
+		/*
+		this.menuController = new TitleScreenController(this);
 		this.gameController = new GameScreenController(this);
 		this.resultsController = new ResultsScreenController(this);
 
@@ -52,6 +55,7 @@ class App implements ScreenSwitcher {
 
 		// Start with menu screen visible
 		this.menuController.getView().show();
+		*/
 	}
 
 	/**
@@ -65,6 +69,8 @@ class App implements ScreenSwitcher {
 	 */
 	switchToScreen(screen: Screen): void {
 		// Hide all screens first by setting their Groups to invisible
+
+		/*
 		this.menuController.hide();
 		this.gameController.hide();
 		this.resultsController.hide();
@@ -85,6 +91,7 @@ class App implements ScreenSwitcher {
 				this.resultsController.showResults(screen.score);
 				break;
 		}
+		*/
 	}
 }
 
