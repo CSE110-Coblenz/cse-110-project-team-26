@@ -3,6 +3,7 @@
     "target": "ES2022",
     "useDefineForClassFields": true,
     "module": "ESNext",
+    "esModuleInterop": true,
     "lib": [
       "ES2022",
       "DOM",
@@ -27,6 +28,6 @@
     "noUncheckedSideEffectImports": true
   },
   "include": [
-    "src"
+    "frontend/src"
   ]
 }
