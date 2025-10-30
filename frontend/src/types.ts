@@ -98,3 +98,9 @@ export interface Question {
 	 */
 	verifyAnswer(): boolean;
 }
+
+export type equationAnswerFormat = 
+	| {yIntercept: 0, coefficient: 0} // LINEAR
+	| {root1: 0, root2: 0} // PARABOLA
+	| {coefficient: 0, xShift: 0, yShift: 0} // ABSOLUTE VALUE
+	| null;
