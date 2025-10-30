@@ -1,4 +1,4 @@
-import type { Question } from "../../types";
+import type { Question, EquationAnswerFormat } from "../../types";
 
 /**
  * Model for the Graphing Game Module
