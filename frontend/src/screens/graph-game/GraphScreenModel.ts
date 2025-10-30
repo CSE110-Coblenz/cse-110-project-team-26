@@ -16,9 +16,13 @@ export class GraphScreenModel {
  */
 class GraphQuestion implements Question {
     private questionType: string;
+    private answer: EquationAnswerFormat;
+    private submission: EquationAnswerFormat;
 
     constructor() {
         this.questionType = "";
+        this.answer = null;
+        this.submission = null;
     }
 
     generateAnswerValues(): void {
