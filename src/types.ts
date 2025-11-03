@@ -30,11 +30,12 @@ export interface View {
  *   - score: Final score to display on results screen
  */
 export type Screen =
-	| { type: "title" }
-	| { type: "graph" }
-	| { type: "maze" }
-	| { type: "match"
-	};
+	| { type: "menu" }
+	| { type: "game" }
+	| { type: "matching-game" }
+	| { type: "maze-game" }
+	| { type: "main-game" }
+	| { type: "result"; score: number };
 
 /**
  * Implements interaction between a module's Controller and View
