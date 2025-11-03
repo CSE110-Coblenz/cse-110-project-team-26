@@ -1,3 +1,4 @@
+import type Konva from "konva";
 import { ScreenController } from "../../types.ts";
 import type { ScreenSwitcher } from "../../types.ts";
 import { MatchingScreenView } from "./MatchingScreenView.ts";
@@ -7,12 +8,14 @@ import { MatchingScreenView } from "./MatchingScreenView.ts";
  */
 export class MatchingScreenController extends ScreenController {
     private view: MatchingScreenView;
+    private stage: Konva.Stage;
     private screenSwitcher: ScreenSwitcher;
 
-    constructor(screenSwitcher: ScreenSwitcher) {
+    constructor(screenSwitcher: ScreenSwitcher, stage: Konva.Stage) {
         super();
         this.screenSwitcher = screenSwitcher;
-        this.view = new MatchingScreenView(() => this.handleStartClick());
+        this.stage = stage;
+        this.view = new MatchingScreenView(() => this.handleStartClick(), this.stage);
     }
 
     /**
