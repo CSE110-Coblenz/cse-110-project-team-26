@@ -10,7 +10,11 @@ export class MatchingScreenView implements View {
     private stage: Konva.Stage;
 
     private leftRect: Konva.Rect;
-    private rightRect: Konva.Rect;
+    private rightRect_1: Konva.Rect;
+    private rightRect_2: Konva.Rect;
+    private rightRect_3: Konva.Rect;
+
+    private arrows: Konva.Arrow[] = [];
 
     constructor(onStartClick: () => void, stage:Konva.Stage) {
         this.group = new Konva.Group({ visible: true });
@@ -19,7 +23,7 @@ export class MatchingScreenView implements View {
         // Title text
         const title = new Konva.Text({
             x: STAGE_WIDTH / 2,
-            y: 150,
+            y: 10,
             text: "Matching Screen View",
             fontSize: 48,
             fontFamily: "Arial",
@@ -32,7 +36,7 @@ export class MatchingScreenView implements View {
         title.offsetX(title.width() / 2);
         this.group.add(title);
 
-        // Left square (start point) - Blue
+        // Question 1
         this.leftRect = new Konva.Rect({
             x: 150,
             y: STAGE_HEIGHT / 2 - 75,
@@ -44,12 +48,12 @@ export class MatchingScreenView implements View {
             cornerRadius: 12,
         });
         this.leftRect.on('mousedown touchstart', () => {
-            this.arrowAnimation();
+            this.arrowAnimation(this.leftRect);
         });
         const leftText = new Konva.Text({
             x: 150 + 60,
             y: STAGE_HEIGHT / 2 - 75 + 60,
-            text: "Question",
+            text: "2x + 1 = 3",
             fontSize: 18,
             fontFamily: "Arial",
             fill: "white",
@@ -61,10 +65,10 @@ export class MatchingScreenView implements View {
         this.group.add(this.leftRect);
         this.group.add(leftText);
 
-        // Right square (target) - Green
-        this.rightRect = new Konva.Rect({
+        // Answer 1
+        this.rightRect_1 = new Konva.Rect({
             x: STAGE_WIDTH - 270,
-            y: STAGE_HEIGHT / 2 - 75,
+            y: STAGE_HEIGHT / 4 - 25,
             width: 120,
             height: 150,
             fill: "darkgreen",
@@ -72,25 +76,77 @@ export class MatchingScreenView implements View {
             strokeWidth: 4,
             cornerRadius: 12,
         });
-        const rightText = new Konva.Text({
+        const rightText_1 = new Konva.Text({
             x: STAGE_WIDTH - 270 + 60,
-            y: STAGE_HEIGHT / 2 - 75 + 60,
-            text: "Answer",
+            y: STAGE_HEIGHT / 4 - 25 + 60,
+            text: "x = 3",
             fontSize: 18,
             fontFamily: "Arial",
             fill: "white",
             align: "center",
             verticalAlign: "middle",
         });
-        rightText.offsetX(rightText.width() / 2);
-        rightText.offsetY(rightText.height() / 2);
-        this.group.add(this.rightRect);
-        this.group.add(rightText);
+        rightText_1.offsetX(rightText_1.width() / 2);
+        rightText_1.offsetY(rightText_1.height() / 2);
+        this.group.add(this.rightRect_1);
+        this.group.add(rightText_1);
+
+        // Answer 2
+        this.rightRect_2 = new Konva.Rect({
+            x: STAGE_WIDTH - 270,
+            y: STAGE_HEIGHT / 2 - 25,
+            width: 120,
+            height: 150,
+            fill: "darkgreen",
+            stroke: "black",
+            strokeWidth: 4,
+            cornerRadius: 12,
+        });
+        const rightText_2 = new Konva.Text({
+            x: STAGE_WIDTH - 270 + 60,
+            y: 2 * STAGE_HEIGHT / 4 - 25 + 60,
+            text: "x = 1",
+            fontSize: 18,
+            fontFamily: "Arial",
+            fill: "white",
+            align: "center",
+            verticalAlign: "middle",
+        });
+        rightText_2.offsetX(rightText_2.width() / 2);
+        rightText_2.offsetY(rightText_2.height() / 2);
+        this.group.add(this.rightRect_2);
+        this.group.add(rightText_2);
+
+        // Answer 3
+        this.rightRect_3 = new Konva.Rect({
+            x: STAGE_WIDTH - 270,
+            y: 3 * STAGE_HEIGHT / 4 - 25,
+            width: 120,
+            height: 150,
+            fill: "darkgreen",
+            stroke: "black",
+            strokeWidth: 4,
+            cornerRadius: 12,
+        });
+        const rightText_3 = new Konva.Text({
+            x: STAGE_WIDTH - 270 + 60,
+            y: 3 * STAGE_HEIGHT / 4 -25 + 60,
+            text: "x = 5",
+            fontSize: 18,
+            fontFamily: "Arial",
+            fill: "white",
+            align: "center",
+            verticalAlign: "middle",
+        });
+        rightText_3.offsetX(rightText_3.width() / 2);
+        rightText_3.offsetY(rightText_3.height() / 2);
+        this.group.add(this.rightRect_3);
+        this.group.add(rightText_3);
 
         const startButtonGroup = new Konva.Group();
         const startButton = new Konva.Rect({
             x: 0,
-            y: 760,
+            y: 860,
             width: 200,
             height: 60,
             fill: "green",
@@ -100,7 +156,7 @@ export class MatchingScreenView implements View {
         });
         const startText = new Konva.Text({
             x: 100,
-            y: 775,
+            y: 875,
             text: "SWITCH TO MENU",
             fontSize: 16,
             fontFamily: "Arial",
@@ -110,16 +166,19 @@ export class MatchingScreenView implements View {
         startText.offsetX(startText.width() / 2);
         startButtonGroup.add(startButton);
         startButtonGroup.add(startText);
-        startButtonGroup.on("click", onStartClick);
+        startButtonGroup.on("click", () => {
+            this.cleanupArrows();    
+            onStartClick();          
+        });
         this.group.add(startButtonGroup);
 
     }
 
-    private arrowAnimation(): void {
+    private arrowAnimation(leftRect: Konva.Rect): void {
         const mousePos = this.stage.getPointerPosition();
         const layer = this.stage.getLayers()[0];
-        const arrowtail_x = this.leftRect.x() + this.leftRect.width();
-        const arrowtail_y = this.rightRect.y() + this.leftRect.height() / 2;
+        const arrowtail_x = leftRect.x() + leftRect.width();
+        const arrowtail_y = leftRect.y() + leftRect.height() / 2;
         let arrow: Konva.Arrow | null = null; // allow type to be Konva.Arrow/null
         arrow = new Konva.Arrow({
             points: [
@@ -156,42 +215,37 @@ export class MatchingScreenView implements View {
         this.stage.on('mouseup touchend', () => {
             if (arrow) {
                 const endPoint = { x: arrow.points()[2], y: arrow.points()[3] };
-                const a_1_Pos = this.rightRect.position();
-                // const a_2_Pos = a_2.position();
-                // const a_3_Pos = a_3.position();
-                const distance_1 = Math.sqrt(
-                    Math.pow(endPoint.x - a_1_Pos.x, 2) + Math.pow(endPoint.y - a_1_Pos.y, 2)
-                );
-                // const distance_2 = Math.sqrt(
-                //     Math.pow(endPoint.x - a_2_Pos.x, 2) + Math.pow(endPoint.y - a_2_Pos.y, 2)
-                // );
-                // const distance_3 = Math.sqrt(
-                //     Math.pow(endPoint.x - a_3_Pos.x, 2) + Math.pow(endPoint.y - a_3_Pos.y, 2)
-                // );
+                const a_1_Pos = this.rightRect_1.position();
+                const a_2_Pos = this.rightRect_2.position();
+                const a_3_Pos = this.rightRect_3.position();
 
                 // Check if the arrow's head is within a_1 (radius + tolerance)
-                const isOnA1 = this.rightRect.x() <= endPoint.x && endPoint.x <= (this.rightRect.x() + this.rightRect.width()) && 
-                this.rightRect.y() <= endPoint.y && endPoint.y <= (this.rightRect.y() + this.rightRect.height());
-                // const isOnA1 = distance_1 <= this.rightRect.radius() + 10; // 10px tolerance
-                // const isOnA2 = distance_2 <= a_2.radius() + 10;
-                // const isOnA3 = distance_3 <= a_3.radius() + 10;
+                const isOnA1 = this.rightRect_1.x() <= endPoint.x && endPoint.x <= (this.rightRect_1.x() + this.rightRect_1.width()) && 
+                this.rightRect_1.y() <= endPoint.y && endPoint.y <= (this.rightRect_1.y() + this.rightRect_1.height());
+                const isOnA2 = this.rightRect_2.x() <= endPoint.x && endPoint.x <= (this.rightRect_2.x() + this.rightRect_2.width()) && 
+                this.rightRect_2.y() <= endPoint.y && endPoint.y <= (this.rightRect_2.y() + this.rightRect_2.height());
+                const isOnA3 = this.rightRect_3.x() <= endPoint.x && endPoint.x <= (this.rightRect_3.x() + this.rightRect_3.width()) && 
+                this.rightRect_3.y() <= endPoint.y && endPoint.y <= (this.rightRect_3.y() + this.rightRect_3.height());
 
                 if (isOnA1) {
                     // Finalize arrow: Snap head to center of a
-                    arrow.points([arrowtail_x, arrowtail_y, a_1_Pos.x, a_1_Pos.y + this.rightRect.height() / 2]);
+                    arrow.points([arrowtail_x, arrowtail_y, a_1_Pos.x, a_1_Pos.y + this.rightRect_1.height() / 2]);
                     arrow.fill("green");
-                    arrow.stroke("green");  
+                    arrow.stroke("green");
+                    this.arrows.push(arrow);  
                 } 
-                // else if (isOnA2){
-                //     arrow.points([this.leftRect.x(), this.leftRect.y(), a_2_Pos.x, a_2_Pos.y]);
-                //     arrow.fill("blue");
-                //     arrow.stroke("blue");  
-                // }
-                // else if (isOnA3){
-                //     arrow.points([this.leftRect.x(), this.leftRect.y(), a_3_Pos.x, a_3_Pos.y]);
-                //     arrow.fill("purple");
-                //     arrow.stroke("purple");  
-                // }
+                else if (isOnA2){
+                    arrow.points([arrowtail_x, arrowtail_y, a_2_Pos.x, a_2_Pos.y + this.rightRect_2.height() / 2]);
+                    arrow.fill("red");
+                    arrow.stroke("red");
+                    this.arrows.push(arrow);  
+                }
+                else if (isOnA3){
+                    arrow.points([arrowtail_x, arrowtail_y, a_3_Pos.x, a_3_Pos.y + this.rightRect_2.height() / 2]);
+                    arrow.fill("purple");
+                    arrow.stroke("purple");
+                    this.arrows.push(arrow);  
+                }
                 else {
                     // Remove arrow
                     arrow.destroy();
@@ -201,6 +255,13 @@ export class MatchingScreenView implements View {
                 arrow = null; // Reset arrow
             }
         });
+    }
+
+    // Destroy all arrows
+    private cleanupArrows(): void {
+        // destroy arrows
+        this.arrows.forEach(a => a.destroy());
+        this.arrows = [];
     }
 
     /**
