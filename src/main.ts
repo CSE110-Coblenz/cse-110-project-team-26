@@ -31,8 +31,8 @@ class App implements ScreenSwitcher {
 		// Initialize Konva stage (the main canvas)
 		this.stage = new Konva.Stage({
 			container,
-			width: STAGE_WIDTH,
-			height: STAGE_HEIGHT,
+			width: CONSTANTS.STAGE_WIDTH,
+			height: CONSTANTS.STAGE_HEIGHT,
 		});
 
 		// Create a layer (screens will be added to this layer)
@@ -95,6 +95,7 @@ class App implements ScreenSwitcher {
 				this.mainScreenController.show();
 				break;
 		}
+		*/
 	}
 }
 
