@@ -1,3 +1,4 @@
+import { randomInt } from 'node:crypto';
 import * as readline from 'node:readline'; 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -34,12 +35,21 @@ class quadraticEquation{
     }
 }
 
-/*
-function equationGenerator() : linearEquation {
-    
-    return 0;
+
+function equationGenerator() : linearEquation { //edge case: dealing with 0x
+    //formuala :ax + b = c
+    var answerX = Math.floor(Math.random()*10);
+    var a = Math.floor(Math.random() * 20);
+    var b = Math.floor(Math.random() * 20);
+    var c = (a * answerX) + b;
+    const randomBool = Math.random() < 0.5;
+    if(randomBool){ //decides if the constant will be positive or negative
+        b = -b;
+    }
+    const equation = new linearEquation(a,b,c)
+    return equation;
 }
-*/
+
 
 function linearStepOne(equation : linearEquation) : number { //move constant to the other side
     var correctChoice;
@@ -91,12 +101,12 @@ function questions(query: string): Promise<string>{
 
 
 
-const linearEquation1 = new linearEquation(2,-3,-7);
+const linearEquation1 = equationGenerator();
 const linearEquation2 = new linearEquation(5,0,15);
 var quadraticEquation1 = new quadraticEquation(1,6,8,0)
 
 async function linearGame(){
-    console.log("You are given the following equation : " + linearEquation1.coefficient + "x " + linearEquation1.constantLHS + " =" + linearEquation1.constantRHS)
+    console.log("You are given the following equation : " + linearEquation1.coefficient + "x " + "+ (" + linearEquation1.constantLHS + ") =" + linearEquation1.constantRHS)
     
     let choiceOne = await questions('Whats should be your first step?\n');
     if(parseInt(choiceOne) != linearStepOne(linearEquation1)){
@@ -143,10 +153,10 @@ async function quadraticGame(){
     rl.close();
 }
 
-//linearGame()
-quadraticGame();
+linearGame()
+//quadraticGame();
 
-
+//console.log(equationGenerator())
 
 
 /* console.log("Step One: " + stepOne(linearEquation2))
