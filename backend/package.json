@@ -1,12 +1,24 @@
 {
-  "name": "backend",
+  "name": "server",
   "version": "1.0.0",
-  "description": "",
+  "description": "backend of cse110-team 26",
+  "keywords": [],
+  "homepage": "https://github.com/CSE110-Coblenz/cse-110-project-team-26#readme",
+  "bugs": {
+    "url": "https://github.com/CSE110-Coblenz/cse-110-project-team-26/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CSE110-Coblenz/cse-110-project-team-26.git"
+  },
+  "license": "UNLICENSED",
+  "author": "CSE110 Team 26",
+  "type": "commonjs",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "express": "^5.1.0"
+  }
 }
