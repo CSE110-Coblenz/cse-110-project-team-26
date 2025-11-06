@@ -1,9 +1,9 @@
 import Konva from "konva";
 import type { ScreenSwitcher, Screen } from "./types.ts";
-// import { TitleScreenController } from "./screens/TitleScreen/TitleScreenController.ts";
-// import { GameScreenController } from "./screens/GameScreen/GameScreenController.ts";
-// import { ResultsScreenController } from "./screens/ResultsScreen/ResultsScreenController.ts";
-import * as CONSTANTS from "./constants.ts";
+import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController.ts";
+import { GameScreenController } from "./screens/GameScreen/GameScreenController.ts";
+import { ResultsScreenController } from "./screens/ResultsScreen/ResultsScreenController.ts";
+import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
 
 /**
  * Main Application - Coordinates all screens
@@ -19,18 +19,16 @@ class App implements ScreenSwitcher {
 	private stage: Konva.Stage;
 	private layer: Konva.Layer;
 
-	/*
-	private menuController: TitleScreenController;
+	private menuController: MenuScreenController;
 	private gameController: GameScreenController;
 	private resultsController: ResultsScreenController;
-	*/
 
 	constructor(container: string) {
 		// Initialize Konva stage (the main canvas)
 		this.stage = new Konva.Stage({
 			container,
-			width: CONSTANTS.STAGE_WIDTH,
-			height: CONSTANTS.STAGE_HEIGHT,
+			width: STAGE_WIDTH,
+			height: STAGE_HEIGHT,
 		});
 
 		// Create a layer (screens will be added to this layer)
@@ -39,8 +37,7 @@ class App implements ScreenSwitcher {
 
 		// Initialize all screen controllers
 		// Each controller manages a Model, View, and handles user interactions
-		/*
-		this.menuController = new TitleScreenController(this);
+		this.menuController = new MenuScreenController(this);
 		this.gameController = new GameScreenController(this);
 		this.resultsController = new ResultsScreenController(this);
 
@@ -55,7 +52,6 @@ class App implements ScreenSwitcher {
 
 		// Start with menu screen visible
 		this.menuController.getView().show();
-		*/
 	}
 
 	/**
@@ -69,8 +65,6 @@ class App implements ScreenSwitcher {
 	 */
 	switchToScreen(screen: Screen): void {
 		// Hide all screens first by setting their Groups to invisible
-		console.log(screen !== null);
-		/*
 		this.menuController.hide();
 		this.gameController.hide();
 		this.resultsController.hide();
@@ -91,7 +85,6 @@ class App implements ScreenSwitcher {
 				this.resultsController.showResults(screen.score);
 				break;
 		}
-		*/
 	}
 }
 

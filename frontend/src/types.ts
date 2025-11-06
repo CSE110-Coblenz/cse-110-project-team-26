@@ -1,23 +1,9 @@
 import type { Group } from "konva/lib/Group";
+import { LINEAR, QUADRATIC, ABSVAL } from "../src/constants";
 
-/**
- * Allows views to be hidden and shown
- */
 export interface View {
-
-	/**
-	 * @returns Konva group the view belongs to
-	 */
 	getGroup(): Group;
-
-	/**
-	 * Shows the view
-	 */
 	show(): void;
-
-	/**
-	 * Hides the view
-	 */
 	hide(): void;
 }
 
@@ -30,77 +16,88 @@ export interface View {
  *   - score: Final score to display on results screen
  */
 export type Screen =
-	| { type: "title" }
-	| { type: "graph" }
-	| { type: "maze" }
-	| { type: "match"
-	};
+	| { type: "menu" }
+	| { type: "game" }
+	| { type: "result"; score: number };
 
-/**
- * Implements interaction between a module's Controller and View
- */
 export abstract class ScreenController {
-	/**
-	 * Gets the view corresponding to the controller
-	 * 
-	 * @returns The corresponding view
-	 */
 	abstract getView(): View;
 
-	/**
-	 * Shows the corrensponding view
-	 */
 	show(): void {
 		this.getView().show();
 	}
 
-	/**
-	 * Hides the corresponding view
-	 */
 	hide(): void {
 		this.getView().hide();
 	}
 }
 
-/**
- * Allows switching between Views
- */
 export interface ScreenSwitcher {
-	/**
-	 * Switches to the given screen
-	 * 
-	 * @param screen Screen to switch to
-	 */
 	switchToScreen(screen: Screen): void;
 }
 
-/**
- * Template for minigame questions
- */
-export interface Question {
-	/**
-	 * Example fields (graph example):
-	 * quadraticCoefficient
-	 * linearCoefficient
-	 * intercept
-	 */
+export interface EquationAnswerFormat {
+	readonly format: string;
 
-	/**
-	 * Generate correct answer values
-	 */
 	generateAnswerValues(): void;
-
-	/**
-	 * Determine if user-inputted answer matches the generated answer
-	 * 
-	 * @returns True if the user's answer matches the generated answer and false
-	 * otherwise
-	 */
 	verifyAnswer(): boolean;
 }
 
-export type EquationAnswerFormat = 
-	| {yIntercept: 0, coefficient: 0} // LINEAR
-	| {root1: 0, root2: 0} // PARABOLA
-	| {coefficient: 0, xShift: 0, yShift: 0} // ABSOLUTE VALUE
-	| null;
+export class Linear implements EquationAnswerFormat {
+	private coefficient: number;
+	private intercept: number;
+	readonly format = LINEAR;
+
+	constructor() {
+		this.coefficient = 0;
+		this.intercept = 0;
+	}
+
+	generateAnswerValues(): void {
+		
+	}
+
+	verifyAnswer(): boolean {
+		return false;
+	}
+}
+
+export class Quadratic implements EquationAnswerFormat {
+	private root1: number;
+	private root2: number;
+	readonly format = QUADRATIC;
+
+	constructor() {
+		this.root1 = 0;
+		this.root2 = 0;
+	}
+
+	generateAnswerValues(): void {
+		
+	}
+
+	verifyAnswer(): boolean {
+		return false;
+	}
+}
+
+export class AbsoluteValue implements EquationAnswerFormat {
+	private coefficient: number;
+	private xShift: number;
+	private yShift: number;
+	readonly format = ABSVAL;
+
+	constructor() {
+		this.coefficient = 0;
+		this.xShift = 0;
+		this.yShift = 0;
+	}
+
+	generateAnswerValues(): void {
+		
+	}
+
+	verifyAnswer(): boolean {
+		return false
+	}
+}

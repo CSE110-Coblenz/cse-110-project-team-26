@@ -11,15 +11,15 @@ export class GraphScreenController extends ScreenController {
     private view: GraphScreenView;
     private screenSwitcher: ScreenSwitcher;
 
-    /**
-     * Initializes default values for the Controller
-     */
+  /**
+   * Initializes default values for the Controller
+   */
     constructor(screenSwitcher: ScreenSwitcher) {
         super();
 
-        this.view = new GraphScreenView();
-        this.model = new GraphScreenModel();
-        this.screenSwitcher = screenSwitcher;
+            this.view = new GraphScreenView();
+            this.model = new GraphScreenModel();
+            this.screenSwitcher = screenSwitcher;
     }
 
     /**
@@ -29,4 +29,28 @@ export class GraphScreenController extends ScreenController {
     getView(): GraphScreenView {
         return this.view;
     }
+
+    private submitEquationInput(): void {
+
+        this.plotGraphGame(false);
+    }
+
+    private previewEquationInput(): void {
+        // TODO: update model
+        this.plotGraphGame(true);
+    }
+
+    private plotGraphGame(isPreview: boolean): void {
+        // if isPreview, then plot color will be different
+        // TODO: update view
+    }
+
+    private switchToMazeGame(): void {
+        // TODO: switch to maze game
+    }
+
+    private switchToMatchGame(): void {
+        // TODO: switch to match game
+    }
+
 }
