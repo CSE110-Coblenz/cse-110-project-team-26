@@ -101,3 +101,22 @@ export class AbsoluteValue implements EquationAnswerFormat {
 		return false
 	}
 }
+
+export abstract class Question {
+	private answer: EquationAnswerFormat | null;
+	private submission: EquationAnswerFormat | null;
+
+	constructor() {
+		this.submission = null;
+		this.answer = null;
+	}
+
+	abstract generateAnswerValues(): void;
+	enterSubmission(submission: EquationAnswerFormat): void {
+		this.submission = submission;
+	}
+	verifyAnswer(): boolean {
+		this.answer?.verifyAnswer();
+		return false;
+	}
+}
