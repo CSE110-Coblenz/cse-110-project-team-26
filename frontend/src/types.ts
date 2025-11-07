@@ -1,5 +1,7 @@
 import type { Group } from "konva/lib/Group";
-import { LINEAR, QUADRATIC, ABSVAL } from "../src/constants";
+import { LINEAR, QUADRATIC, ABSVAL,
+		Y_MAX, Y_MIN, X_MAX, X_MIN
+ } from "../src/constants";
 
 export interface View {
 	getGroup(): Group;
@@ -112,9 +114,11 @@ export abstract class Question {
 	}
 
 	abstract generateAnswerValues(): void;
+
 	enterSubmission(submission: EquationAnswerFormat): void {
 		this.submission = submission;
 	}
+
 	verifyAnswer(): boolean {
 		this.answer?.verifyAnswer();
 		return false;

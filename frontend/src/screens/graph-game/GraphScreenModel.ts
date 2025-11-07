@@ -21,18 +21,13 @@ export class GraphScreenModel {
  * Generate and store answer values for the Graphing Game
  */
 class GraphQuestion extends Question {
-    private questionType: string;
+    private submission: EquationAnswerFormat | null;
+    private answer: EquationAnswerFormat | null;
 
     constructor() {
         super();
-        this.questionType = "";
+        this.submission = null;
+        this.answer = null;
     }
 
-    generateAnswerValues(): void {
-
-    }
-
-    verifyAnswer(): boolean {
-        return false;
-    }
 }
