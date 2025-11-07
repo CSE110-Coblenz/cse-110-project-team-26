@@ -28,22 +28,16 @@ export class GraphScreenModel {
  * Generate and store answer values for the Graphing Game
  */
 class GraphQuestion extends Question {
-
-    constructor(stage: number) {
+    constructor(type: string) {
         super();
-        switch(stage) {
-            case 0:
-                this.submission = new Linear();
-            break;
-            case 1:
-                this.submission = new AbsoluteValue();
-            break;
-            case 2:
-                this.submission = new Quadratic();
-            break;
-            default:
-                console.log("BAD STAGE INPUT");
-        }
+        this.questionType = type;
     }
 
+    generateAnswerValues(): void {
+
+    }
+
+    verifyAnswer(): boolean {
+        return false;
+    }
 }
