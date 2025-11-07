@@ -23,9 +23,9 @@ export class GraphScreenModel {
 class GraphQuestion extends Question {
     private questionType: string;
 
-    constructor() {
+    constructor(type: string) {
         super();
-        this.questionType = "";
+        this.questionType = type;
     }
 
     generateAnswerValues(): void {
