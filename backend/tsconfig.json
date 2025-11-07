@@ -1,5 +1,6 @@
 {
     "compilerOptions": {
+      "types": ["vitest/globals"],
       "target": "ES2020",
       "module": "commonjs",
       "rootDir": ".",
@@ -8,6 +9,6 @@
       "strict": true,
       "skipLibCheck": true
     },
-    "include": ["*.ts"]
+    "include": ["*.ts", "src", "src/tests"]
   }
   
