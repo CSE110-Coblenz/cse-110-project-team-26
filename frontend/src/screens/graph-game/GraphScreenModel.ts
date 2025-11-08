@@ -6,28 +6,40 @@ import { LINEAR, ABSVAL, QUADRATIC } from "../../constants"
  */
 export class GraphScreenModel {
     private question: GraphQuestion;
+    private stage: number;
 
     constructor() {
-        this.question = new GraphQuestion();
+        this.stage = 0;
+        this.question = new GraphQuestion(this.stage);
     }
 
-    verifyAnswer(submission: EquationAnswerFormat) {
-        this.question.enterSubmission(submission);
-        this.question.verifyAnswer();
-    }
+    verifyAnswer(submission: EquationAnswerFormat) { 
+        this.question.enterSubmission(submission); 
+        this.question.verifyAnswer(); 
+    } 
+
 }
 
 /**
  * Generate and store answer values for the Graphing Game
  */
 class GraphQuestion extends Question {
-    private submission: EquationAnswerFormat | null;
-    private answer: EquationAnswerFormat | null;
 
-    constructor() {
+    constructor(stage: number) {
         super();
-        this.submission = null;
-        this.answer = null;
+        switch(stage) {
+            case 0:
+                this.submission = new Linear();
+            break;
+            case 1:
+                this.submission = new AbsoluteValue();
+            break;
+            case 2:
+                this.submission = new Quadratic();
+            break;
+            default:
+                console.log("BAD STAGE INPUT");
+        }
     }
 
 }
