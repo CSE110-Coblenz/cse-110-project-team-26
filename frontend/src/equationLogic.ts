@@ -153,8 +153,8 @@ async function quadraticGame(){
     rl.close();
 }
 
-linearGame()
-//quadraticGame();
+//linearGame()
+quadraticGame();
 
 //console.log(equationGenerator())
 
