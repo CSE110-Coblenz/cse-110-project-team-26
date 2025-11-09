@@ -5,6 +5,7 @@ import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 // SCREEN SPECIFIC CONSTANTS
 
 const OFFSET = STAGE_WIDTH * 0.02;
+const BOX_WIDTH = STAGE_WIDTH * (1/5) - OFFSET;
 
 const BACKGROUND_PROPERTIES = {
   x: 0,
@@ -17,7 +18,7 @@ const BACKGROUND_PROPERTIES = {
 const SPRITE_BOX_PROPERTIES = {
   x: OFFSET,
   y: OFFSET,
-  width: STAGE_WIDTH * (1/5) - OFFSET,
+  width: BOX_WIDTH,
   height: STAGE_HEIGHT * (2/7) - OFFSET,
   fill: "#FFF3F3"
 };
@@ -25,7 +26,7 @@ const SPRITE_BOX_PROPERTIES = {
 const DIALOGUE_BOX_PROPERTIES = {
   x: OFFSET,
   y: SPRITE_BOX_PROPERTIES.height + (2 * OFFSET),
-  width: STAGE_WIDTH * (1/5) - OFFSET,
+  width: BOX_WIDTH,
   height: STAGE_HEIGHT * (3/7) - OFFSET,
   fill: "#413434"
 };
@@ -33,7 +34,7 @@ const DIALOGUE_BOX_PROPERTIES = {
 const INPUT_AND_EQUATION_BOX_PROPERTIES = {
   x: OFFSET,
   y: SPRITE_BOX_PROPERTIES.height + DIALOGUE_BOX_PROPERTIES.height + (3 * OFFSET),
-  width: STAGE_WIDTH * (1/5) - OFFSET,
+  width: BOX_WIDTH,
   height: STAGE_HEIGHT * (2/7) - (OFFSET * 2),
   fill: "#D9D9D9"
 }
@@ -41,9 +42,40 @@ const INPUT_AND_EQUATION_BOX_PROPERTIES = {
 const EQUATION_BOX_PROPERTIES = {
   x: OFFSET * (1.5),
   y: INPUT_AND_EQUATION_BOX_PROPERTIES.y + OFFSET * (0.5),
-  width: INPUT_AND_EQUATION_BOX_PROPERTIES.width - (OFFSET),
+  width: BOX_WIDTH - (OFFSET),
   height: INPUT_AND_EQUATION_BOX_PROPERTIES.height * (1/4) - OFFSET,
   fill: "#110808"
+}
+
+const DIALOGUE_TEXT_PROPERTIES = {
+  x: DIALOGUE_BOX_PROPERTIES.x,
+  y: DIALOGUE_BOX_PROPERTIES.y,
+  width: DIALOGUE_BOX_PROPERTIES.width,
+  height: DIALOGUE_BOX_PROPERTIES.height,
+  text: "<Dialogue>\nOh no, an asteroid field! Let's safely plot a path to <destination>",
+  fontSize: 24,
+  fontFamily: "Arial",
+  fill: "white"
+}
+
+const EQUATION_TEXT_PROPERTIES = {
+  x: EQUATION_BOX_PROPERTIES.x,
+  y: EQUATION_BOX_PROPERTIES.y,
+  width: EQUATION_BOX_PROPERTIES.width,
+  height: EQUATION_BOX_PROPERTIES.height,
+  text: "y=_x+_",
+  fontSize: 16,
+  fontFamily: "Arial",
+  fill: "white",
+  align: "center"
+}
+
+const GRAPH_BACKGROUND_PROPERTIES = {
+  x: BOX_WIDTH + OFFSET * 2,
+  y: OFFSET,
+  width: STAGE_WIDTH - BOX_WIDTH - OFFSET * 3,
+  height: STAGE_HEIGHT - OFFSET * 2,
+  fill: "#161313"
 }
 
 /**
@@ -81,7 +113,42 @@ export class GraphScreenView implements View {
             ...EQUATION_BOX_PROPERTIES
         });
 
-        this.group.add(background, spriteBox, dialogueBox, inputAndEquationBox, equationBox);
+        const graphBackground = new Konva.Rect({
+            ...GRAPH_BACKGROUND_PROPERTIES
+        });
+
+        this.dialogueText = new Konva.Text({
+            ...DIALOGUE_TEXT_PROPERTIES
+        });
+
+        this.equationText = new Konva.Text({
+            ...EQUATION_TEXT_PROPERTIES
+        });
+        
+        // This is a placeholder for the sprite
+        const spriteText = new Konva.Text({
+            x: OFFSET,
+            y: OFFSET,
+            width: SPRITE_BOX_PROPERTIES.width,
+            height: SPRITE_BOX_PROPERTIES.height,
+            text: "Sprite Placeholder",
+            fontSize: 24,
+            fontFamily: "Arial",
+            fill: "black",
+            align: "center",
+            verticalAlign: "middle"
+        });
+
+        this.group.add(background,
+            spriteBox,
+            dialogueBox,
+            inputAndEquationBox,
+            equationBox,
+            graphBackground,
+            this.dialogueText,
+            this.equationText,
+            spriteText // Sprite placeholder
+        );
     }
 
     /**
