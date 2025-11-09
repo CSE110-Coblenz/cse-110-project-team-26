@@ -32,12 +32,12 @@ export class GraphScreenController extends ScreenController {
 
     private submitEquationInput(): void {
 
-        this.plotGraphGame(false);
+        this.plotGraphGame(false); // isPreview = false
     }
 
     private previewEquationInput(): void {
         // TODO: update model
-        this.plotGraphGame(true);
+        this.plotGraphGame(true); // isPreview = true
     }
 
     private plotGraphGame(isPreview: boolean): void {
