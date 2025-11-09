@@ -3,8 +3,16 @@ import { LINEAR, QUADRATIC, ABSVAL,
 		Y_MAX, Y_MIN, X_MAX, X_MIN
  	} from "../src/constants";
 
+/**
+ * Generates an integer in [min, max]
+ * 
+ * @param min Minimum value that can be generated
+ * @param max Maximum value that can be generated
+ * @returns An integer in [min, max]
+ */
 function generateRandomNumber(min: number, max: number): number {
-	return Math.floor(Math.random() * (max - min)) + min;
+	if (max <= min) console.log("BAD INPUT");
+	return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export interface View {
@@ -58,17 +66,25 @@ export class Linear implements EquationAnswerFormat {
 	readonly format = LINEAR;
 
 	constructor() {
-		this.coefficient = {
-			numerator: 0,
-			denominator: 0
-		};
+		let isPositive = generateRandomNumber(0, 1);
+		if (isPositive == 1) {
+			this.coefficient = {
+				numerator: generateRandomNumber(1, 6),
+				denominator: generateRandomNumber(1, 6)
+			}
+		} else {
+			this.coefficient = {
+				numerator: -1 * generateRandomNumber(1, 6),
+				denominator: generateRandomNumber(1, 6)
+			}
+		}
 		this.intercept = 0;
 	}
 
 	generateAnswerValues(): void {
 		this.coefficient = {
-			numerator: generateRandomNumber(1, 6),
-			denominator: generateRandomNumber(1, 6)
+			numerator: generateRandomNumber(1, 8),
+			denominator: generateRandomNumber(1, 8)
 		};
 		this.intercept = generateRandomNumber(-10, 10);
 	}
@@ -91,15 +107,20 @@ export class Quadratic implements EquationAnswerFormat {
 	}
 
 	generateAnswerValues(): void {
-		this.root1 = generateRandomNumber(1, 5);
-		this.root2 = generateRandomNumber(1, 5);
+		while (this.root1 == 0) {
+			this.root1 = generateRandomNumber(-5, 5);
+		}
+		while (this.root2 == 0) {
+			this.root2 = generateRandomNumber(-5, 5);
+		}
 	}
 
 	verifyAnswer(submission: Quadratic): boolean {
-		// MODIFY TO HANDLE CASES WHERE ROOTS ARE SWAPPED
-		if (this.root1 != submission.root1) return false;
-		else if (this.root2 != submission.root2) return false;
-		return true;
+		if ((this.root1 == submission.root1 && this.root2 == submission.root2) ||
+			(this.root2 == submission.root1 && this.root1 == submission.root1)) {
+				return true;
+			}
+		return false;
 	}
 }
 
@@ -123,12 +144,20 @@ export class AbsoluteValue implements EquationAnswerFormat {
 
 	// TO-DO: MODIFY TO ALLOW NEGATIVE VALUES
 	generateAnswerValues(): void {
-		this.coefficient = {
-			numerator: generateRandomNumber(1, 6),
-			denominator: generateRandomNumber(1, 6)
+		let isPositive = generateRandomNumber(0, 1);
+		if (isPositive == 1) {
+			this.coefficient = {
+				numerator: generateRandomNumber(1, 6),
+				denominator: generateRandomNumber(1, 6)
+			}
+		} else {
+			this.coefficient = {
+				numerator: -1 * generateRandomNumber(1, 6),
+				denominator: generateRandomNumber(1, 6)
+			}
 		}
-		this.xShift = generateRandomNumber(0, 8);
-		this.yShift = generateRandomNumber(0, 8);
+		this.xShift = generateRandomNumber(-8, 8);
+		this.yShift = generateRandomNumber(-8, 8);
 	}
 
 	verifyAnswer(submission: AbsoluteValue): boolean {

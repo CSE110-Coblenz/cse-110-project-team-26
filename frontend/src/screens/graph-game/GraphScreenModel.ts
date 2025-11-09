@@ -13,11 +13,15 @@ export class GraphScreenModel {
         this.question = new GraphQuestion(this.stage);
     }
 
-    verifyAnswer(submission: EquationAnswerFormat) { 
+    verifyAnswer(submission: EquationAnswerFormat): boolean { 
         this.question.enterSubmission(submission); 
-        this.question.verifyAnswer(); 
+        return this.question.verifyAnswer(); 
     } 
 
+    // FOR PLOTTING PURPOSES
+    getQuestion(): GraphQuestion {
+        return this.question;
+    }
 }
 
 /**
