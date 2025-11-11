@@ -30,8 +30,8 @@ const GRAPH_GROUP_PROPERTIES = {
 const GRAPH_BACKGROUND_PROPERTIES = {
   x: OFFSET,
   y: OFFSET,
-  width: GRAPH_GROUP_PROPERTIES.width - OFFSET,
-  height: GRAPH_GROUP_PROPERTIES.height - OFFSET * 2,
+  width: GRAPH_GROUP_PROPERTIES.width - (OFFSET * 2),
+  height: GRAPH_GROUP_PROPERTIES.height - (OFFSET * 2),
   fill: "#161313"
 };
 
