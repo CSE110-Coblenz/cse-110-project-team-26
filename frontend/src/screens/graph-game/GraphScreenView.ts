@@ -40,6 +40,9 @@ export class GraphScreenView implements View {
     constructor(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => boolean) {
 
         // Add layers for static and dynamic elements
+
+        console.log((({ width }) => ({ width }))(GRAPH_BACKGROUND_PROPERTIES));
+        console.log((({ height }) => ({ height }))(GRAPH_BACKGROUND_PROPERTIES));
         
         this.staticLayer = new Konva.Layer();
         this.dynamicLayer = new Konva.Layer();
