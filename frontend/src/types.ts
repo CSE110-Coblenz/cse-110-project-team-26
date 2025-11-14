@@ -7,6 +7,10 @@ export interface View {
 	hide(): void;
 }
 
+export function generateRandomInt(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min)) + min;
+}
+
 /**
  * Screen types for navigation
  *
