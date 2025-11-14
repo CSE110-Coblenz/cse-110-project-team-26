@@ -80,10 +80,10 @@ const DIALOGUE_BOX_PROPERTIES = {
 };
 
 const DIALOGUE_TEXT_PROPERTIES = {
-  x: DIALOGUE_BOX_PROPERTIES.x,
-  y: DIALOGUE_BOX_PROPERTIES.y,
-  width: DIALOGUE_BOX_PROPERTIES.width,
-  height: DIALOGUE_BOX_PROPERTIES.height,
+  x: DIALOGUE_BOX_PROPERTIES.x + (OFFSET * 0.5),
+  y: DIALOGUE_BOX_PROPERTIES.y + (OFFSET * 0.5),
+  width: DIALOGUE_BOX_PROPERTIES.width - OFFSET,
+  height: DIALOGUE_BOX_PROPERTIES.height - OFFSET,
   text: "<Dialogue>\nOh no, an asteroid field! Let's safely plot a path to <destination>",
   fontSize: 24,
   fontFamily: "Arial",
@@ -124,7 +124,8 @@ const EQUATION_TEXT_PROPERTIES = {
   fontSize: 16,
   fontFamily: "Arial",
   fill: "white",
-  align: "center"
+  align: "center",
+  verticalAlign: "middle"
 };
 
 export {
