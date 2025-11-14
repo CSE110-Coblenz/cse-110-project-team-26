@@ -16,14 +16,11 @@ class App implements ScreenSwitcher {
       height: STAGE_HEIGHT,
     });
 
-    this.layer = new Konva.Layer();
-    this.stage.add(this.layer);
-
     this.graphScreenController = new GraphScreenController(this);
 
-    this.layer.add(this.graphScreenController.getView().getGroup());
+    this.stage.add(...this.graphScreenController.getView().getLayers());
 
-    this.layer.draw();
+    this.stage.draw();
 
     this.graphScreenController.getView().show();
   }
