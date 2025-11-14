@@ -172,9 +172,23 @@ export class GraphScreenView implements View {
                 height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
                 fill: "#5F5050"
             });
+
+            const buttonText = new Konva.Text({
+                x: 0,
+                y: 0,
+                width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
+                height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
+                text: (i + 1) as string,
+                fontSize: 24,
+                fontFamily: "Arial",
+                fill: "white",
+                align: "center",
+                verticalAlign: "middle"
+            });
             
             buttonGroup.on("click", () => onNumberInput(i + 1));
             buttonGroup.add(button);
+            buttonGroup.add(buttonText);
             keypadGroup.add(buttonGroup);
         }
         
@@ -193,8 +207,22 @@ export class GraphScreenView implements View {
             fill: "#5F5050"
         });
       
+        const zeroButtonText = new Konva.Text({
+            x: 0,
+            y: 0,
+            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
+            height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
+            text: "0",
+            fontSize: 24,
+            fontFamily: "Arial",
+            fill: "white",
+            align: "center",
+            verticalAlign: "middle"
+        });
+      
         zeroButtonGroup.on("click", () => onNumberInput(0));
         zeroButtonGroup.add(zeroButton);
+        zeroButtonGroup.add(zeroButtonText);
         keypadGroup.add(zeroButtonGroup);
 
         const resetButtonGroup = new Konva.Group({
@@ -212,8 +240,22 @@ export class GraphScreenView implements View {
             fill: "#5F5050"
         });
 
+        const resetButtonText = new Konva.Text({
+            x: 0,
+            y: 0,
+            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
+            height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
+            text: "reset",
+            fontSize: 16,
+            fontFamily: "Arial",
+            fill: "white",
+            align: "center",
+            verticalAlign: "middle"
+        });
+      
         resetButtonGroup.on("click", onEquationReset)
         resetButtonGroup.add(resetButton);
+        resetButtonGroup.add(resetButtonText);
         keypadGroup.add(resetButtonGroup);
 
         const submitButtonGroup = new Konva.Group({
@@ -231,8 +273,22 @@ export class GraphScreenView implements View {
             fill: "#5F5050"
         });
 
+        const submitButtonText = new Konva.Text({
+            x: 0,
+            y: 0,
+            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
+            height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
+            text: "submit",
+            fontSize: 12,
+            fontFamily: "Arial",
+            fill: "white",
+            align: "center",
+            verticalAlign: "middle"
+        });
+      
         submitButtonGroup.on("click", onEquationSubmission);
         submitButtonGroup.add(submitButton);
+        submitButtonGroup.add(submitButtonText);
         keypadGroup.add(submitButtonGroup);
 
         return keypadGroup;
