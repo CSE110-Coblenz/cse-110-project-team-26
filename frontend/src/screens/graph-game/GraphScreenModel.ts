@@ -15,13 +15,17 @@ export class GraphScreenModel {
         this.question.enterSubmission(submission);
         this.question.verifyAnswer();
     }
+
+    getQuestionType(): string {
+        return this.question.getQuestionType();
+    }
 }
 
 /**
  * Generate and store answer values for the Graphing Game
  */
 class GraphQuestion extends Question {
-    private questionType: string;
+    private questionType: string
 
     constructor(type: string) {
         super();
@@ -40,6 +44,10 @@ class GraphQuestion extends Question {
             default: 
                 console.log("BAD TYPE INPUT");
         }
+    }
+
+    getQuestionType(): string {
+        return this.questionType;
     }
 
 }
