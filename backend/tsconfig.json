@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+      "types": ["vitest/globals"],
+      "target": "ES2020",
+      "module": "commonjs",
+      "rootDir": ".",
+      "outDir": "dist",
+      "esModuleInterop": true,
+      "strict": true,
+      "skipLibCheck": true
+    },
+    "include": ["*.ts", "src", "src/tests"]
+  }
+  
