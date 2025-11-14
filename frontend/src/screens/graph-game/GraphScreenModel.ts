@@ -26,13 +26,20 @@ class GraphQuestion extends Question {
     constructor(type: string) {
         super();
         this.questionType = type;
+
+        switch (type) {
+            case LINEAR:
+                this.answer = new Linear();
+            break;
+            case QUADRATIC:
+                this.answer = new Quadratic();
+            break;
+            case ABSVAL:
+                this.answer = new AbsoluteValue();
+            break;
+            default: 
+                console.log("BAD TYPE INPUT");
+        }
     }
 
-    generateAnswerValues(): void {
-
-    }
-
-    verifyAnswer(): boolean {
-        return false;
-    }
 }
