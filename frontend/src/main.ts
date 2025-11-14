@@ -3,6 +3,9 @@ import type { ScreenSwitcher, Screen } from "./types.ts";
 import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController.ts";
 import { GameScreenController } from "./screens/GameScreen/GameScreenController.ts";
 import { ResultsScreenController } from "./screens/ResultsScreen/ResultsScreenController.ts";
+import { GraphScreenController } from "./screens/graph-game/GraphScreenController.ts"
+import { MazeScreenController } from "./screens/maze-game/MazeScreenController.ts"
+import { MatchScreenController } from "./screens/match-game/MatchScreenController.ts"
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
 
 /**
