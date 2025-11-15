@@ -299,12 +299,29 @@ export class GraphScreenView implements View {
 
     updateSprite(sprite: HTMLImageElement): void {
         this.playerSprite = sprite;
-        this.spriteGroup.getLayer()?.draw();
+        this.staticLayer.draw();
     }
 
     updateDialogue(dialogue: string): void {
-        this.dialogueText = dialogue;
-        this.dialogueGroup.getLayer()?.draw();
+        this.dialogueText.text(dialogue);
+        this.staticLayer.draw();
+    }
+
+    updateEquation(equation: string): void {
+        this.equationText.text(equation);
+        this.staticLayer.draw();
+    }
+
+    getSprite(): HTMLImageElement {
+        return this.playerSprite;
+    }
+
+    getDialogue(): string {
+        return this.dialogueText;
+    }
+
+    getEquation(): string {
+        return this.equationText;
     }
 
     /**
