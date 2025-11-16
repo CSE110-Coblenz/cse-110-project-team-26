@@ -21,6 +21,7 @@ import {
   EQUATION_BOX_PROPERTIES,
   EQUATION_TEXT_PROPERTIES
 } from "./GraphScreenConstants";
+import { graphGroup } from "./GraphChart";
 
 /**
  * View for the Graphing game module
@@ -41,8 +42,8 @@ export class GraphScreenView implements View {
 
         // Add layers for static and dynamic elements
 
-        console.log((({ width }) => ({ width }))(GRAPH_BACKGROUND_PROPERTIES));
-        console.log((({ height }) => ({ height }))(GRAPH_BACKGROUND_PROPERTIES));
+        console.log(GRAPH_BACKGROUND_PROPERTIES.width);
+        console.log(GRAPH_BACKGROUND_PROPERTIES.height);
         
         this.staticLayer = new Konva.Layer();
         this.dynamicLayer = new Konva.Layer();
@@ -52,9 +53,7 @@ export class GraphScreenView implements View {
         this.staticGroup = new Konva.Group({
             ...STATIC_GROUP_PROPERTIES
         });
-        this.graphGroup = new Konva.Group({
-            ...GRAPH_GROUP_PROPERTIES
-        });
+        this.graphGroup = graphGroup;
 
         // Background element
     
@@ -128,12 +127,7 @@ export class GraphScreenView implements View {
         
         // Graph group elements
 
-        const graphBackground = new Konva.Rect({
-            ...GRAPH_BACKGROUND_PROPERTIES
-        });
-
         this.staticGroup.add(background, spriteGroup, dialogueGroup, inputAndEquationGroup);
-        this.graphGroup.add(graphBackground);
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
     }

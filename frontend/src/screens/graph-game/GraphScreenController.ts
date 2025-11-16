@@ -16,7 +16,7 @@ export class GraphScreenController extends ScreenController {
    */
     constructor(screenSwitcher: ScreenSwitcher) {
         super();
-            this.model = new GraphScreenModel;
+            this.model = new GraphScreenModel();
             this.view = new GraphScreenView(
                 (input: number) => this.handleNumberInput(input),
                 () => this.handleEquationReset(),
