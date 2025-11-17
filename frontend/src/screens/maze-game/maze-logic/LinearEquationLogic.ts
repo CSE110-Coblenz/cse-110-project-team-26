@@ -63,7 +63,7 @@ class EquationBuilder {
             resultEquation += ` ${op} ${c}`;
             resultEquation += ')';
         }
-        if (RandomUtils.yesNo(.3)) {
+        if (RandomUtils.yesNo(.3)) { // 30 percent chance an extra constant will be added
             const d = RandomUtils.getInt(1,5);
             resultEquation += ` + ${d}`;
         }
@@ -175,8 +175,9 @@ class LinearEquation {
 // Solver that breaks down the steps to solve a linear equation
 class EquationSolver {
     private computeEngine: ComputeEngine;
-    private steps: Step[] = [];
+    public steps: Step[] = [];             //remind me to set it private
     private stepNumber: number = 1;
+    private getStepNumber: number = 1;
 
     constructor(computeEngine: ComputeEngine, equation: MathJson) {
         this.computeEngine = computeEngine;
@@ -187,12 +188,102 @@ class EquationSolver {
         this.steps.reverse();
     }
     // get the next step in the solution process
+
     public getStep(): Step {
         if (this.steps.length === 0) {
             throw new Error("No steps available");
         }
-        return this.steps.pop() as Step;
+
+        while(true){
+            const arr = this.steps[this.steps.length - 1].description.split(",");
+            if(arr.length == 3 && arr[0] == 'Multiply' && !isNaN(Number(arr[1])) && arr[2] == 'x'){
+                this.steps.pop();
+            }
+            else if((arr[0] == 'Add' || arr[0] == 'Subtract') && arr.length == 3 && arr[1].length <=3 && arr[1].includes('x') && !isNaN(Number(arr[2]))){
+                this.steps.pop();
+            }
+            else if(arr[0] == "Negate" && arr.length == 2){
+                this.steps.pop();
+            }
+            else if(arr[0] == "Rational"){
+                this.steps.pop();
+            }
+            else if(arr[0] == 'Equal'){
+                var step = this.steps.pop();
+                step!.stepNumber = this.getStepNumber; //gets actual Step Number
+                this.getStepNumber++;
+                this.SolveX(arr);
+                return step as Step;
+            }
+            else{
+                var step = this.steps.pop();
+                step!.stepNumber = this.getStepNumber; //gets actual Step Number
+                this.getStepNumber++;
+                return step as Step;
+            }
+        }  
+
+        //return this.steps.pop() as Step;
     }
+    private SolveX(arr: string[]){
+        var lhs = arr[1].trim();
+        var rhs = arr[2].trim();
+        var currentStep = this.computeEngine.box((this.computeEngine.parse(arr[1])).simplify());
+        var div;
+        if(lhs != currentStep.toString()){ // Simplification needed
+            console.log("Step: Must combine like terms: " + lhs);
+            console.log("Result: " + currentStep.toString());
+            lhs = currentStep.toString();
+        }
+
+        while(lhs != "x"){
+            const lhsExpr = this.computeEngine.parse(lhs).toMathJson().toString();
+            console.log("Parsed lhs: " + lhsExpr)
+            if(lhsExpr[0] === "A"){
+                div = rhs + "-" + lhs.slice(lhs.indexOf("+") + 1) 
+                div = this.computeEngine.parse(div);
+                currentStep = this.computeEngine.box((div.evaluate()));
+                console.log("current step: " + div)
+                div = div.toMathJson();
+                var temp = {
+                    description:`${div}`,
+                    current:div as MathJson,
+                    stepNumber: this.getStepNumber,
+                    result: currentStep.toMathJson() as MathJson
+                }
+                console.log(temp)
+                rhs = currentStep.toString();
+                lhs = lhs.slice(0,lhs.indexOf("+"));
+            }
+            else if(lhsExpr[0] === "S"){
+                div = rhs + " +" + lhs.slice(lhs.lastIndexOf("-")+ 1);
+                currentStep = this.computeEngine.box((this.computeEngine.parse(div).evaluate()));
+                console.log("current step: " + div)
+                rhs = currentStep.toString();
+                lhs = lhs.slice(0,lhs.lastIndexOf("-"));
+
+            }
+            else{
+                div = rhs + "/" + lhs.slice(0,lhs.indexOf("x"));
+                if(lhs.includes("-x")){ //for negative x
+                    div = rhs + "/" + -1;
+                }
+                else if(lhs.slice(0,lhs.indexOf("x")) === ""){ // isolated x
+                    div = rhs + "/" + 1
+                }
+                else if(lhs.includes("*")){ // fraction x.       lhs =  4/3 * x + 7 => 5
+                    div = this.computeEngine.parse(rhs).toString() + " / (" + lhs.slice(0,lhs.indexOf("*")-1) + ")";
+                }
+                currentStep = this.computeEngine.box((this.computeEngine.parse(div).evaluate()).toString());
+                console.log("Final Step: " + div)
+                console.log("x is : " + currentStep.toString());
+                lhs = "x";
+            } 
+        }
+        return;
+
+    }
+
     // recursively process the expression to generate steps
     private stepRecursive(expr: MathJson): MathJson {
         if (Array.isArray(expr)) {
@@ -214,5 +305,27 @@ class EquationSolver {
         return this.steps[this.stepNumber-2]?.result as MathJson;
     }   
 }
+
+const compute = new ComputeEngine;
+const linearEquationTest = new LinearEquation(3,compute);
+const solver = new EquationSolver(compute,linearEquationTest.getEquation())
+
+console.log("Latex Form: " + linearEquationTest.getEquationLaTeX())
+console.log("MathJson Form: " + linearEquationTest.getEquation())
+console.log("Expand: " + compute.parse(linearEquationTest.getEquationLaTeX()).expand())
+console.log("Simplified: " + compute.parse(linearEquationTest.getEquationLaTeX()).simplify())
+
+
+
+while(solver.steps.length != 0){
+    const rational = "-7 / (-1/2)"
+    const expr = compute.parse(rational).evaluate().toString();
+    console.log("expr:" + expr);
+    console.log(solver.getStep())
+}
+
+
+
+
 
 export { LinearEquation, EquationSolver };
