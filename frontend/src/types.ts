@@ -5,7 +5,15 @@ export interface View {
 	show(): void;
 	hide(): void;
 }
-
+// MathJson type representing mathematical expressions
+export type MathJson = number | string | (string | number | MathJson)[];
+// Step interface representing each step in the solution process
+export interface Step {
+    description: string;
+    current: MathJson;
+    stepNumber: number;
+    result?: MathJson;
+}
 /**
  * Screen types for navigation
  *

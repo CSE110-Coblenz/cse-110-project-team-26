@@ -14,14 +14,8 @@ TO-DO: Fix the following issues:
 */
 
 import { ComputeEngine } from "@cortex-js/compute-engine";
-type MathJson = number | string | (string | number | MathJson)[];
-// Step interface representing each step in the solution process
-interface Step {
-    description: string;
-    current: MathJson;
-    stepNumber: number;
-    result?: MathJson;
-}
+import type { MathJson, Step } from "../../../types";
+
 // Helper class for random number and operation generation
 class RandomUtils {
     // returns a random integer between min and max, inclusive
@@ -148,7 +142,12 @@ class LinearEquation {
             result = EquationBuilder.divisionEquation(result);
         }
         let temp = this.ce.parse(result);
-        this.setY(temp.subs({x: x}).evaluate());
+        try {
+            this.setY(temp.subs({x: x}).evaluate());
+        } catch (error) {
+            console.error("Error evaluating equation: ", error);
+            this.generateLinearEquation(); // regenerate if error occurs
+        }
         const expression = temp.toMathJson() as MathJson;
         const final : MathJson = ['Equal', expression, this.y as string];
         return final;
@@ -161,6 +160,11 @@ class LinearEquation {
     public getY(): string {
         return this.y;
     }
+
+    public getX(): number {
+        return this.x;
+    }
+
     // returns the equation in MathJson format
     public getEquation(): MathJson {
         return this.equation;
@@ -179,7 +183,7 @@ class EquationSolver {
     private stepNumber: number = 1;
     private getStepNumber: number = 1;
 
-    constructor(computeEngine: ComputeEngine, equation: MathJson) {
+    constructor(equation: MathJson, computeEngine: ComputeEngine) {
         this.computeEngine = computeEngine;
         if (!Array.isArray(equation) || equation.length < 3) {
             throw new Error("Invalid equation format: expected an array like ['Equal', lhs, rhs]");
@@ -308,7 +312,7 @@ class EquationSolver {
 
 const compute = new ComputeEngine;
 const linearEquationTest = new LinearEquation(3,compute);
-const solver = new EquationSolver(compute,linearEquationTest.getEquation())
+const solver = new EquationSolver(linearEquationTest.getEquation(), compute);
 
 console.log("Latex Form: " + linearEquationTest.getEquationLaTeX())
 console.log("MathJson Form: " + linearEquationTest.getEquation())
@@ -317,15 +321,9 @@ console.log("Simplified: " + compute.parse(linearEquationTest.getEquationLaTeX()
 
 
 
-while(solver.steps.length != 0){
-    const rational = "-7 / (-1/2)"
-    const expr = compute.parse(rational).evaluate().toString();
-    console.log("expr:" + expr);
-    console.log(solver.getStep())
-}
 
-
-
+console.log(solver.steps);
 
 
 export { LinearEquation, EquationSolver };
+export type { Step, MathJson };
