@@ -3,6 +3,7 @@ import type { View } from "../../types.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
 import { ChoiceModel } from "./MazeModels.ts";
 
+// Component to represent a choice in the maze game
 export class ChoiceView {
     private group: Konva.Group;
     private choice: ChoiceModel | null = null;
@@ -14,7 +15,7 @@ export class ChoiceView {
         const rectHeight = 100;
 
         const rect = new Konva.Rect({
-            fill: "green",
+            fill: "black",
             width: rectWidth,
             height: rectHeight
         });
@@ -34,9 +35,9 @@ export class ChoiceView {
         this.group.add(rect, text);
         this.group.position({ x, y });
     }
-
+    // Get the Konva group for this choice
     getGroup() { return this.group; }
-
+    // Update the displayed text for the choice
     setText(newChoice: ChoiceModel) {
         this.choice = newChoice;
         const textNode = this.group.findOne<Konva.Text>('Text');
@@ -44,9 +45,9 @@ export class ChoiceView {
             textNode.text(newChoice.getText());
         }
     }
-
+    // Get the associated ChoiceModel
     getChoice() { return this.choice; }
-
+    // Register click handler for this choice
     onClick(handler: (choice: ChoiceModel) => void) {
         this.group.on('click', () => handler(this.choice as ChoiceModel));
     }
@@ -100,25 +101,29 @@ export class MazeScreenView implements View {
 		this.group.add(this.timerText);
 
 		// Objects in scene
+        // Problem statement
         this.problemText = new Konva.Text({
             text: "Problem Statement",
-            fontSize: 24,
+            fontSize: 40,
             fontFamily: "Arial",
             fill: "white",
             width: STAGE_WIDTH,
             align: "center",
         });
-        this.problemText.y((STAGE_HEIGHT - this.problemText.height()) / 2);
+        this.problemText.y((STAGE_HEIGHT - this.problemText.height() - 200) / 2);
+        // Choices
         // 50 = half width of choice rectangle
 		this.choiceOne = new ChoiceView(STAGE_WIDTH/2-50, STAGE_HEIGHT/2);
         this.choiceTwo = new ChoiceView(STAGE_WIDTH/2-250, STAGE_HEIGHT/2);
         this.choiceThree = new ChoiceView(STAGE_WIDTH/2+150, STAGE_HEIGHT/2);
-        
+        // Add to group
         this.group.add(
             this.choiceOne.getGroup(),
             this.choiceTwo.getGroup(), 
-            this.choiceThree.getGroup()
+            this.choiceThree.getGroup(),
+            this.problemText
         );
+        // Register click handlers, passing the choice model to the handler
         this.choiceOne.onClick(handler);
         this.choiceTwo.onClick(handler);
         this.choiceThree.onClick(handler);
@@ -148,7 +153,6 @@ export class MazeScreenView implements View {
 
     // Update choices display
     updateChoices(choices: ChoiceModel[]): void {
-        // Assuming choices array has exactly 3 elements
         const choiceTexts = [this.choiceOne, this.choiceTwo, this.choiceThree];
         for (let i = 0; i < 3; i++) {
             choiceTexts[i].setText(choices[i]);

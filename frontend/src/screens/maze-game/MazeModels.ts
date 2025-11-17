@@ -43,29 +43,30 @@ export class ProblemModel {
         this.solver = new EquationSolver(this.linearEquation.getEquation(), compute);
         this.generateChoices();
     }
-
+    // Need logic to see when it is the last step
     private generateChoices(){
         this.choices.push(new ChoiceModel(this.solver.getStep().description, true));
         this.choices.push(new ChoiceModel("Incorrect Choice 1", false));
         this.choices.push(new ChoiceModel("Incorrect Choice 2", false));
         this.shuffleChoices();
     }
-
+    // Shuffle choices to randomize their order
     private shuffleChoices() {
         for (let i = this.choices.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [this.choices[i], this.choices[j]] = [this.choices[j], this.choices[i]];
         }
     }
-
+    // Need to return problem with the next step applied rather than the original problem
+    // Also Konva does not support LaTeX rendering directly, so we need to convert LaTeX to an image
     public getProblemStatement(): string {
         return this.problemStatement;
     }
-
+    // Return the current choices
     public getChoices(): ChoiceModel[] {
         return this.choices;
     }
-    
+    // Clear current choices and generate new ones based on the next step
     public nextMove() {
         this.choices = [];
         this.generateChoices();
