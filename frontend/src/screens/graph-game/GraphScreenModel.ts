@@ -1,4 +1,5 @@
-import { Question, EquationAnswerFormat, Linear, Quadratic, AbsoluteValue } from "../../types";
+import { Question, Linear, Quadratic, AbsoluteValue } from "../../types";
+import type { EquationAnswerFormat } from "../../types";
 import { LINEAR, ABSVAL, QUADRATIC } from "../../constants"
 
 /**
