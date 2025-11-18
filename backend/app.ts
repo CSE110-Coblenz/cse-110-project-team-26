@@ -2,10 +2,11 @@ import express from "express";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRoutes from "./src/routes/user";
+import mazeRoutes from "./src/routes/Game/maze";
 import cors from "cors";
 
 dotenv.config();
-
+console.log("GOOGLE_API_KEY present?", Boolean(process.env.GOOGLE_API_KEY));
 
 export const app = express();
 app.use(express.json());
@@ -20,6 +21,7 @@ app.use(
 
 // Mount routes
 app.use("/auth", userRoutes);
+app.use("/game/maze", mazeRoutes);
 
 export async function connectDB(uri?: string) {
   const mongoUri = uri ?? process.env.MONGO_URI;
