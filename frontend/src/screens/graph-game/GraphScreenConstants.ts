@@ -45,7 +45,7 @@ const GRAPH_BACKGROUND_PROPERTIES = {
   fill: "#161313"
 };
 
-const PIX_PER_UNIT = 20;
+const PIX_PER_UNIT = 40;
 
 // Sprite group and elements
 

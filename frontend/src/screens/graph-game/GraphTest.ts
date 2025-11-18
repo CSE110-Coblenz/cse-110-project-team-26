@@ -22,6 +22,7 @@ class App implements ScreenSwitcher {
 
     this.stage.draw();
 
+
     this.graphScreenController.getView().show();
   }
 }
