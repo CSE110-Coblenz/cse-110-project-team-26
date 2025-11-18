@@ -46,7 +46,7 @@ export class TitleScreenModel {
 		this.state = { ...this.state, error };
 	}
 
-	async submitAuth(): Promise<{ success: boolean; message?: string }> {
+	async submitAuth(screenSwitcher?: import("../../types").ScreenSwitcher): Promise<{ success: boolean; message?: string }> {
 		const { mode, email, password } = this.state;
 		if (!email || !password) {
 			this.setError("Email and password are required.");
@@ -82,6 +82,12 @@ export class TitleScreenModel {
 					| null;
 				this.setError(data?.error ?? "Request failed.");
 				return { success: false, message: data?.error ?? "Request failed." };
+			}
+
+			// On success, route to tutorial screen
+			if (screenSwitcher) {
+				// TODO(team): Decide if tutorial should be skipped for returning users
+				screenSwitcher.switchToScreen({ type: "tutorial" });
 			}
 
 			return { success: true };

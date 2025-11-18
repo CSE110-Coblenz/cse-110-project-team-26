@@ -1,4 +1,4 @@
-import { ScreenController } from "../../types";
+import { ScreenController, type ScreenSwitcher } from "../../types";
 import { TitleScreenView } from "./TitleScreenView";
 import { TitleScreenModel } from "./TitleScreenModel";
 
@@ -10,9 +10,11 @@ import { TitleScreenModel } from "./TitleScreenModel";
 export class TitleScreenController extends ScreenController {
 	private view: TitleScreenView;
 	private model: TitleScreenModel;
+	private screenSwitcher: ScreenSwitcher;
 
-	constructor(_screenSwitcher: unknown) { // screenSwitcher retained for future integration
+	constructor(screenSwitcher: ScreenSwitcher) {
 		super();
+		this.screenSwitcher = screenSwitcher;
 		this.model = new TitleScreenModel();
 
 		this.view = new TitleScreenView({
@@ -44,7 +46,7 @@ export class TitleScreenController extends ScreenController {
 		this.model.switchMode(mode);
 		this.model.setCredentials(email.trim(), password);
 
-		const result = await this.model.submitAuth();
+		const result = await this.model.submitAuth(this.screenSwitcher);
 		if (result.success) {
 			this.view.showMessage("Success! You're logged in.", false);
 		} else {

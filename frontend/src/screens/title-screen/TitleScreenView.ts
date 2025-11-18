@@ -37,7 +37,7 @@ export class TitleScreenView implements View {
 			y: 80,
 			width: STAGE_WIDTH,
 			align: "center",
-			text: "Graph Games",
+			text: "(Game Name)",
 			fontSize: 40,
 			fontFamily: "Arial",
 			fill: "#ffffff",
