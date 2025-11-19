@@ -1,31 +1,97 @@
-import type { Question, EquationAnswerFormat } from "../../types";
+import { Question, Linear, Quadratic, AbsoluteValue } from "../../types";
+import type { EquationAnswerFormat } from "../../types.ts";
+import { LINEAR, ABSVAL, QUADRATIC } from "../../constants"
+
+type parameter = number | null;
 
 /**
  * Model for the Graphing Game Module
  */
 export class GraphScreenModel {
+    
     private question: GraphQuestion;
+    private slope: parameter;
+    private intercept: parameter;
+    private dialogue: string;
+    private sprite: HTMLImageElement;
 
     constructor() {
-        this.question = new GraphQuestion();
+        this.question = new GraphQuestion(LINEAR);
+        this.slope = null;
+        this.intercept = null;
+    }
+    
+    reset(): void {
+        this.question = new GraphQuestion(LINEAR);
+        this.slope = null;
+        this.intercept = null;
+    }
+
+    getQuestionType(): string {
+        return this.question.getQuestionType();
+    }
+    
+    verifyAnswer(submission: EquationAnswerFormat) {
+        this.question.enterSubmission(submission);
+        this.question.verifyAnswer();
+    }
+
+    getParameters(): { slope: parameter, intercept: parameter } {
+        return {
+            slope: this.slope,
+            intercept: this.intercept
+        }
+    }
+
+    setParameters(slope: parameter, intercept: parameter): void {
+        this.slope = slope;
+        this.intercept = intercept;
+    }
+
+    getDialogue(): string {
+        return this.dialogue;
+    }
+    
+    setDialogue(dialogue: string): void {
+        this.dialogue = dialogue;
+    }
+
+    getSprite(): HTMLImageElement {
+        return this.sprite;
+    }
+
+    setSprite(sprite: HTMLImageElement): void {
+        this.sprite = sprite;
     }
 }
 
 /**
  * Generate and store answer values for the Graphing Game
  */
-class GraphQuestion implements Question {
-    private questionType: string;
+class GraphQuestion extends Question {
+    private questionType: string
 
-    constructor() {
-        this.questionType = "";
+    constructor(type: string) {
+        super();
+        this.questionType = type;
+
+        switch (type) {
+            case LINEAR:
+                this.answer = new Linear();
+            break;
+            case QUADRATIC:
+                this.answer = new Quadratic();
+            break;
+            case ABSVAL:
+                this.answer = new AbsoluteValue();
+            break;
+            default: 
+                console.log("BAD TYPE INPUT");
+        }
     }
 
-    generateAnswerValues(): void {
-
+    getQuestionType(): string {
+        return this.questionType;
     }
 
-    verifyAnswer(): boolean {
-        return true;
-    }
 }
