@@ -70,6 +70,5 @@ const UserStatsSchema = new Schema<IUserStats>(
   { timestamps: true }
 );
 
-UserStatsSchema.index({ userId: 1 });
 
 export const UserStats = mongoose.model<IUserStats>("UserStats", UserStatsSchema);

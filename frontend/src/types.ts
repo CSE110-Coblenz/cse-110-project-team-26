@@ -12,17 +12,17 @@ export function generateRandomInt(min: number, max: number): number {
 }
 
 /**
- * Screen types for navigation
+ * Screen types for navigation.
  *
- * - "menu": Main menu screen
- * - "game": Gameplay screen
- * - "result": Results screen with final score
- *   - score: Final score to display on results screen
+ * Update this union any time you add another screen/controller.
  */
 export type Screen =
-	| { type: "menu" }
-	| { type: "game" }
-	| { type: "result"; score: number };
+	// | { type: "menu" }
+	// | { type: "game" }
+	// | { type: "result"; score: number }
+	// | { type: "graph" }
+	| { type: "title" }
+	| { type: "tutorial" };
 
 export abstract class ScreenController {
 	abstract getView(): View;

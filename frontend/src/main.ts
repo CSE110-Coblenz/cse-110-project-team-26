@@ -1,11 +1,12 @@
 import Konva from "konva";
 import type { ScreenSwitcher, Screen } from "./types.ts";
-import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController.ts";
-import { GameScreenController } from "./screens/GameScreen/GameScreenController.ts";
-import { ResultsScreenController } from "./screens/ResultsScreen/ResultsScreenController.ts";
-import { GraphScreenController } from "./screens/graph-game/GraphScreenController.ts"
-import { MazeScreenController } from "./screens/maze-game/MazeScreenController.ts"
-import { MatchScreenController } from "./screens/match-game/MatchScreenController.ts"
+// Legacy imports kept for future merge:
+// import { MenuScreenController } from "./screens/MenuScreen/MenuScreenController.ts";
+// import { GameScreenController } from "./screens/GameScreen/GameScreenController.ts";
+// import { ResultsScreenController } from "./screens/ResultsScreen/ResultsScreenController.ts";
+// import { GraphScreenController } from "./screens/graph-game/GraphScreenController.ts";
+import { TitleScreenController } from "./screens/title-screen/TitleScreenController.ts";
+import { TutorialScreenController } from "./screens/tutorial-screen/TutorialScreenController.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
 
 /**
@@ -22,9 +23,12 @@ class App implements ScreenSwitcher {
 	private stage: Konva.Stage;
 	private layer: Konva.Layer;
 
-	private menuController: MenuScreenController;
-	private gameController: GameScreenController;
-	private resultsController: ResultsScreenController;
+	// private menuController: MenuScreenController;
+	// private gameController: GameScreenController;
+	// private resultsController: ResultsScreenController;
+	// private graphController: GraphScreenController;
+	private titleController: TitleScreenController;
+	private tutorialController: TutorialScreenController;
 
 	constructor(container: string) {
 		// Initialize Konva stage (the main canvas)
@@ -40,21 +44,28 @@ class App implements ScreenSwitcher {
 
 		// Initialize all screen controllers
 		// Each controller manages a Model, View, and handles user interactions
-		this.menuController = new MenuScreenController(this);
-		this.gameController = new GameScreenController(this);
-		this.resultsController = new ResultsScreenController(this);
+		// TODO(team): Re-enable controllers once they're merged
+		// this.menuController = new MenuScreenController(this);
+		// this.gameController = new GameScreenController(this);
+		// this.resultsController = new ResultsScreenController(this);
+		// this.graphController = new GraphScreenController(this);
+		this.titleController = new TitleScreenController(this);
+		this.tutorialController = new TutorialScreenController(this);
 
 		// Add all screen groups to the layer
 		// All screens exist simultaneously but only one is visible at a time
-		this.layer.add(this.menuController.getView().getGroup());
-		this.layer.add(this.gameController.getView().getGroup());
-		this.layer.add(this.resultsController.getView().getGroup());
+		// this.layer.add(this.menuController.getView().getGroup());
+		// this.layer.add(this.gameController.getView().getGroup());
+		// this.layer.add(this.resultsController.getView().getGroup());
+		// this.layer.add(this.graphController.getView().getGroup());
+		this.layer.add(this.titleController.getView().getGroup());
+		this.layer.add(this.tutorialController.getView().getGroup());
 
 		// Draw the layer (render everything to the canvas)
 		this.layer.draw();
 
-		// Start with menu screen visible
-		this.menuController.getView().show();
+		// Start with title screen visible
+		this.titleController.getView().show();
 	}
 
 	/**
@@ -68,25 +79,26 @@ class App implements ScreenSwitcher {
 	 */
 	switchToScreen(screen: Screen): void {
 		// Hide all screens first by setting their Groups to invisible
-		this.menuController.hide();
-		this.gameController.hide();
-		this.resultsController.hide();
+		// this.menuController.hide();
+		// this.gameController.hide();
+		// this.resultsController.hide();
+		// this.graphController.hide();
+		this.titleController.hide();
+		this.tutorialController.hide();
 
 		// Show the requested screen based on the screen type
 		switch (screen.type) {
-			case "menu":
-				this.menuController.show();
+			case "title":
+				this.titleController.show();
 				break;
 
-			case "game":
-				// Start the game (which also shows the game screen)
-				this.gameController.startGame();
+			case "tutorial":
+				this.tutorialController.show();
 				break;
 
-			case "result":
-				// Show results with the final score
-				this.resultsController.showResults(screen.score);
-				break;
+			// case "graph":
+			// 	this.graphController.show();
+			// 	break;
 		}
 	}
 }
