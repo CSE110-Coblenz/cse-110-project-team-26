@@ -5,7 +5,8 @@ import { MenuTestScreenController } from "./screens/MenuTestScreen/MenuTestScree
 import { MatchingScreenController } from "./screens/MatchingScreen/MatchingScreenController.ts";
 import { MazeScreenController } from "./screens/MazeScreen/MazeScreenController.ts";
 import { MainScreenController } from "./screens/MainScreen/MainScreenController.ts";
-
+import { TitleScreenController } from "./screens/title-screen/TitleScreenController.ts";
+import { TutorialScreenController } from "./screens/tutorial-screen/TutorialScreenController.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
 
 /**
@@ -26,6 +27,8 @@ class App implements ScreenSwitcher {
 	private matchingScreenController: MatchingScreenController;
 	private mazeScreenController: MazeScreenController;
 	private mainScreenController: MainScreenController;
+	private titleController: TitleScreenController;
+	private tutorialController: TutorialScreenController;
 
 	constructor(container: string) {
 		// Initialize Konva stage (the main canvas)
@@ -45,6 +48,8 @@ class App implements ScreenSwitcher {
 		this.matchingScreenController = new MatchingScreenController(this, this.stage);
 		this.mazeScreenController = new MazeScreenController(this);
 		this.mainScreenController = new MainScreenController(this);
+    this.titleController = new TitleScreenController(this);
+		this.tutorialController = new TutorialScreenController(this);
 
 		// Add all screen groups to the layer
 		// All screens exist simultaneously but only one is visible at a time
@@ -53,12 +58,14 @@ class App implements ScreenSwitcher {
 		this.layer.add(this.matchingScreenController.getView().getGroup());
 		this.layer.add(this.mazeScreenController.getView().getGroup());
 		this.layer.add(this.mainScreenController.getView().getGroup());
+		this.layer.add(this.titleController.getView().getGroup());
+		this.layer.add(this.tutorialController.getView().getGroup());
 
 		// Draw the layer (render everything to the canvas)
 		this.layer.draw();
 
 		// Start with menu screen visible
-		this.switchToScreen({ type: "menu" });
+		this.switchToScreen({ type: "title" });
 	}
 
 	/**
@@ -76,6 +83,8 @@ class App implements ScreenSwitcher {
 		this.matchingScreenController.hide();
 		this.mazeScreenController.hide();
 		this.mainScreenController.hide();
+    this.titleController.hide();
+		this.tutorialController.hide();
 
 		// Show the requested screen based on the screen type
 		switch (screen.type) {
@@ -93,6 +102,14 @@ class App implements ScreenSwitcher {
 
 			case "main-game":
 				this.mainScreenController.show();
+				break;
+        
+      case "title":
+				this.titleController.show();
+				break;
+
+			case "tutorial":
+				this.tutorialController.show();
 				break;
 		}
 	}

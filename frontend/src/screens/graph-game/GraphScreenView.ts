@@ -6,12 +6,31 @@ import type { View } from "../../types";
  */
 export class GraphScreenView implements View {
     private group: Konva.Group;
+    private dialogueText: Konva.Text;
+    private playerSprite: HTMLImageElement;
+    private equationText: Konva.Text;
+
+    // TODO: Implement these
+    // private spriteBox: Konva.Rect;
+    // private dialogueBox: Konva.Rect;
+    // private inputAndEquationBox: Konva.Rect;
+    // private equationBox: Konva.Rect;
 
     /**
      * Initializes default values for the View
      */
-    constructor() {
-        this.group = new Konva.Group();
+    constructor(onEquationSubmission: () => boolean) {
+        this.group = new Konva.Group({ visible: false });
+
+        const background = new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            fill: "#616161" // Gray
+        });
+        this.group.add(background);
+
     }
 
     /**
