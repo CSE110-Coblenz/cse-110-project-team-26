@@ -57,26 +57,28 @@ export interface EquationAnswerFormat {
 	verifyAnswer(submission: EquationAnswerFormat): boolean;
 }
 
+export type Fraction = {
+  numerator: number,
+  denominator: number
+};
+
 export class Linear implements EquationAnswerFormat {
-	public coefficient: {
-		numerator: number,
-		denominator: number
-	};
+	public coefficient: Fraction;
 	public intercept: number;
 	readonly format = LINEAR;
 
 	constructor() {
 		let isPositive = generateRandomNumber(0, 1);
-		if (isPositive == 1) {
+		if (isPositive === 1) {
 			this.coefficient = {
 				numerator: generateRandomNumber(1, 6),
 				denominator: generateRandomNumber(1, 6)
-			}
+			};
 		} else {
 			this.coefficient = {
 				numerator: -1 * generateRandomNumber(1, 6),
 				denominator: generateRandomNumber(1, 6)
-			}
+			};
 		}
 		this.intercept = 0;
 	}
@@ -90,8 +92,8 @@ export class Linear implements EquationAnswerFormat {
 	}
 
 	verifyAnswer(submission: Linear): boolean {
-		if (this.coefficient != submission.coefficient) return false;
-		else if (this.intercept != submission.intercept) return false;
+		if ((this.coefficient.numerator !== submission.coefficient.numerator) || (this.coefficient.denominator !== submission.coefficient.denominator)) return false;
+		else if (this.intercept !== submission.intercept) return false;
 		return true;
 	}
 }
@@ -107,17 +109,17 @@ export class Quadratic implements EquationAnswerFormat {
 	}
 
 	generateAnswerValues(): void {
-		while (this.root1 == 0) {
+		while (this.root1 === 0) {
 			this.root1 = generateRandomNumber(-5, 5);
 		}
-		while (this.root2 == 0) {
+		while (this.root2 === 0) {
 			this.root2 = generateRandomNumber(-5, 5);
 		}
 	}
 
 	verifyAnswer(submission: Quadratic): boolean {
-		if ((this.root1 == submission.root1 && this.root2 == submission.root2) ||
-			(this.root2 == submission.root1 && this.root1 == submission.root1)) {
+		if ((this.root1 === submission.root1 && this.root2 === submission.root2) ||
+			(this.root2 === submission.root1 && this.root1 === submission.root1)) {
 				return true;
 			}
 		return false;
@@ -125,10 +127,7 @@ export class Quadratic implements EquationAnswerFormat {
 }
 
 export class AbsoluteValue implements EquationAnswerFormat {
-	public coefficient: {
-		numerator: number,
-		denominator: number
-	};
+	public coefficient: Fraction;
 	public xShift: number;
 	public yShift: number;
 	readonly format = ABSVAL;
@@ -145,7 +144,7 @@ export class AbsoluteValue implements EquationAnswerFormat {
 	// TO-DO: MODIFY TO ALLOW NEGATIVE VALUES
 	generateAnswerValues(): void {
 		let isPositive = generateRandomNumber(0, 1);
-		if (isPositive == 1) {
+		if (isPositive === 1) {
 			this.coefficient = {
 				numerator: generateRandomNumber(1, 6),
 				denominator: generateRandomNumber(1, 6)
@@ -161,9 +160,9 @@ export class AbsoluteValue implements EquationAnswerFormat {
 	}
 
 	verifyAnswer(submission: AbsoluteValue): boolean {
-		if (this.coefficient != submission.coefficient) return false;
-		else if (this.xShift != submission.xShift) return false;
-		else if (this.yShift != this.yShift) return false
+		if ((this.coefficient.numerator !== submission.coefficient.denominator) || (this.coefficient.denominator !== submission.coefficient.denominator)) return false;
+		else if (this.xShift !== submission.xShift) return false;
+		else if (this.yShift !== this.yShift) return false
 		return true;
 	}
 }
