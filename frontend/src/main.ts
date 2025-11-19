@@ -4,10 +4,11 @@ import type { ScreenSwitcher, Screen } from "./types.ts";
 import { MenuTestScreenController } from "./screens/MenuTestScreen/MenuTestScreenController.ts";
 import { MatchingScreenController } from "./screens/MatchingScreen/MatchingScreenController.ts";
 import { MazeScreenController } from "./screens/maze-game/MazeScreenController.ts";
-import { MainScreenController } from "./screens/MainScreen/MainScreenController.ts";
+import { GraphScreenController } from "./screens/graph-game/GraphScreenController.ts";
 import { TitleScreenController } from "./screens/title-screen/TitleScreenController.ts";
 import { TutorialScreenController } from "./screens/tutorial-screen/TutorialScreenController.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
+import type { TupleType } from "@cortex-js/compute-engine";
 
 /**
  * Main Application - Coordinates all screens
@@ -26,7 +27,7 @@ class App implements ScreenSwitcher {
 	private menuTestController: MenuTestScreenController;
 	private matchingScreenController: MatchingScreenController;
 	private mazeScreenController: MazeScreenController;
-	private mainScreenController: MainScreenController;
+	private graphScreenController: GraphScreenController;
 	private titleController: TitleScreenController;
 	private tutorialController: TutorialScreenController;
 
@@ -47,17 +48,16 @@ class App implements ScreenSwitcher {
 		this.menuTestController = new MenuTestScreenController(this);
 		this.matchingScreenController = new MatchingScreenController(this, this.stage);
 		this.mazeScreenController = new MazeScreenController(this);
-		this.mainScreenController = new MainScreenController(this);
+		this.graphScreenController = new GraphScreenController(this);
     	this.titleController = new TitleScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
 
 		// Add all screen groups to the layer
 		// All screens exist simultaneously but only one is visible at a time
-
+		this.stage.add(...this.graphScreenController.getView().getLayers());
 		this.layer.add(this.menuTestController.getView().getGroup());
 		this.layer.add(this.matchingScreenController.getView().getGroup());
 		this.layer.add(this.mazeScreenController.getView().getGroup());
-		this.layer.add(this.mainScreenController.getView().getGroup());
 		this.layer.add(this.titleController.getView().getGroup());
 		this.layer.add(this.tutorialController.getView().getGroup());
 
@@ -82,9 +82,10 @@ class App implements ScreenSwitcher {
 		this.menuTestController.hide();
 		this.matchingScreenController.hide();
 		this.mazeScreenController.hide();
-		this.mainScreenController.hide();
+		this.graphScreenController.hide();
     	this.titleController.hide();
 		this.tutorialController.hide();
+		
 
 		// Show the requested screen based on the screen type
 		switch (screen.type) {
@@ -101,7 +102,7 @@ class App implements ScreenSwitcher {
 				break;
 
 			case "main-game":
-				this.mainScreenController.show();
+				this.graphScreenController.show();
 				break;
         
       case "title":

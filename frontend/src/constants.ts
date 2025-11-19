@@ -1,4 +1,5 @@
 import { ComputeEngine } from "@cortex-js/compute-engine";
+export const compute = new ComputeEngine();
 
 // Stage dimensions
 export const STAGE_WIDTH = 1280;
