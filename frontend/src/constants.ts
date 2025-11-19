@@ -8,3 +8,12 @@ export const STAGE_HEIGHT = 600;
 export const GAME_DURATION = 10; // seconds
 
 export const compute = new ComputeEngine;
+/*
+export const GRAPH = "graph";
+export const MAZE = "maze";
+export const MATCH = "match";
+export const TITLE = "title";
+*/
+export const LINEAR = "LINEAR";
+export const QUADRATIC = "QUADRATIC";
+export const ABSVAL = "ABSVAL";
