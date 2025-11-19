@@ -13,9 +13,9 @@ export class GraphScreenController extends ScreenController {
     private view: GraphScreenView;
     private screenSwitcher: ScreenSwitcher;
 
-  /**
-   * Initializes default values for the Controller
-   */
+    /**
+     * Initializes default values for the Controller
+     */
     constructor(screenSwitcher: ScreenSwitcher) {
         super();
             this.model = new GraphScreenModel(-6, 7);

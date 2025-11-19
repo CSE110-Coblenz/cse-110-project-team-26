@@ -1,18 +1,21 @@
 {
-  "name": "cse-110-lab3",
+  "name": "cse-110-project-team-26",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest test"
   },
   "devDependencies": {
     "typescript": "~5.9.3",
     "vite": "^7.1.7"
   },
   "dependencies": {
-    "konva": "^10.0.2"
+    "@cortex-js/compute-engine": "^0.30.2",
+    "konva": "^10.0.8",
+    "vitest": "^4.0.3"
   }
 }
