@@ -7,22 +7,16 @@ export interface View {
 	hide(): void;
 }
 
-export function generateRandomInt(min: number, max: number): number {
-    return Math.floor(Math.random() * (max - min)) + min;
-}
-
-/**
- * Screen types for navigation.
- *
- * Update this union any time you add another screen/controller.
- */
 export type Screen =
-	// | { type: "menu" }
-	// | { type: "game" }
-	// | { type: "result"; score: number }
-	// | { type: "graph" }
-	| { type: "title" }
+	| { type: "menu" }
+	| { type: "game" }
+	| { type: "matching-game" }
+	| { type: "maze-game" }
+	| { type: "main-game" }
+	| { type: "result"; score: number }
+  | { type: "title" }
 	| { type: "tutorial" };
+
 
 export abstract class ScreenController {
 	abstract getView(): View;
@@ -36,6 +30,19 @@ export abstract class ScreenController {
 	}
 }
 
+/**
+ * Template for minigame questions
+ */
+export interface Question {
+	generateAnswerValues(): void;
+	verifyAnswer(): boolean;
+}
+
+export type EquationAnswerFormat = 
+	| {yIntercept: 0, coefficient: 0} // LINEAR
+	| {root1: 0, root2: 0} // PARABOLA
+	| {coefficient: 0, xShift: 0, yShift: 0} // ABSOLUTE VALUE
+	| null;
 export interface ScreenSwitcher {
 	switchToScreen(screen: Screen): void;
 }

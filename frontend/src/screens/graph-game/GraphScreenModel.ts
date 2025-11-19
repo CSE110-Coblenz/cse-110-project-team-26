@@ -1,6 +1,4 @@
-import { Question, Linear, Quadratic, AbsoluteValue } from "../../types";
-import type { EquationAnswerFormat } from "../../types";
-import { LINEAR, ABSVAL, QUADRATIC } from "../../constants"
+import type { Question, EquationAnswerFormat } from "../../types";
 
 /**
  * Model for the Graphing Game Module
@@ -11,22 +9,16 @@ export class GraphScreenModel {
     constructor() {
         this.question = new GraphQuestion();
     }
-
-    verifyAnswer(submission: EquationAnswerFormat) {
-        this.question.enterSubmission(submission);
-        this.question.verifyAnswer();
-    }
 }
 
 /**
  * Generate and store answer values for the Graphing Game
  */
-class GraphQuestion extends Question {
+class GraphQuestion implements Question {
     private questionType: string;
 
-    constructor(type: string) {
-        super();
-        this.questionType = type;
+    constructor() {
+        this.questionType = "";
     }
 
     generateAnswerValues(): void {
@@ -34,6 +26,6 @@ class GraphQuestion extends Question {
     }
 
     verifyAnswer(): boolean {
-        return false;
+        return true;
     }
 }
