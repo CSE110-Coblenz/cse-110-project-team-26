@@ -20,7 +20,15 @@ export interface View {
 	show(): void;
 	hide(): void;
 }
-
+// MathJson type representing mathematical expressions
+export type MathJson = number | string | (string | number | MathJson)[];
+// Step interface representing each step in the solution process
+export interface Step {
+    description: string;
+    current: MathJson;
+    stepNumber: number;
+    result?: MathJson;
+}
 /**
  * Screen types for navigation
  *
@@ -32,7 +40,13 @@ export interface View {
 export type Screen =
 	| { type: "menu" }
 	| { type: "game" }
-	| { type: "result"; score: number };
+	| { type: "matching-game" }
+	| { type: "maze-game" }
+	| { type: "main-game" }
+	| { type: "result"; score: number }
+  | { type: "title" }
+	| { type: "tutorial" };
+
 
 export abstract class ScreenController {
 	abstract getView(): View;
@@ -46,6 +60,19 @@ export abstract class ScreenController {
 	}
 }
 
+/**
+ * Template for minigame questions
+ */
+export interface Question {
+	generateAnswerValues(): void;
+	verifyAnswer(): boolean;
+}
+
+export type EquationAnswerFormat = 
+	| {yIntercept: 0, coefficient: 0} // LINEAR
+	| {root1: 0, root2: 0} // PARABOLA
+	| {coefficient: 0, xShift: 0, yShift: 0} // ABSOLUTE VALUE
+	| null;
 export interface ScreenSwitcher {
 	switchToScreen(screen: Screen): void;
 }

@@ -2,23 +2,39 @@
   "name": "server",
   "version": "1.0.0",
   "description": "backend of cse110-team 26",
-  "keywords": [],
-  "homepage": "https://github.com/CSE110-Coblenz/cse-110-project-team-26#readme",
-  "bugs": {
-    "url": "https://github.com/CSE110-Coblenz/cse-110-project-team-26/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/CSE110-Coblenz/cse-110-project-team-26.git"
-  },
   "license": "UNLICENSED",
   "author": "CSE110 Team 26",
   "type": "commonjs",
-  "main": "index.js",
+  "main": "dist/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "ts-node-dev --respawn --transpile-only server.ts",
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "test": "vitest --run"
   },
   "dependencies": {
-    "express": "^5.1.0"
+    "@google/genai": "^1.30.0",
+    "bcryptjs": "^3.0.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.19.3"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^4.17.21",
+    "@types/jest": "^30.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "^22.8.1",
+    "@types/supertest": "^6.0.3",
+    "axios": "^1.13.2",
+    "mongodb-memory-server": "^10.3.0",
+    "supertest": "^7.1.4",
+    "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.3",
+    "vitest": "^4.0.7"
   }
 }
