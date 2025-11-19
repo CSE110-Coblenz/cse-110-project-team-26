@@ -53,7 +53,7 @@ export class GraphScreenView implements View {
         this.staticGroup = new Konva.Group({
             ...STATIC_GROUP_PROPERTIES
         });
-        this.graphGroup = graphGroup;
+        this.graphGroup = graphGroup();
 
         // Background element
     
@@ -310,11 +310,11 @@ export class GraphScreenView implements View {
         return this.playerSprite;
     }
 
-    getDialogue(): string {
+    getDialogue(): Konva.Text {
         return this.dialogueText;
     }
 
-    getEquation(): string {
+    getEquation(): Konva.Text {
         return this.equationText;
     }
 

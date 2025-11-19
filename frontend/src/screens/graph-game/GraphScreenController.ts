@@ -3,6 +3,8 @@ import { GraphScreenView } from "./GraphScreenView";
 import { GraphScreenModel } from "./GraphScreenModel";
 import type { ScreenSwitcher } from "../../types";
 
+// REFACTOR CODE TO HAVE VARIABLE ORIGIN POINT
+
 /**
  * Controller for the Graphing game module
  */
@@ -16,7 +18,7 @@ export class GraphScreenController extends ScreenController {
    */
     constructor(screenSwitcher: ScreenSwitcher) {
         super();
-            this.model = new GraphScreenModel();
+            this.model = new GraphScreenModel(-6, 7);
             this.view = new GraphScreenView(
                 (input: number) => this.handleNumberInput(input),
                 () => this.handleEquationReset(),
@@ -32,7 +34,6 @@ export class GraphScreenController extends ScreenController {
     getView(): GraphScreenView {
         return this.view;
     }
-
 
     private handleNumberInput(input: number): void {
         let params = this.model.getParameters();
@@ -54,6 +55,7 @@ export class GraphScreenController extends ScreenController {
     private handleEquationSubmission(): boolean {
         console.log('Submit button clicked');
         this.submitEquationInput();
+        return false;
     }
 
     private submitEquationInput(): void {

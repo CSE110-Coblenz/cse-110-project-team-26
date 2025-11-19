@@ -14,11 +14,17 @@ export class GraphScreenModel {
     private intercept: parameter;
     private dialogue: string;
     private sprite: HTMLImageElement;
+    private xMin: number;
+    private yMax: number;
 
-    constructor() {
+    constructor(xMin: number, yMax: number) {
         this.question = new GraphQuestion(LINEAR);
         this.slope = null;
         this.intercept = null;
+        this.xMin = xMin;
+        this.yMax = yMax;
+        this.dialogue = "";
+        this.sprite = new HTMLImageElement();
     }
     
     reset(): void {
