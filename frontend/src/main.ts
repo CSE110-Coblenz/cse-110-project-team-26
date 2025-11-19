@@ -3,7 +3,7 @@ import type { ScreenSwitcher, Screen } from "./types.ts";
 
 import { MenuTestScreenController } from "./screens/MenuTestScreen/MenuTestScreenController.ts";
 import { MatchingScreenController } from "./screens/MatchingScreen/MatchingScreenController.ts";
-import { MazeScreenController } from "./screens/MazeScreen/MazeScreenController.ts";
+import { MazeScreenController } from "./screens/maze-game/MazeScreenController.ts";
 import { MainScreenController } from "./screens/MainScreen/MainScreenController.ts";
 import { TitleScreenController } from "./screens/title-screen/TitleScreenController.ts";
 import { TutorialScreenController } from "./screens/tutorial-screen/TutorialScreenController.ts";
@@ -48,7 +48,7 @@ class App implements ScreenSwitcher {
 		this.matchingScreenController = new MatchingScreenController(this, this.stage);
 		this.mazeScreenController = new MazeScreenController(this);
 		this.mainScreenController = new MainScreenController(this);
-    this.titleController = new TitleScreenController(this);
+    	this.titleController = new TitleScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
 
 		// Add all screen groups to the layer
@@ -83,7 +83,7 @@ class App implements ScreenSwitcher {
 		this.matchingScreenController.hide();
 		this.mazeScreenController.hide();
 		this.mainScreenController.hide();
-    this.titleController.hide();
+    	this.titleController.hide();
 		this.tutorialController.hide();
 
 		// Show the requested screen based on the screen type

@@ -63,7 +63,6 @@ export class MazeScreenController extends ScreenController {
 
 	// Handle choice click
 	private handleChoiceClick(choice : ChoiceModel): void {
-		console.log("Choice clicked:", choice.getText());
 		if (choice.getIsCorrect()) {
 			// Update model
 			this.model.incrementScore();

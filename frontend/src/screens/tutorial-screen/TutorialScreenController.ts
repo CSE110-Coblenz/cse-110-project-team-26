@@ -12,11 +12,11 @@ export class TutorialScreenController extends ScreenController {
 	private view: TutorialScreenView;
 	// TODO(team): Use model and screenSwitcher when implementing tutorial logic
 	// private model: TutorialScreenModel;
-	// private screenSwitcher: ScreenSwitcher;
+	private screenSwitcher: ScreenSwitcher;
 
 	constructor(_screenSwitcher: ScreenSwitcher) {
 		super();
-		// this.screenSwitcher = screenSwitcher;
+		 this.screenSwitcher = _screenSwitcher;
 		// this.model = new TutorialScreenModel();
 
 		this.view = new TutorialScreenView({
@@ -29,7 +29,7 @@ export class TutorialScreenController extends ScreenController {
 			onSkip: () => {
 				// TODO(team): Decide which screen to route to when skipping tutorial
 				console.log("[TutorialScreen] Skip button clicked");
-				// Example: this.screenSwitcher.switchToScreen({ type: "menu" });
+				this.screenSwitcher.switchToScreen({ type: "menu" });
 			},
 		});
 	}
