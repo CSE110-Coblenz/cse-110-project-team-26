@@ -16,15 +16,6 @@ function getGenAI(): GoogleGenAI | null {
 	return cachedGenAI;
 }
 
-export const generateMainProblem = async (req: Request, res: Response) => {
-    // logic
-};
-export const generateMatchingProblem = async (req: Request, res: Response) => {
-    // logic
-};
-export const generateMazeProblem = async (req: Request, res: Response) => {
-    // logic
-};
 
 export const handleMainProblem = async (req: Request, res: Response) => {
     // logic
@@ -89,27 +80,27 @@ function buildMazeExplanationPrompt(
 			? values.map((v, i) => `${i + 1}. ${String(v)}`).join("\n")
 			: "None provided.";
 
-	return `You are an encouraging math tutor helping students navigate a maze puzzle.
+	return `Don't refrence to the user as "the student" but rather in second person. These questions are in the format of following steps of the equation,
+		so explain why the users step is incorrect and what the correct step should be. Be consistent in using PEMDAS.
+		Problem statements (LaTeX):
+		${formatArray(latex)}
 
-Problem statements (LaTeX):
-${formatArray(latex)}
+		Student's submitted answer:
+		${formatArray(givenAnswer)}
 
-Student's submitted answer:
-${formatArray(givenAnswer)}
+		Correct answer:
+		${formatArray(correctAnswer)}
 
-Correct answer:
-${formatArray(correctAnswer)}
+		Explain concisely why the student's answer is incorrect, referencing the specific mistakes.
+		Then clearly explain what the correct answer is and how to arrive at it.
+		Format the response as:
 
-Explain concisely why the student's answer is incorrect, referencing the specific mistakes.
-Then clearly explain what the correct answer is and how to arrive at it.
-Use friendly, encouraging language. Format the response as:
+		Why it is incorrect:
+		- ...
+		- ...
 
-Why it is incorrect:
-- ...
-- ...
-
-Correct approach:
-- ...
-- ...
-`;
-}
+		Correct approach:
+		- ...
+		- ...
+		`;
+	}
