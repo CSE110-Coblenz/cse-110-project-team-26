@@ -4,8 +4,10 @@ import dotenv from "dotenv";
 import userRoutes from "./src/routes/user";
 import mazeRoutes from "./src/routes/Game/maze";
 import cors from "cors";
+import path from "path";
 
-dotenv.config();
+
+dotenv.config({ path: path.join(__dirname, ".env") });
 console.log("GOOGLE_API_KEY present?", Boolean(process.env.GOOGLE_API_KEY));
 
 export const app = express();
