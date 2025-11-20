@@ -68,11 +68,6 @@ export interface Question {
 	verifyAnswer(): boolean;
 }
 
-export type EquationAnswerFormat = 
-	| {yIntercept: 0, coefficient: 0} // LINEAR
-	| {root1: 0, root2: 0} // PARABOLA
-	| {coefficient: 0, xShift: 0, yShift: 0} // ABSOLUTE VALUE
-	| null;
 export interface ScreenSwitcher {
 	switchToScreen(screen: Screen): void;
 }
@@ -81,21 +76,30 @@ export interface EquationAnswerFormat {
 	readonly format: string;
 
 	generateAnswerValues(): void;
+	checkCompleteSubmission(): boolean;
 	verifyAnswer(submission: EquationAnswerFormat): boolean;
 }
 
 export type Fraction = {
-  numerator: number,
-  denominator: number
+  numerator: number | null,
+  denominator: number | null
 };
 
 export class Linear implements EquationAnswerFormat {
 	public coefficient: Fraction;
-	public intercept: number;
+	public intercept: number | null;
 	readonly format = LINEAR;
 
-	constructor() {
-		let isPositive = generateRandomNumber(0, 1);
+	constructor(isAnswer: boolean) {
+		if (!isAnswer) {
+			this.coefficient = {
+				numerator: null,
+				denominator: null
+			};
+			this.intercept = null;
+			return;
+		}
+		let isPositive = generateRandomNumber(0, 2);
 		if (isPositive === 1) {
 			this.coefficient = {
 				numerator: generateRandomNumber(1, 6),
@@ -107,7 +111,7 @@ export class Linear implements EquationAnswerFormat {
 				denominator: generateRandomNumber(1, 6)
 			};
 		}
-		this.intercept = 0;
+		this.intercept = generateRandomNumber(-5, 5);
 	}
 
 	generateAnswerValues(): void {
@@ -123,16 +127,50 @@ export class Linear implements EquationAnswerFormat {
 		else if (this.intercept !== submission.intercept) return false;
 		return true;
 	}
+
+	getCoefficient(): Fraction {
+		return this.coefficient;
+	}
+
+	getIntercept(): number | null {
+		return this.intercept;
+	}
+
+	setNumerator(numerator: number) {
+		console.log("Numerator set: " + numerator);
+		this.coefficient.numerator = numerator;
+	}
+
+	setDenominator(denominator: number) {
+		this.coefficient.denominator = denominator;
+	}
+
+	setIntercept(intercept: number) {
+		this.intercept = intercept;
+	}
+
+	checkCompleteSubmission(): boolean {
+		if (this.coefficient.numerator == null) return false;
+		else if (this.coefficient.denominator == null) return false;
+		else if (this.intercept == null) return false;
+		return true;
+	}
 }
 
 export class Quadratic implements EquationAnswerFormat {
-	public root1: number;
-	public root2: number;
+	public root1: number | null;
+	public root2: number | null;
 	readonly format = QUADRATIC;
 
-	constructor() {
+	constructor(isAnswer: boolean) {
+		if (!isAnswer) {
+			this.root1 = null;
+			this.root2 = null;
+			return;
+		}
 		this.root1 = 0;
 		this.root2 = 0;
+		this.generateAnswerValues();
 	}
 
 	generateAnswerValues(): void {
@@ -146,26 +184,66 @@ export class Quadratic implements EquationAnswerFormat {
 
 	verifyAnswer(submission: Quadratic): boolean {
 		if ((this.root1 === submission.root1 && this.root2 === submission.root2) ||
-			(this.root2 === submission.root1 && this.root1 === submission.root1)) {
+			(this.root2 === submission.root1 && this.root1 === submission.root2)) {
 				return true;
 			}
 		return false;
 	}
+
+	getRoot1(): number | null {
+		return this.root1;
+	}
+
+	getRoot2(): number | null {
+		return this.root2;
+	}
+
+	setRoot1(root1: number) {
+		this.root1 = root1;
+	}
+
+	setRoot2(root2: number) {
+		this.root2 = root2;
+	}
+
+	checkCompleteSubmission(): boolean {
+		if (this.root1 == null) return false;
+		else if (this.root2 == null) return false;
+		return true;
+	}
+
 }
 
 export class AbsoluteValue implements EquationAnswerFormat {
 	public coefficient: Fraction;
-	public xShift: number;
-	public yShift: number;
+	public xShift: number | null;
+	public yShift: number | null;
 	readonly format = ABSVAL;
 
-	constructor() {
-		this.coefficient = {
-			numerator: 0,
-			denominator: 0
-		};
-		this.xShift = 0;
-		this.yShift = 0;
+	constructor(isAnswer: boolean) {
+		if (!isAnswer) { 
+			this.coefficient = {
+				numerator: null,
+				denominator: null
+			};
+			this.xShift = null;
+			this.yShift = null;
+			return
+		}
+		let isPositive = generateRandomNumber(0, 1);
+		if (isPositive === 1) {
+			this.coefficient = {
+				numerator: generateRandomNumber(1, 6),
+				denominator: generateRandomNumber(1, 6)
+			}
+		} else {
+			this.coefficient = {
+				numerator: -1 * generateRandomNumber(1, 6),
+				denominator: generateRandomNumber(1, 6)
+			}
+		}
+		this.xShift = generateRandomNumber(-4, 4);
+		this.yShift = generateRandomNumber(-4, 4);
 	}
 
 	// TO-DO: MODIFY TO ALLOW NEGATIVE VALUES
@@ -192,11 +270,47 @@ export class AbsoluteValue implements EquationAnswerFormat {
 		else if (this.yShift !== this.yShift) return false
 		return true;
 	}
+
+	getCoefficient(): Fraction {
+		return this.coefficient;
+	}
+
+	getXShift(): number | null {
+		return this.xShift;
+	}
+
+	getYShift(): number | null {
+		return this.yShift;
+	}
+
+	setNumerator(numerator: number) {
+		this.coefficient.numerator = numerator;
+	}
+
+	setDenominator(denominator: number) {
+		this.coefficient.denominator = denominator;
+	}
+
+	setXShift(xShift: number) {
+		this.xShift = xShift;
+	}
+
+	setYShift(yShift: number) {
+		this.yShift = yShift;
+	}
+
+	checkCompleteSubmission(): boolean {
+		if (this.coefficient.numerator == null) return false;
+		else if (this.coefficient.denominator == null) return false;
+		else if (this.xShift == null) return false;
+		else if (this.yShift == null) return false;
+		return true;
+	}
 }
 
 export abstract class Question {
-	protected answer: EquationAnswerFormat | null;
-	protected submission: EquationAnswerFormat | null;
+	protected answer: EquationAnswerFormat;
+	protected submission: EquationAnswerFormat;
 
 	constructor() {
 		this.submission = null;
@@ -204,7 +318,7 @@ export abstract class Question {
 	}
 
 	generateAnswerValues(): void {
-		this.submission?.generateAnswerValues();
+		this.submission.generateAnswerValues();
 	}
 
 	enterSubmission(submission: EquationAnswerFormat): void {
@@ -212,7 +326,12 @@ export abstract class Question {
 	}
 
 	verifyAnswer(): boolean {
-		this.answer?.verifyAnswer(this.submission as AbsoluteValue);
-		return false;
+		return this.submission.verifyAnswer(this.submission);
 	}
+
 }
+
+
+export {
+	generateRandomNumber
+};

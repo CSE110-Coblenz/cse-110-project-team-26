@@ -1,4 +1,4 @@
-import { Question, Linear, Quadratic, AbsoluteValue } from "../../types";
+import { Question, Linear, Quadratic, AbsoluteValue, generateRandomNumber } from "../../types";
 import type { EquationAnswerFormat } from "../../types.ts";
 import { LINEAR, ABSVAL, QUADRATIC } from "../../constants"
 
@@ -10,21 +10,15 @@ type parameter = number | null;
 export class GraphScreenModel {
     
     private question: GraphQuestion;
-    private slope: parameter;
-    private intercept: parameter;
     private dialogue: string;
     private sprite: HTMLImageElement;
 
-    constructor() {
-        this.question = new GraphQuestion(LINEAR);
-        this.slope = null;
-        this.intercept = null;
+    constructor(type: number) {
+        this.question = new GraphQuestion(type);
     }
     
     reset(): void {
-        this.question = new GraphQuestion(LINEAR);
-        this.slope = null;
-        this.intercept = null;
+        this.question = new GraphQuestion(generateRandomNumber(0, 2));
     }
 
     getQuestionType(): string {
@@ -36,16 +30,8 @@ export class GraphScreenModel {
         this.question.verifyAnswer();
     }
 
-    getParameters(): { slope: parameter, intercept: parameter } {
-        return {
-            slope: this.slope,
-            intercept: this.intercept
-        }
-    }
-
-    setParameters(slope: parameter, intercept: parameter): void {
-        this.slope = slope;
-        this.intercept = intercept;
+    getAnswer(): EquationAnswerFormat {
+        return this.question.getAnswer();
     }
 
     getDialogue(): string {
@@ -63,6 +49,10 @@ export class GraphScreenModel {
     setSprite(sprite: HTMLImageElement): void {
         this.sprite = sprite;
     }
+
+    enterSubmission(submission: EquationAnswerFormat) {
+        this.question.enterSubmission(submission);
+    }
 }
 
 /**
@@ -71,27 +61,34 @@ export class GraphScreenModel {
 class GraphQuestion extends Question {
     private questionType: string
 
-    constructor(type: string) {
+    constructor(type: number) {
         super();
-        this.questionType = type;
 
         switch (type) {
-            case LINEAR:
-                this.answer = new Linear();
+            case 0:
+                this.questionType = LINEAR;
+                this.answer = new Linear(true);
             break;
-            case QUADRATIC:
-                this.answer = new Quadratic();
+            case 1:
+                this.questionType = QUADRATIC;
+                this.answer = new Quadratic(true);
             break;
-            case ABSVAL:
-                this.answer = new AbsoluteValue();
+            case 2:
+                this.questionType = ABSVAL;
+                this.answer = new AbsoluteValue(true);
             break;
             default: 
                 console.log("BAD TYPE INPUT");
         }
+        console.log(67);
+        console.log("Type: " + type);
     }
 
     getQuestionType(): string {
         return this.questionType;
     }
 
+    getAnswer(): EquationAnswerFormat {
+        return this.answer;
+    }
 }
