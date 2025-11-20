@@ -65,7 +65,7 @@ class App implements ScreenSwitcher {
 		this.layer.draw();
 
 		// Start with menu screen visible
-		this.switchToScreen({ type: "menu" });
+		this.switchToScreen({ type: "title" });
 	}
 
 	/**
