@@ -65,7 +65,7 @@ class App implements ScreenSwitcher {
 		this.layer.draw();
 
 		// Start with menu screen visible
-		this.switchToScreen({ type: "title" });
+		this.switchToScreen({ type: "menu" });
 	}
 
 	/**
@@ -98,7 +98,7 @@ class App implements ScreenSwitcher {
 				break;
 
 			case "maze-game":
-				this.mazeScreenController.show();
+				this.mazeScreenController.startGame();
 				break;
 
 			case "main-game":
