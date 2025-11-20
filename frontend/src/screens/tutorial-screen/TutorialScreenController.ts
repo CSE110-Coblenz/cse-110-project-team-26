@@ -1,7 +1,6 @@
 import { ScreenController, type ScreenSwitcher } from "../../types";
 import { TutorialScreenView } from "./TutorialScreenView";
-// TODO(team): Uncomment when implementing tutorial logic
-// import { TutorialScreenModel } from "./TutorialScreenModel";
+import { TutorialScreenModel } from "./TutorialScreenModel";
 
 /**
  * Controller for the Tutorial screen.
@@ -10,32 +9,58 @@ import { TutorialScreenView } from "./TutorialScreenView";
  */
 export class TutorialScreenController extends ScreenController {
 	private view: TutorialScreenView;
-	// TODO(team): Use model and screenSwitcher when implementing tutorial logic
-	// private model: TutorialScreenModel;
+	private model: TutorialScreenModel;
 	private screenSwitcher: ScreenSwitcher;
 
-	constructor(_screenSwitcher: ScreenSwitcher) {
+	constructor(screenSwitcher: ScreenSwitcher) {
 		super();
-		 this.screenSwitcher = _screenSwitcher;
-		// this.model = new TutorialScreenModel();
+		this.screenSwitcher = screenSwitcher;
+		this.model = new TutorialScreenModel();
 
 		this.view = new TutorialScreenView({
 			onContinue: () => {
-				// TODO(team): Decide which screen to route to after tutorial
-				// For now, this just logs - you can route to menu, graph game, etc.
-				console.log("[TutorialScreen] Continue button clicked");
-				// Example: this.screenSwitcher.switchToScreen({ type: "menu" });
+				if (this.model.isLastStep()) {
+					// On last step, route to main game (graph game)
+					this.screenSwitcher.switchToScreen({ type: "main-game" });
+				} else {
+					// Move to next tutorial step
+					this.model.nextStep();
+					this.updateView();
+				}
+			},
+			onPrevious: () => {
+				this.model.previousStep();
+				this.updateView();
 			},
 			onSkip: () => {
-				// TODO(team): Decide which screen to route to when skipping tutorial
-				console.log("[TutorialScreen] Skip button clicked");
-				this.screenSwitcher.switchToScreen({ type: "menu" });
+				// Skip tutorial and go directly to main game
+				this.screenSwitcher.switchToScreen({ type: "main-game" });
 			},
 		});
+
+		// Initialize view with first step content
+		this.updateView();
+	}
+
+	private updateView(): void {
+		const stepContent = this.model.getStepContent();
+		this.view.updateContent(
+			stepContent.title,
+			stepContent.content,
+			this.model.isFirstStep(),
+			this.model.isLastStep()
+		);
 	}
 
 	getView(): TutorialScreenView {
 		return this.view;
+	}
+
+	show(): void {
+		// Reset to first step when showing tutorial
+		this.model.reset();
+		this.updateView();
+		super.show();
 	}
 }
 

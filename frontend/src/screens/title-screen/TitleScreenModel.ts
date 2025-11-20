@@ -67,21 +67,24 @@ export class TitleScreenModel {
 				credentials: "include",
 			});
 
+			const data = (await res.json().catch(() => null)) as
+				| { token?: string; user?: { id: string; email: string }; error?: string }
+				| null;
+
 			if (res.status === 401) {
-				const data = (await res.json().catch(() => null)) as
-					| { error?: string }
-					| null;
 				const message = data?.error ?? "Invalid credentials.";
 				this.setError(message);
 				return { success: false, message };
 			}
 
 			if (!res.ok) {
-				const data = (await res.json().catch(() => null)) as
-					| { error?: string }
-					| null;
 				this.setError(data?.error ?? "Request failed.");
 				return { success: false, message: data?.error ?? "Request failed." };
+			}
+
+			// Store auth token in localStorage
+			if (data?.token) {
+				localStorage.setItem("authToken", data.token);
 			}
 
 			// On success, route to tutorial screen

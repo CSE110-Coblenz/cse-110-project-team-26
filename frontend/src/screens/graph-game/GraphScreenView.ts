@@ -1,5 +1,6 @@
 import Konva from "konva";
 import type { View } from "../../types";
+import { STAGE_WIDTH } from "../../constants";
 import {
   OFFSET,
   SIDEBAR_WIDTH,
@@ -35,10 +36,14 @@ export class GraphScreenView implements View {
     private playerSprite: HTMLImageElement;
     private equationText: Konva.Text;
 
+    private profileButton: Konva.Rect;
+    private profileText: Konva.Text;
+    private onProfileClick: (() => void) | null = null;
+
     /**
      * Initializes default values for the View
      */
-    constructor(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => boolean) {
+    constructor(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => boolean, onProfileClick?: () => void) {
 
         // Add layers for static and dynamic elements
 
@@ -125,9 +130,49 @@ export class GraphScreenView implements View {
 
         inputAndEquationGroup.add(inputAndEquationBox, equationBox, this.equationText, keypadGroup);
         
+        // Profile button (top right corner)
+        const profileButtonWidth = 100;
+        const profileButtonHeight = 35;
+        const profileButtonX = STAGE_WIDTH - profileButtonWidth - OFFSET;
+        const profileButtonY = OFFSET;
+
+        this.profileButton = new Konva.Rect({
+            x: profileButtonX,
+            y: profileButtonY,
+            width: profileButtonWidth,
+            height: profileButtonHeight,
+            fill: "#4CAF50",
+            cornerRadius: 6,
+        });
+
+        this.profileText = new Konva.Text({
+            x: profileButtonX,
+            y: profileButtonY + (profileButtonHeight - 20) / 2,
+            width: profileButtonWidth,
+            align: "center",
+            text: "Profile",
+            fontSize: 18,
+            fontFamily: "Arial",
+            fill: "#ffffff",
+        });
+
+        this.onProfileClick = onProfileClick || null;
+        if (this.onProfileClick) {
+            this.profileButton.on("click", this.onProfileClick);
+            this.profileText.on("click", this.onProfileClick);
+            this.profileButton.on("mouseenter", () => {
+                this.profileButton.fill("#45a049");
+                this.staticLayer.draw();
+            });
+            this.profileButton.on("mouseleave", () => {
+                this.profileButton.fill("#4CAF50");
+                this.staticLayer.draw();
+            });
+        }
+
         // Graph group elements
 
-        this.staticGroup.add(background, spriteGroup, dialogueGroup, inputAndEquationGroup);
+        this.staticGroup.add(background, spriteGroup, dialogueGroup, inputAndEquationGroup, this.profileButton, this.profileText);
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
     }

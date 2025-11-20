@@ -20,9 +20,24 @@ export class GraphScreenController extends ScreenController {
             this.view = new GraphScreenView(
                 (input: number) => this.handleNumberInput(input),
                 () => this.handleEquationReset(),
-                () => this.handleEquationSubmission()
+                () => this.handleEquationSubmission(),
+                () => this.handleProfileClick()
             );
             this.screenSwitcher = screenSwitcher;
+            this.setupEscapeKeyHandler();
+    }
+
+    private setupEscapeKeyHandler(): void {
+        const handleKeyDown = (e: KeyboardEvent) => {
+            if (e.key === "Escape" && this.view.getLayers()[0].visible()) {
+                this.handleProfileClick();
+            }
+        };
+        window.addEventListener("keydown", handleKeyDown);
+    }
+
+    private handleProfileClick(): void {
+        this.screenSwitcher.switchToScreen({ type: "statistics" });
     }
 
     /**

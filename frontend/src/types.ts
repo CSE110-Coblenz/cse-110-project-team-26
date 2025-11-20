@@ -44,8 +44,9 @@ export type Screen =
 	| { type: "maze-game" }
 	| { type: "main-game" }
 	| { type: "result"; score: number }
-  | { type: "title" }
-	| { type: "tutorial" };
+  	| { type: "title" }
+	| { type: "tutorial" }
+	| { type: "statistics" };
 
 
 export abstract class ScreenController {
