@@ -208,6 +208,7 @@ class EquationSolver {
         //this.steps.reverse(); // reverse steps to be in correct order
         console.log("equation: " + this.equation);
         //var temp = this.computeEngine.box(this.lhs as any).toString();
+        this.steps.reverse(); // reverse steps to be in correct order
     }
     // get the next step in the solution process
     public getStep(): Step {
