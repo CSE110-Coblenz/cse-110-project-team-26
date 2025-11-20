@@ -24,7 +24,7 @@ export class GraphScreenModel {
         this.xMin = xMin;
         this.yMax = yMax;
         this.dialogue = "";
-        this.sprite = new HTMLImageElement();
+        this.sprite = new Image();
     }
     
     reset(): void {
