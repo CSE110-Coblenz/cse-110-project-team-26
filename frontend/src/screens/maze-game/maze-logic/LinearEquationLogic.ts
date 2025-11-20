@@ -195,7 +195,7 @@ class EquationSolver {
         this.equation = equation;
         this.lhs = equation[1] as MathJson;// Equal, lhs, rhs
         this.stepRecursive(this.lhs);
-        console.log("popped",this.steps.pop()); // remove last step which is the fully simplified equation
+        this.steps.pop(); // remove last step which is the fully simplified equation
         this.stepNumber--;
         // Turn lhs to string and back to MathJson to flatten any nested structures
         this.lhs = this.computeEngine.box(this.lhs as any, {canonical:false}).toString();
@@ -204,8 +204,10 @@ class EquationSolver {
         this.breakDownEquation(this.lhs); // break down lhs into terms and constants and group them into arrays
         this.groupTerms(); // combine x terms with steps
         this.groupConstants(); // combine constant terms with steps
-        
-        this.steps.reverse(); // reverse steps to be in correct order
+        this.SolveX();
+        //this.steps.reverse(); // reverse steps to be in correct order
+        console.log("equation: " + this.equation);
+        //var temp = this.computeEngine.box(this.lhs as any).toString();
     }
     // get the next step in the solution process
     public getStep(): Step {
@@ -277,6 +279,92 @@ class EquationSolver {
         }
         this.equation[1] = this.lhs;
     }
+    //        var temp = this.computeEngine.box(this.lhs as any).toString();
+
+    private SolveX(){ // 
+        console.log("equation: " + this.equation);
+        var lhs = this.computeEngine.box(this.lhs as any).toString(); // this.lhs -> parse -> toString()
+        var rhs = this.equation[2].toString();
+        var currentStep;
+        var div;
+/*         if(lhs != currentStep.toString()){ // Simplification needed
+            console.log("Step: Must combine like terms: " + lhs);
+            lhs = currentStep.toString();
+            var stepJson = {
+                description: `${simplify.toMathJson()}`,
+                current: simplify.toMathJson(),
+                stepNumber: this.stepNumber++,
+                result: currentStep.toString()
+            }
+            this.steps.push(stepJson as Step);
+            this.equation[1] = lhs; //Updates the lhs of the expression
+            return stepJson as Step;
+        } */
+
+        while(lhs != "x"){ // 9x + 8 = 188 -> 9x = 180
+            const lhsExpr = this.computeEngine.parse(lhs).toMathJson().toString();
+            if(lhsExpr[0] === "A"){
+                console.log("Ran Addition in SOlvex")
+                div = rhs + "-" + lhs.slice(lhs.indexOf("+") + 1) 
+                div = this.computeEngine.parse(div);
+                currentStep = this.computeEngine.box((div.evaluate()));
+                div = div.toMathJson();
+                var stepJson = {
+                    description:`${div}`,
+                    current:div,
+                    stepNumber: this.stepNumber++,
+                    result: currentStep.toString()
+                }
+                rhs = currentStep.toString();
+                lhs = lhs.slice(0,lhs.indexOf("+"));
+                this.steps.push(stepJson as Step);
+                this.equation[1] = lhs;
+                this.equation[2] = rhs;
+            }
+            else if(lhsExpr[0] === "S"){
+                console.log("Subtract SolveX() ran");
+                div = rhs + " +" + lhs.slice(lhs.lastIndexOf("-")+ 1);
+                div = this.computeEngine.parse(div);
+                currentStep = this.computeEngine.box((div.evaluate()));
+                div = div.toMathJson();
+                var stepJson = {
+                    description:`${div}`,
+                    current:div,
+                    stepNumber: this.stepNumber++,
+                    result: currentStep.toString()
+                }
+                rhs = currentStep.toString();
+                lhs = lhs.slice(0,lhs.lastIndexOf("-"));
+                this.steps.push(stepJson as Step);
+                this.equation[1] = lhs;
+                this.equation[2] = rhs;
+            }
+            else{
+                div = rhs + "/" + lhs.slice(0,lhs.indexOf("x"));
+                if(lhs.includes("-x")){ //for negative x
+                    div = rhs + "/" + -1;
+                }
+                else if(lhs.slice(0,lhs.indexOf("x")) === ""){ // isolated x
+                    div = rhs + "/" + 1
+                }
+                else if(lhs.includes("*")){ // fraction x.       lhs =  4/3 * x + 7 => 5
+                    div = this.computeEngine.parse(rhs).toString() + " / (" + lhs.slice(0,lhs.indexOf("*")-1) + ")";
+                }
+                div = this.computeEngine.parse(div, {canonical:false});
+                currentStep = this.computeEngine.box(div.evaluate());
+                div = div.toMathJson(); 
+                var stepJson = {
+                    description:`${div}`,
+                    current:div,
+                    stepNumber: this.stepNumber++,
+                    result: currentStep.toString()
+                }
+                this.steps.push(stepJson as Step);
+                console.log("x is : " + currentStep.toString());
+                lhs = "x";
+            }
+        }
+    }
 
     private stepRecursive(expr: MathJson | string | number): MathJson | string | number {
         if (!Array.isArray(expr)) return expr;
@@ -303,21 +391,19 @@ class EquationSolver {
         return this.steps[this.stepNumber-2]?.result as MathJson;
     }  
 }
-/*
+
 const compute = new ComputeEngine;
 const linearEquationTest = new LinearEquation(3,compute);
-const solver = new EquationSolver(linearEquationTest.getEquation(), compute);
-
 console.log("Latex Form: " + linearEquationTest.getEquationLaTeX())
 console.log("MathJson Form: " + linearEquationTest.getEquation())
-console.log("Expand: " + compute.parse(linearEquationTest.getEquationLaTeX()).expand())
-console.log("Simplified: " + compute.parse(linearEquationTest.getEquationLaTeX()).simplify())
+const solver = new EquationSolver(linearEquationTest.getEquation(), compute);
+
 
 
 
 
 console.log(solver.steps);
 
-*/
+
 export { LinearEquation, EquationSolver };
 export type { Step, MathJson };
