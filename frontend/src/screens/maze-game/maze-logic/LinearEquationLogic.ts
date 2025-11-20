@@ -142,7 +142,11 @@ class LinearEquation {
             result = EquationBuilder.divisionEquation(result);
         }
         let temp = this.ce.parse(result);
-        //let temp = this.ce.parse("4x(3+7)-4x-4")
+        //let temp = this.ce.parse("-6(2x-10)-4x+1=-35")
+        //let temp = this.ce.parse("3x+9x+10x=440");
+        //let temp = this.ce.parse("5x(4+7)-10x+7x=208");
+        //let temp = this.ce.parse("x + 8x - 4=14");
+        //let temp = this.ce.parse("4(4x + 3) + 5(3x - 9) + 7x=271"); // BUG: rearranges x terms to the front
         try {
             this.setY(temp.subs({x: x}).evaluate());
         } catch (error) {
@@ -172,14 +176,14 @@ class LinearEquation {
     }
     // returns the LaTeX representation of the equation
     public getEquationLaTeX(): string {
-        return this.ce.box(this.equation as any).toLatex();
+        return this.ce.box(this.equation as any).toString();
     }
 
     
 }
 // Solver that breaks down the steps to solve a linear equation
 class EquationSolver {
-    private computeEngine: ComputeEngine;
+    private ce: ComputeEngine;
     public steps: Step[] = [];             //remind me to set it private
     private stepNumber: number = 1;
     public lhs: MathJson|string|number;
@@ -188,7 +192,7 @@ class EquationSolver {
     public equation: MathJson;
 
     constructor(equation: MathJson, computeEngine: ComputeEngine) {
-        this.computeEngine = computeEngine;
+        this.ce = computeEngine;
         if (!Array.isArray(equation) || equation.length < 3) {
             throw new Error("Invalid equation format: expected an array like ['Equal', lhs, rhs]");
         }
@@ -197,18 +201,23 @@ class EquationSolver {
         this.stepRecursive(this.lhs);
         this.steps.pop(); // remove last step which is the fully simplified equation
         this.stepNumber--;
-        // Turn lhs to string and back to MathJson to flatten any nested structures
-        this.lhs = this.computeEngine.box(this.lhs as any, {canonical:false}).toString();
-        this.lhs = this.computeEngine.parse(this.lhs as string, {canonical:false}).toMathJson() as unknown as MathJson;
+        // Turn lhs to string and back to MathJson to flatten any nested structures without changing order of terms
+        this.lhs = this.ce.box(this.lhs as any, {canonical:false}).toString();
+        this.lhs = this.ce.parse(this.lhs as string, {canonical:false}).toMathJson() as unknown as MathJson;
 
         this.breakDownEquation(this.lhs); // break down lhs into terms and constants and group them into arrays
         this.groupTerms(); // combine x terms with steps
         this.groupConstants(); // combine constant terms with steps
-        this.SolveX();
-        //this.steps.reverse(); // reverse steps to be in correct order
-        console.log("equation: " + this.equation);
-        //var temp = this.computeEngine.box(this.lhs as any).toString();
-        this.steps.reverse(); // reverse steps to be in correct order
+        this.SolveX(); // isolate x with steps
+        this.steps.push({ // final step showing solution
+            description: `x = ${this.steps[this.steps.length -1].result}`,
+            current: this.ce.box(this.equation as any,{canonical:["InvisibleOperator"]}).toString(),
+            stepNumber: this.stepNumber,
+            result: this.ce.box(this.equation[2] as any).toString()
+        });
+        console.log("Final Steps: ", this.steps[this.steps.length -1]);
+        this.steps.reverse(); // reverse steps to be in correct order when popping
+
     }
     // get the next step in the solution process
     public getStep(): Step {
@@ -222,7 +231,7 @@ class EquationSolver {
     private breakDownEquation(equationPart: MathJson): void {
         for (let i = 1; i < equationPart.length; i++) {
             if(equationPart[i].toString().includes('x')) {
-                this.terms.push(this.computeEngine.box(equationPart[i] as any).toString());
+                this.terms.push(this.ce.box(equationPart[i] as any).toString());
             }
             else {
                 this.constants.push(equationPart[i].toString());
@@ -233,34 +242,55 @@ class EquationSolver {
     private groupTerms(): void {
         if (!Array.isArray(this.lhs)) return;
         if (this.terms.length <= 1) return;
-        this.terms.reverse();
+        this.terms.reverse(); // reverse for left to right processing
         while (this.terms.length > 1) {
+            // Deep copy of current equation state to add to step
+            const current = JSON.parse(JSON.stringify(this.equation)) as MathJson;
+            // Pop last two terms in the terms array
             const term1 = this.terms.pop();
             const term2 = this.terms.pop();
-            const sum = parseInt(term1?.slice(0, -1) as string) + parseInt(term2?.slice(0, -1) as string) + 'x';
-            this.lhs = JSON.parse(JSON.stringify(this.computeEngine.parse(this.computeEngine.box(this.lhs as any, {canonical:false}).toLatex().replace(term1 as string, '').replace(term2 as string, sum), {canonical:false}))) as MathJson;
+            const term1WithoutX = term1?.toString().slice(0, -1)?term1?.toString().slice(0, -1):'1';
+            const term2WithoutX = term2?.toString().slice(0, -1)?term2?.toString().slice(0, -1):'1';
+            // Calculate their sum
+            const sum = parseInt(term1WithoutX as string ?? '0') + parseInt(term2WithoutX as string) + 'x';
+            console.log(`Combining terms: ${term1}, ${term2} to get ${sum}`);
+            // Remove spaces and update lhs by replacing the two terms with their sum
+            this.lhs = this.ce.box(this.lhs as any, {canonical:["InvisibleOperator"]}).toString().replace(/\s+/g, '');
+            this.lhs = this.lhs.replace(term1 as string, sum);
+            if(parseInt(term2 as string) < 0){ // if negative, replace with nothing
+                this.lhs = this.lhs.replace(term2 as string, '');
+            }
+            this.lhs = this.lhs.replace(term2 as string, '0');
+            this.lhs = this.ce.parse(this.lhs as string, {canonical:["Add"]}).toMathJson() as unknown as MathJson;
+            // Update the overarching equation's lhs
+            this.equation[1] = this.lhs;
+            // Push the sum back to terms array just in case more grouping is needed (because it add 2 terms at a time)
             this.terms.push(sum);
+            // Add step to steps array
             this.steps.push({
                 description: `Add ${term1}, ${term2}`,
-                current: this.computeEngine.box(JSON.parse(JSON.stringify(this.equation)),{canonical:false}).toString(),
+                current: this.ce.box(current as any, {canonical:["InvisibleOperator"]}).toString(),
                 stepNumber: this.stepNumber++,
                 result: sum
             });
-            this.lhs = this.computeEngine.box(this.lhs as any).toMathJson() as unknown as MathJson;
         }
-        //this.computeEngine.box(this.lhs as any,{canonical:["InvisibleOperator"]}).toString()
-        this.lhs = this.computeEngine.box(this.lhs as any).toMathJson() as unknown as MathJson;
+        // Update lhs to flattened MathJson
+        this.lhs = this.ce.box(this.lhs as any).toMathJson() as unknown as MathJson;
     }
     // groups constants together
     private groupConstants(): void {
         if (!Array.isArray(this.lhs)) return;
         if (this.constants.length <= 1) return;
-        this.constants.reverse();
+        this.constants.reverse(); // reverse for left to right processing
         while (this.constants.length > 1) {
-            const current = JSON.parse(JSON.stringify(this.lhs)) as MathJson;
+            // Deep copy of current equation state to add to step
+            const current = JSON.parse(JSON.stringify(this.equation)) as MathJson;
+            // Pop last two constants in the constants array
             const constant1 = this.constants.pop() as string;
             const constant2 = this.constants.pop() as string;
+            // Calculate their sum
             const sum = parseInt(constant1) + parseInt(constant2)+'';
+            // Remove the two constants from lhs and add their sum
             for (let i = 1; i < this.lhs.length; i++) {
                 if(this.lhs[i].toString() === constant1 || this.lhs[i].toString() === constant2) {
                     this.lhs.splice(i,1);
@@ -268,23 +298,22 @@ class EquationSolver {
                 }     
             }
             this.lhs.push(sum);
-            console.log("Updated LHS after combining constants: ")
-            console.log(this.lhs);
+            // Update the overarching equation's lhs
+            this.equation[1] = this.lhs;
+            // Push the sum back to constants array just in case more grouping is needed (because it add 2 constants at a time)
             this.terms.push(sum.toString());
             this.steps.push({
                 description: `Add ${constant1},${constant2}`,
-                current: this.computeEngine.box(current as any).toString(),
+                current: this.ce.box(current as any,{canonical:["InvisibleOperator"]}).toString(),
                 stepNumber: this.stepNumber++,
                 result: sum
             });
         }
-        this.equation[1] = this.lhs;
     }
-    //        var temp = this.computeEngine.box(this.lhs as any).toString();
 
     private SolveX(){ // 
         console.log("equation: " + this.equation);
-        var lhs = this.computeEngine.box(this.lhs as any).toString(); // this.lhs -> parse -> toString()
+        var lhs = this.ce.box(this.lhs as any).toString(); // this.lhs -> parse -> toString()
         var rhs = this.equation[2].toString();
         var currentStep;
         var div;
@@ -303,12 +332,12 @@ class EquationSolver {
         } */
 
         while(lhs != "x"){ // 9x + 8 = 188 -> 9x = 180
-            const lhsExpr = this.computeEngine.parse(lhs).toMathJson().toString();
+            const lhsExpr = this.ce.parse(lhs).toMathJson().toString();
             if(lhsExpr[0] === "A"){
                 console.log("Ran Addition in SOlvex")
                 div = rhs + "-" + lhs.slice(lhs.indexOf("+") + 1) 
-                div = this.computeEngine.parse(div);
-                currentStep = this.computeEngine.box((div.evaluate()));
+                div = this.ce.parse(div);
+                currentStep = this.ce.box((div.evaluate()));
                 div = div.toMathJson();
                 var stepJson = {
                     description:`${div}`,
@@ -325,8 +354,8 @@ class EquationSolver {
             else if(lhsExpr[0] === "S"){
                 console.log("Subtract SolveX() ran");
                 div = rhs + " +" + lhs.slice(lhs.lastIndexOf("-")+ 1);
-                div = this.computeEngine.parse(div);
-                currentStep = this.computeEngine.box((div.evaluate()));
+                div = this.ce.parse(div);
+                currentStep = this.ce.box((div.evaluate()));
                 div = div.toMathJson();
                 var stepJson = {
                     description:`${div}`,
@@ -349,10 +378,10 @@ class EquationSolver {
                     div = rhs + "/" + 1
                 }
                 else if(lhs.includes("*")){ // fraction x.       lhs =  4/3 * x + 7 => 5
-                    div = this.computeEngine.parse(rhs).toString() + " / (" + lhs.slice(0,lhs.indexOf("*")-1) + ")";
+                    div = this.ce.parse(rhs).toString() + " / (" + lhs.slice(0,lhs.indexOf("*")-1) + ")";
                 }
-                div = this.computeEngine.parse(div, {canonical:false});
-                currentStep = this.computeEngine.box(div.evaluate());
+                div = this.ce.parse(div, {canonical:false});
+                currentStep = this.ce.box(div.evaluate());
                 div = div.toMathJson(); 
                 var stepJson = {
                     description:`${div}`,
@@ -360,6 +389,7 @@ class EquationSolver {
                     stepNumber: this.stepNumber++,
                     result: currentStep.toString()
                 }
+                console.log(stepJson);
                 this.steps.push(stepJson as Step);
                 console.log("x is : " + currentStep.toString());
                 lhs = "x";
@@ -383,16 +413,16 @@ class EquationSolver {
         } else {
             console.log("Adding step: ", `${expr[0]}, ${JSON.stringify(expr.slice(1))}`);
             this.steps.push({
-                description: `${expr[0]} ${this.computeEngine.box(expr as any).toString()}`,
-                current: this.computeEngine.box(JSON.parse(JSON.stringify(this.equation)),{canonical:false}).toString(),
+                description: `${expr[0]} ${this.ce.box(expr as any).toString()}`,
+                current: this.ce.box(JSON.parse(JSON.stringify(this.equation)),{canonical:false}).toString(),
                 stepNumber: this.stepNumber++,
-                result: JSON.parse(JSON.stringify(this.computeEngine.box(expr as any).simplify().toMathJson())) as MathJson
+                result: JSON.parse(JSON.stringify(this.ce.box(expr as any).simplify().toMathJson())) as MathJson
             });
         }
         return this.steps[this.stepNumber-2]?.result as MathJson;
     }  
 }
-
+/*
 const compute = new ComputeEngine;
 const linearEquationTest = new LinearEquation(3,compute);
 console.log("Latex Form: " + linearEquationTest.getEquationLaTeX())
@@ -405,6 +435,6 @@ const solver = new EquationSolver(linearEquationTest.getEquation(), compute);
 
 console.log(solver.steps);
 
-
+*/
 export { LinearEquation, EquationSolver };
 export type { Step, MathJson };

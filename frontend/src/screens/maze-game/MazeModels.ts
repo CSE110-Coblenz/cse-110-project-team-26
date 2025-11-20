@@ -42,11 +42,12 @@ export class ProblemModel {
         this.problemStatement = this.linearEquation.getEquationLaTeX();
         this.solver = new EquationSolver(this.linearEquation.getEquation(), compute);
         console.log("Steps to solve the equation:");
-        console.log(this.solver.steps);
-        this.generateChoices(this.solver.getStep());
+        console.log(JSON.parse(JSON.stringify(this.solver.steps)));
+        const firstStep = this.solver.getStep();
+        console.log(firstStep);
+        this.generateChoices(firstStep);
         console.log("Generated Problem: ", this.problemStatement);
-        console.log(this.linearEquation)
-    }
+        }
     // Need logic to see when it is the last step
     private generateChoices(correctChoice: Step){
         this.choices.push(new ChoiceModel(correctChoice.description, true));
