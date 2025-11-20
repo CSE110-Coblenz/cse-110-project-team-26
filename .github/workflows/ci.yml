@@ -1,16 +1,4 @@
 name: CI
-on: [push, pull_request]
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-      - run: npm ci
-      - run: npx tsc --noEmit
-      - run: npm test
 
 on:
   push:
@@ -19,7 +7,32 @@ on:
     branches: [ "**" ]
 
 jobs:
-  test:
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install deps (frontend)
+        run: npm ci
+
+      - name: Typecheck (frontend)
+        run: npx tsc --noEmit
+
+      - name: Run tests (frontend)
+        run: npm test
+
+  backend:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -35,11 +48,10 @@ jobs:
           cache: npm
           cache-dependency-path: backend/package-lock.json
 
-      - name: Install deps
+      - name: Install deps (backend)
         run: npm ci
 
-      # Vitest uses mongodb-memory-server so no DB secrets needed.
-      - name: Run tests (Vitest)
+      - name: Run tests (backend - Vitest)
         env:
           NODE_ENV: test
           JWT_SECRET: dummy_secret_for_ci

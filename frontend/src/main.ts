@@ -98,7 +98,7 @@ class App implements ScreenSwitcher {
 				break;
 
 			case "maze-game":
-				this.mazeScreenController.show();
+				this.mazeScreenController.startGame();
 				break;
 
 			case "main-game":
