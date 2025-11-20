@@ -41,11 +41,15 @@ export class ProblemModel {
         this.linearEquation = new LinearEquation(difficultyLevel, compute);
         this.problemStatement = this.linearEquation.getEquationLaTeX();
         this.solver = new EquationSolver(this.linearEquation.getEquation(), compute);
-        this.generateChoices();
+        console.log("Steps to solve the equation:");
+        console.log(this.solver.steps);
+        this.generateChoices(this.solver.getStep());
+        console.log("Generated Problem: ", this.problemStatement);
+        console.log(this.linearEquation)
     }
     // Need logic to see when it is the last step
-    private generateChoices(){
-        this.choices.push(new ChoiceModel(this.solver.getStep().description, true));
+    private generateChoices(correctChoice: Step){
+        this.choices.push(new ChoiceModel(correctChoice.description, true));
         this.choices.push(new ChoiceModel("Incorrect Choice 1", false));
         this.choices.push(new ChoiceModel("Incorrect Choice 2", false));
         this.shuffleChoices();
@@ -56,6 +60,10 @@ export class ProblemModel {
             const j = Math.floor(Math.random() * (i + 1));
             [this.choices[i], this.choices[j]] = [this.choices[j], this.choices[i]];
         }
+    }
+    // Set the problem statement based on the current step
+    private setProblemStatement(statement: string) {
+        this.problemStatement = statement;
     }
     // Need to return problem with the next step applied rather than the original problem
     // Also Konva does not support LaTeX rendering directly, so we need to convert LaTeX to an image
@@ -69,7 +77,10 @@ export class ProblemModel {
     // Clear current choices and generate new ones based on the next step
     public nextMove() {
         this.choices = [];
-        this.generateChoices();
+        const newStep = this.solver.getStep(); // advance to next step
+        console.log("Next Step: ", newStep);
+        this.generateChoices(newStep);
+        this.setProblemStatement(newStep.current);
     }
 }
 /**

@@ -3,7 +3,7 @@ import type { ScreenSwitcher, Screen } from "./types.ts";
 
 import { MenuTestScreenController } from "./screens/MenuTestScreen/MenuTestScreenController.ts";
 import { MatchingScreenController } from "./screens/MatchingScreen/MatchingScreenController.ts";
-import { MazeScreenController } from "./screens/MazeScreen/MazeScreenController.ts";
+import { MazeScreenController } from "./screens/maze-game/MazeScreenController.ts";
 import { MainScreenController } from "./screens/MainScreen/MainScreenController.ts";
 import { TitleScreenController } from "./screens/title-screen/TitleScreenController.ts";
 import { TutorialScreenController } from "./screens/tutorial-screen/TutorialScreenController.ts";
@@ -65,7 +65,7 @@ class App implements ScreenSwitcher {
 		this.layer.draw();
 
 		// Start with menu screen visible
-		this.switchToScreen({ type: "title" });
+		this.switchToScreen({ type: "menu" });
 	}
 
 	/**
@@ -97,7 +97,7 @@ class App implements ScreenSwitcher {
 				break;
 
 			case "maze-game":
-				this.mazeScreenController.show();
+				this.mazeScreenController.startGame();
 				break;
 
 			case "main-game":

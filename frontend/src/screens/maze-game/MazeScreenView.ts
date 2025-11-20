@@ -22,7 +22,7 @@ export class ChoiceView {
 
         const text = new Konva.Text({
             text: "Choice",
-            fontSize: 24,
+            fontSize: 14,
             fontFamily: "Arial",
             fill: "white",
             width: rectWidth,

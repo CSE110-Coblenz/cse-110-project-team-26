@@ -7,13 +7,13 @@ export interface View {
 	hide(): void;
 }
 // MathJson type representing mathematical expressions
-export type MathJson = number | string | (string | number | MathJson)[];
+export type MathJson = (string | number | MathJson)[];
 // Step interface representing each step in the solution process
 export interface Step {
     description: string;
-    current: MathJson;
+    current: string;
     stepNumber: number;
-    result?: MathJson;
+    result?: MathJson|string|number;
 }
 /**
  * Screen types for navigation
