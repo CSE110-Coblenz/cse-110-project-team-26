@@ -215,7 +215,7 @@ class EquationSolver {
             stepNumber: this.stepNumber,
             result: this.ce.box(this.equation[2] as any).toString()
         });
-        console.log("Final Steps: ", this.steps[this.steps.length -1]);
+        //console.log("Final Steps: ", this.steps[this.steps.length -1]);
         this.steps.reverse(); // reverse steps to be in correct order when popping
 
     }
@@ -313,6 +313,9 @@ class EquationSolver {
 
     private SolveX(){ // 
         console.log("equation: " + this.equation);
+        var tempEquation = JSON.parse(JSON.stringify(this.equation));
+        tempEquation = this.ce.box(tempEquation).toLatex(); 
+        console.log("tempEquation: " + tempEquation);
         var lhs = this.ce.box(this.lhs as any).toString(); // this.lhs -> parse -> toString()
         var rhs = this.equation[2].toString();
         var currentStep;
@@ -341,7 +344,7 @@ class EquationSolver {
                 div = div.toMathJson();
                 var stepJson = {
                     description:`${div}`,
-                    current:div,
+                    current:tempEquation,
                     stepNumber: this.stepNumber++,
                     result: currentStep.toString()
                 }
@@ -350,16 +353,23 @@ class EquationSolver {
                 this.steps.push(stepJson as Step);
                 this.equation[1] = lhs;
                 this.equation[2] = rhs;
+                console.log("Overarching Equation: " + this.ce.box(this.equation.toString()).toLatex());
+                tempEquation = this.equation;
+                console.log("tempEquation in Add: " + tempEquation);
+
+
             }
             else if(lhsExpr[0] === "S"){
                 console.log("Subtract SolveX() ran");
+                console.log("tempEquation in Sub: " + tempEquation);
+                console.log("Overarching Equation: " + this.equation);
                 div = rhs + " +" + lhs.slice(lhs.lastIndexOf("-")+ 1);
                 div = this.ce.parse(div);
                 currentStep = this.ce.box((div.evaluate()));
                 div = div.toMathJson();
                 var stepJson = {
                     description:`${div}`,
-                    current:div,
+                    current:tempEquation,
                     stepNumber: this.stepNumber++,
                     result: currentStep.toString()
                 }
@@ -368,8 +378,13 @@ class EquationSolver {
                 this.steps.push(stepJson as Step);
                 this.equation[1] = lhs;
                 this.equation[2] = rhs;
+                console.log("Overarching Equation: " + this.equation);
+                tempEquation = this.equation;
+                console.log("tempEquation in Add: " + tempEquation);
+
             }
             else{
+                tempEquation = this.ce.box(tempEquation).toLatex();
                 div = rhs + "/" + lhs.slice(0,lhs.indexOf("x"));
                 if(lhs.includes("-x")){ //for negative x
                     div = rhs + "/" + -1;
@@ -385,11 +400,12 @@ class EquationSolver {
                 div = div.toMathJson(); 
                 var stepJson = {
                     description:`${div}`,
-                    current:div,
+                    current:tempEquation,
                     stepNumber: this.stepNumber++,
                     result: currentStep.toString()
                 }
-                console.log(stepJson);
+                console.log("tempEquation in Final: " + tempEquation);
+                console.log("Overarching Equation: " + this.equation);
                 this.steps.push(stepJson as Step);
                 console.log("x is : " + currentStep.toString());
                 lhs = "x";
@@ -422,7 +438,7 @@ class EquationSolver {
         return this.steps[this.stepNumber-2]?.result as MathJson;
     }  
 }
-/*
+
 const compute = new ComputeEngine;
 const linearEquationTest = new LinearEquation(3,compute);
 console.log("Latex Form: " + linearEquationTest.getEquationLaTeX())
@@ -431,10 +447,11 @@ const solver = new EquationSolver(linearEquationTest.getEquation(), compute);
 
 
 
-
-
 console.log(solver.steps);
 
-*/
+
+
+
+
 export { LinearEquation, EquationSolver };
 export type { Step, MathJson };
