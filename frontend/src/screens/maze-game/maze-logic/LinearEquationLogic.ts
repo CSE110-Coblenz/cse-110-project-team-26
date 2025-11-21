@@ -86,7 +86,7 @@ class EquationBuilder {
     // ax
     static simpleTerm(): string {
         const a = RandomUtils.getInt(1,10);
-        return a <= 1 ? "x" : `${a}x`;
+        return a <= 1 ? "x" : `${a}*x`;
     }
     // a/b
     static constantDivision(): string {
@@ -259,8 +259,8 @@ class EquationSolver {
             // Pop last two terms in the terms array
             const term1 = this.terms.pop();
             const term2 = this.terms.pop();
-            const term1WithoutX = term1?.toString().slice(0, -1)?term1?.toString().slice(0, -1):'1';
-            const term2WithoutX = term2?.toString().slice(0, -1)?term2?.toString().slice(0, -1):'1';
+            const term1WithoutX = term1?.toString().slice(0, -1)? term1?.toString().slice(0, -1) !== '-'?term1?.toString().slice(0, -1):'-1':'1';
+            const term2WithoutX = term2?.toString().slice(0, -1)? term2?.toString().slice(0, -1) !== '-'?term2?.toString().slice(0, -1):'-1':'1';
             // Calculate their sum
             const sum = parseInt(term1WithoutX as string ?? '0') + parseInt(term2WithoutX as string) + 'x';
             console.log(`Combining terms: ${term1}, ${term2} to get ${sum}`);
@@ -437,9 +437,10 @@ class EquationSolver {
             expr[i] = this.stepRecursive(expr[i]);
         }
 
-        const simplify = (expr.length == 3 && (((expr[0] === 'Add' || expr[0] === 'Subtract') && expr[1].toString().includes('x') 
+        const simplify = (expr.length <= 3 && (((expr[0] === 'Add' || expr[0] === 'Subtract') && expr[1].toString().includes('x') 
             && !expr[2].toString().includes('x')) 
-            || (expr[0] === 'Multiply' && expr[2].toString() === 'x')));
+            || (expr[0] === 'Multiply' && expr[2].toString() === 'x') 
+            || (expr[0] === 'Negate')));
 
         if (simplify) {
             return expr;

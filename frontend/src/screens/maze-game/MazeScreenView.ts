@@ -184,7 +184,7 @@ export class MazeScreenView implements View {
         }
         this.group.getLayer()?.draw();
     }
-
+    // Fade to black transition
     fadeToBlack(duration: number = 0.2): Promise<void> {
     this.transitionScreen.moveToTop();
     return new Promise((resolve) => {
@@ -200,6 +200,7 @@ export class MazeScreenView implements View {
         }).play();
     });
     }
+    // Fade from black transition
     fadeFromBlack(duration: number = 0.5): Promise<void> {
     return new Promise((resolve) => {
         new Konva.Tween({
@@ -213,6 +214,7 @@ export class MazeScreenView implements View {
         }).play();
     });
     }
+    // Move the player circle to new position
     moveCircleTo(x: number, y: number) {
     new Konva.Tween({
         node: this.player,
