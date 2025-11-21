@@ -152,16 +152,16 @@ class LinearEquation {
         //let temp = this.ce.parse("3x(10-10)-7x+6x=-11"); // BUG: handle zero better
         //let temp = this.ce.parse("-4x+8x-x+8=52") // really bad bug with negate
         //let temp = this.ce.parse("3x(4-6)-5x-3(x+10)+5=-277") // really bad bug that skips over combining x terms
-        try {
+        //let temp = this.ce.parse("9 + x(4 - 6) + x") // incompatible type
+        if(!(JSON.stringify(temp).includes("Undefined")||JSON.stringify(temp).includes("Error"))){
             this.setY(temp.subs({x: x}).evaluate());
-        } catch (error) {
-            console.error("Error evaluating equation: ", error);
-            this.generateLinearEquation(); // regenerate if error occurs
+        } else {
+            console.error("Error evaluating equation");
         }
         const expression = JSON.parse(JSON.stringify(temp.toMathJson())) as MathJson;
         const final : MathJson = ['Equal', expression, this.y as string];
         console.log("GENERATION")
-        console.log(JSON.parse(JSON.stringify(final)));
+        console.log(JSON.parse(JSON.stringify(temp)));
         return final;
     }
 
@@ -394,7 +394,9 @@ class EquationSolver {
 
             }
             else{
+                tempEquation[2] = this.ce.box(tempEquation[2]).evaluate().toMathJson() as unknown as MathJson;
                 tempEquation = this.ce.box(tempEquation).toLatex();
+                console.log("tempEquation in Final: " + tempEquation);
                 div = rhs + "/" + lhs.slice(0,lhs.indexOf("x"));
                 if(lhs.includes("-x")){ //for negative x
                     div = rhs + "/" + -1;
@@ -410,7 +412,7 @@ class EquationSolver {
                 div = div.toMathJson(); 
                 var stepJson = {
                     description:`${div}`,
-                    current:tempEquation,
+                    current: tempEquation,
                     stepNumber: this.stepNumber++,
                     result: currentStep.toString()
                 }
@@ -420,6 +422,11 @@ class EquationSolver {
                 console.log("x is : " + currentStep.toString());
                 lhs = "x";
             }
+            this.equation[1] = lhs; //Updates the lhs of the expression
+            this.equation[2] = this.ce.box(div, {canonical:false}).toMathJson() as unknown as MathJson; //Updates the rhs of the expression
+            console.log("LHS Expr: " + this.equation[1]);
+            console.log("RHS Expr: " + this.equation[2]);
+            console.log("DIV: " + div);
         }
     }
 
@@ -449,15 +456,15 @@ class EquationSolver {
     }  
 }
 
-const compute = new ComputeEngine;
+/* const compute = new ComputeEngine;
 const linearEquationTest = new LinearEquation(3,compute);
 console.log("Latex Form: " + linearEquationTest.getEquationLaTeX())
 console.log("MathJson Form: " + linearEquationTest.getEquation())
 const solver = new EquationSolver(linearEquationTest.getEquation(), compute);
+ */
 
-
-
-console.log(solver.steps);
+/* 
+console.log(solver.steps); */
 
 
 

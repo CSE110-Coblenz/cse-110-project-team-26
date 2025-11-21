@@ -106,6 +106,7 @@ Good luck and have fun!`;
 			this.view.updateChoices(this.problem.getChoices());
 		}
 		this.view.fadeToBlack().then(() => this.view.fadeFromBlack());
+		this.stopTimer();
 		this.startTimer();
 	}
 
