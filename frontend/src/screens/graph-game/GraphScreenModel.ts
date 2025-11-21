@@ -4,14 +4,20 @@ import { LINEAR, ABSVAL, QUADRATIC } from "../../constants"
 
 type parameter = number | null;
 
+type Fraction = {
+  numerator: parameter;
+  denominator: parameter;
+}
+
 /**
  * Model for the Graphing Game Module
  */
 export class GraphScreenModel {
     
     private question: GraphQuestion;
-    private slope: parameter;
+    private slope: Fraction;
     private intercept: parameter;
+    private equation: string;
     private dialogue: string;
     private sprite: HTMLImageElement;
     private xMin: number;
@@ -19,18 +25,26 @@ export class GraphScreenModel {
 
     constructor(xMin: number, yMax: number) {
         this.question = new GraphQuestion(LINEAR);
-        this.slope = null;
+        this.slope = {
+            numerator: null,
+            denominator: null
+        };
         this.intercept = null;
         this.xMin = xMin;
         this.yMax = yMax;
         this.dialogue = "";
+        this.equation = "y=(_/_)x+_";
         this.sprite = new Image();
     }
     
     reset(): void {
         this.question = new GraphQuestion(LINEAR);
-        this.slope = null;
+        this.slope = {
+            numerator: null,
+            denominator: null
+        };
         this.intercept = null;
+        this.equation = "y=(_/_)x+_";
     }
 
     getQuestionType(): string {
@@ -42,15 +56,16 @@ export class GraphScreenModel {
         this.question.verifyAnswer();
     }
 
-    getParameters(): { slope: parameter, intercept: parameter } {
+    getParameters(): { slope: Fraction, intercept: parameter } {
         return {
             slope: this.slope,
             intercept: this.intercept
         }
     }
 
-    setParameters(slope: parameter, intercept: parameter): void {
-        this.slope = slope;
+    setParameters(slope: Fraction, intercept: parameter): void {
+        this.slope.numerator = slope.numerator;
+        this.slope.denominator = slope.denominator;
         this.intercept = intercept;
     }
 

@@ -37,18 +37,21 @@ export class GraphScreenController extends ScreenController {
 
     private handleNumberInput(input: number): void {
         let params = this.model.getParameters();
-        if(params.slope === null) {
-            this.model.setParameters(input, null);
-            this.view.updateEquation(`y=${input}x+_`);
+        if(params.slope.numerator === null) {
+            this.model.setParameters({ numerator: input, denominator: null }, null);
+            this.view.updateEquation(`y=(${input}/_)x+_`);
+        } else if(params.slope.denominator === null) {
+            this.model.setParameters({ numerator: params.slope.numerator, denominator: input }, null)
+            this.view.updateEquation(`y=(${params.slope.numerator}/${input})x+_`)
         } else {
             this.model.setParameters(params.slope, input);
-            this.view.updateEquation(`y=${params.slope}x+${input}`);
+            this.view.updateEquation(`y=(${params.slope.numerator}/${params.slope.denominator})x+${input}`);
         }
     }
 
     private handleEquationReset(): void {
-        this.model.setParameters(null, null);
-        this.view.updateEquation("y=_x+_");
+        this.model.setParameters({ numerator: null, denominator: null }, null);
+        this.view.updateEquation("y=(_/_)x+_");
         console.log('Reset button clicked');
     }
 

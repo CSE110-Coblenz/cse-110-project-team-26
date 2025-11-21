@@ -122,7 +122,7 @@ const EQUATION_TEXT_PROPERTIES = {
   y: EQUATION_BOX_PROPERTIES.y,
   width: EQUATION_BOX_PROPERTIES.width,
   height: EQUATION_BOX_PROPERTIES.height,
-  text: "y=_x+_",
+  text: "y=(_/_)x+_",
   fontSize: 16,
   fontFamily: "Arial",
   fill: "white",
