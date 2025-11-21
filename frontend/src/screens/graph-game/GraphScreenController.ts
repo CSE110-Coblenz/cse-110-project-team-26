@@ -21,6 +21,7 @@ export class GraphScreenController extends ScreenController {
             this.model = new GraphScreenModel(-6, 7);
             this.view = new GraphScreenView(
                 (input: number) => this.handleNumberInput(input),
+                () => this.handleSignInput(),
                 () => this.handleEquationReset(),
                 () => this.handleEquationSubmission()
             );
@@ -37,20 +38,35 @@ export class GraphScreenController extends ScreenController {
 
     private handleNumberInput(input: number): void {
         let params = this.model.getParameters();
+        const sign = params.slope.positive ? "" : "-";
         if(params.slope.numerator === null) {
-            this.model.setParameters({ numerator: input, denominator: null }, null);
-            this.view.updateEquation(`y=(${input}/_)x+_`);
+            this.model.setParameters({ numerator: input, denominator: null, positive: params.slope.positive }, null);
+            this.view.updateEquation(`y=${sign}(${input}/_)x+_`);
         } else if(params.slope.denominator === null) {
-            this.model.setParameters({ numerator: params.slope.numerator, denominator: input }, null)
-            this.view.updateEquation(`y=(${params.slope.numerator}/${input})x+_`)
+            this.model.setParameters({ numerator: params.slope.numerator, denominator: input, positive: params.slope.positive }, null)
+            this.view.updateEquation(`y=${sign}(${params.slope.numerator}/${input})x+_`)
         } else {
             this.model.setParameters(params.slope, input);
-            this.view.updateEquation(`y=(${params.slope.numerator}/${params.slope.denominator})x+${input}`);
+            this.view.updateEquation(`y=${sign}(${params.slope.numerator}/${params.slope.denominator})x+${input}`);
         }
     }
 
+    private handleSignInput(): void {
+        let params = this.model.getParameters();
+        const sign = !(params.slope.positive) ? "" : "-";
+        const handleNull = (x: any) => x ?? "_";
+        this.model.setParameters(
+            { numerator: params.slope.numerator, 
+              denominator: params.slope.denominator, 
+              positive: !(params.slope.positive) 
+            }, 
+            params.intercept
+        );
+        this.view.updateEquation(`y=${sign}(${handleNull(params.slope.numerator)}/${handleNull(params.slope.denominator)})x+${handleNull(params.intercept)}`);
+    }
+
     private handleEquationReset(): void {
-        this.model.setParameters({ numerator: null, denominator: null }, null);
+        this.model.setParameters({ numerator: null, denominator: null, positive: true }, null);
         this.view.updateEquation("y=(_/_)x+_");
         console.log('Reset button clicked');
     }

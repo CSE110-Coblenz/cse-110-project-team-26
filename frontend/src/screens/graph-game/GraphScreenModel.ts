@@ -5,8 +5,9 @@ import { LINEAR, ABSVAL, QUADRATIC } from "../../constants"
 type parameter = number | null;
 
 type Fraction = {
-  numerator: parameter;
-  denominator: parameter;
+  numerator: parameter,
+  denominator: parameter,
+  positive: boolean
 }
 
 /**
@@ -27,7 +28,8 @@ export class GraphScreenModel {
         this.question = new GraphQuestion(LINEAR);
         this.slope = {
             numerator: null,
-            denominator: null
+            denominator: null,
+            positive: true
         };
         this.intercept = null;
         this.xMin = xMin;
@@ -41,7 +43,8 @@ export class GraphScreenModel {
         this.question = new GraphQuestion(LINEAR);
         this.slope = {
             numerator: null,
-            denominator: null
+            denominator: null,
+            positive: true
         };
         this.intercept = null;
         this.equation = "y=(_/_)x+_";
@@ -66,6 +69,7 @@ export class GraphScreenModel {
     setParameters(slope: Fraction, intercept: parameter): void {
         this.slope.numerator = slope.numerator;
         this.slope.denominator = slope.denominator;
+        this.slope.positive = slope.positive;
         this.intercept = intercept;
     }
 

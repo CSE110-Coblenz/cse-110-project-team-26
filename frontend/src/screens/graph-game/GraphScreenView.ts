@@ -38,7 +38,7 @@ export class GraphScreenView implements View {
     /**
      * Initializes default values for the View
      */
-    constructor(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => boolean) {
+    constructor(onNumberInput: (input: number) => void, onSignInput: () => void, onEquationReset: () => void, onEquationSubmission: () => boolean) {
 
         // Add layers for static and dynamic elements
 
@@ -121,7 +121,7 @@ export class GraphScreenView implements View {
             ...EQUATION_TEXT_PROPERTIES
         });
         
-        const keypadGroup = this.createInputButtons(onNumberInput, onEquationReset, onEquationSubmission);
+        const keypadGroup = this.createInputButtons(onNumberInput, onSignInput, onEquationReset, onEquationSubmission);
 
         inputAndEquationGroup.add(inputAndEquationBox, equationBox, this.equationText, keypadGroup);
         
@@ -135,7 +135,7 @@ export class GraphScreenView implements View {
     /**
      * Creates equation input buttons
      */
-    createInputButtons(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => boolean): Konva.Group {
+    createInputButtons(onNumberInput: (input: number) => void, onSignInput: () => void, onEquationReset: () => void, onEquationSubmission: () => boolean): Konva.Group {
         const fill = "#5F5050";
         const smallOffset = OFFSET * (1/4);
         const rows = 3;
@@ -221,6 +221,39 @@ export class GraphScreenView implements View {
         zeroButtonGroup.add(zeroButton);
         zeroButtonGroup.add(zeroButtonText);
         keypadGroup.add(zeroButtonGroup);
+        
+        const signButtonGroup = new Konva.Group({
+            x: (KEYPAD_GROUP_PROPERTIES.width * (1 / columns)) * (numberColumns + 1),
+            y: 0,
+            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns),
+            height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows)
+        });
+
+        const signButton = new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
+            height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
+            fill: "#5F5050"
+        });
+
+        const signButtonText = new Konva.Text({
+            x: 0,
+            y: 0,
+            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
+            height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
+            text: "+/-",
+            fontSize: 24,
+            fontFamily: "Arial",
+            fill: "white",
+            align: "center",
+            verticalAlign: "middle"
+        });
+
+        signButtonGroup.on("click", () => onSignInput());
+        signButtonGroup.add(signButton);
+        signButtonGroup.add(signButtonText);
+        keypadGroup.add(signButtonGroup);
 
         const resetButtonGroup = new Konva.Group({
             x: (KEYPAD_GROUP_PROPERTIES.width * (1 / columns)) * (numberColumns),
