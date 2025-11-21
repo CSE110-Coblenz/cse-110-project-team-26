@@ -8,7 +8,6 @@ Translate input coordinates into Konva coordinates
 */
 
 import Konva from "konva";
-import type { View } from "../../types";
 import { OFFSET, GRAPH_BACKGROUND_PROPERTIES, GRAPH_GROUP_PROPERTIES, PIX_PER_UNIT } from "./GraphScreenConstants";
 
 let graphGroup: Konva.Group = new Konva.Group(GRAPH_GROUP_PROPERTIES);

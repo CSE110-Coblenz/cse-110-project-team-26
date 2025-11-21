@@ -19,6 +19,8 @@ export class GraphScreenModel {
         this.question = new GraphQuestion(LINEAR);
         this.slope = null;
         this.intercept = null;
+        this.dialogue = "";
+        this.sprite = new Image();
     }
     
     reset(): void {
@@ -31,9 +33,9 @@ export class GraphScreenModel {
         return this.question.getQuestionType();
     }
     
-    verifyAnswer(submission: EquationAnswerFormat) {
+    verifyAnswer(submission: EquationAnswerFormat): boolean {
         this.question.enterSubmission(submission);
-        this.question.verifyAnswer();
+        return this.question.verifyAnswer();
     }
 
     getParameters(): { slope: parameter, intercept: parameter } {

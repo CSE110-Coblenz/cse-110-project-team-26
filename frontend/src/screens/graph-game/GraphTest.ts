@@ -5,7 +5,6 @@ import { STAGE_WIDTH, STAGE_HEIGHT } from  "../../constants.ts";
 
 class App implements ScreenSwitcher {
   private stage: Konva.Stage;
-  private layer: Konva.Layer;
 
   private graphScreenController: GraphScreenController;
   
@@ -18,12 +17,18 @@ class App implements ScreenSwitcher {
 
     this.graphScreenController = new GraphScreenController(this);
 
-    this.stage.add(...this.graphScreenController.getView().getLayers());
+    this.graphScreenController.getView().getLayers().forEach((layer) => {
+      this.stage.add(layer);
+    });
 
     this.stage.draw();
 
 
     this.graphScreenController.getView().show();
+  }
+
+  switchToScreen(_screen: Screen): void {
+    // no-op for test harness
   }
 }
 

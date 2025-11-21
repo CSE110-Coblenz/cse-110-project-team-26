@@ -1,7 +1,5 @@
 import type { Group } from "konva/lib/Group";
-import { LINEAR, QUADRATIC, ABSVAL,
-		Y_MAX, Y_MIN, X_MAX, X_MIN
- 	} from "../src/constants";
+import { LINEAR, QUADRATIC, ABSVAL } from "../src/constants";
 
 /**
  * Generates an integer in [min, max]
@@ -61,19 +59,6 @@ export abstract class ScreenController {
 	}
 }
 
-/**
- * Template for minigame questions
- */
-export interface Question {
-	generateAnswerValues(): void;
-	verifyAnswer(): boolean;
-}
-
-export type EquationAnswerFormat = 
-	| {yIntercept: 0, coefficient: 0} // LINEAR
-	| {root1: 0, root2: 0} // PARABOLA
-	| {coefficient: 0, xShift: 0, yShift: 0} // ABSOLUTE VALUE
-	| null;
 export interface ScreenSwitcher {
 	switchToScreen(screen: Screen): void;
 }
@@ -199,21 +184,24 @@ export abstract class Question {
 	protected answer: EquationAnswerFormat | null;
 	protected submission: EquationAnswerFormat | null;
 
-	constructor() {
-		this.submission = null;
-		this.answer = null;
-	}
+constructor() {
+	this.submission = null;
+	this.answer = null;
+}
 
-	generateAnswerValues(): void {
-		this.submission?.generateAnswerValues();
-	}
+generateAnswerValues(): void {
+	this.answer?.generateAnswerValues();
+}
 
-	enterSubmission(submission: EquationAnswerFormat): void {
-		this.submission = submission;
-	}
+enterSubmission(submission: EquationAnswerFormat): void {
+	this.submission = submission;
+}
 
-	verifyAnswer(): boolean {
-		this.answer?.verifyAnswer(this.submission as AbsoluteValue);
+verifyAnswer(): boolean {
+	if (!this.answer || !this.submission) {
 		return false;
 	}
+
+	return this.answer.verifyAnswer(this.submission);
+}
 }

@@ -65,7 +65,7 @@ export class GraphScreenController extends ScreenController {
         console.log('Reset button clicked');
     }
 
-    private handleEquationSubmission(): boolean {
+    private handleEquationSubmission(): void {
         console.log('Submit button clicked');
         this.submitEquationInput();
     }
@@ -75,22 +75,8 @@ export class GraphScreenController extends ScreenController {
         this.plotGraphGame(false); // isPreview = false
     }
 
-    private previewEquationInput(): void {
-        // TODO: update model
-        this.plotGraphGame(true); // isPreview = true
-    }
-
-    private plotGraphGame(isPreview: boolean): void {
+    private plotGraphGame(_isPreview: boolean): void {
         // if isPreview, then plot color will be different
         // TODO: update view
     }
-
-    private switchToMazeGame(): void {
-        // TODO: switch to maze game
-    }
-
-    private switchToMatchGame(): void {
-        // TODO: switch to match game
-    }
-
 }

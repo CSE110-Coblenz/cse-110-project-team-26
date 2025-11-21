@@ -10,13 +10,13 @@ import { GAME_DURATION } from "../../constants.ts";
 export class MazeScreenController extends ScreenController {
 	private model: MazeScreenModel;
 	private view: MazeScreenView;
-	private screenSwitcher: ScreenSwitcher;
+	// private screenSwitcher: ScreenSwitcher;
     private problem : ProblemModel | null = null;
 	private gameTimer: number | null = null;
 
-	constructor(screenSwitcher: ScreenSwitcher) {
+	constructor(_screenSwitcher: ScreenSwitcher) {
 		super();
-		this.screenSwitcher = screenSwitcher;
+		// this.screenSwitcher = screenSwitcher;
 		this.model = new MazeScreenModel();
         this.view = new MazeScreenView((choice: ChoiceModel) => this.handleChoiceClick(choice));
 	}

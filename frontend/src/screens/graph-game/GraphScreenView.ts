@@ -2,14 +2,9 @@ import Konva from "konva";
 import type { View } from "../../types";
 import {
   OFFSET,
-  SIDEBAR_WIDTH,
   BOX_WIDTH,
-  SMALL_BOX_HEIGHT,
-  LARGE_BOX_HEIGHT,
-  GRAPH_WIDTH,
   BACKGROUND_PROPERTIES,
   STATIC_GROUP_PROPERTIES,
-  GRAPH_GROUP_PROPERTIES,
   GRAPH_BACKGROUND_PROPERTIES,
   SPRITE_GROUP_PROPERTIES,
   SPRITE_BOX_PROPERTIES,
@@ -32,13 +27,12 @@ export class GraphScreenView implements View {
     private staticGroup: Konva.Group;
     private graphGroup: Konva.Group;
     private dialogueText: Konva.Text;
-    private playerSprite: HTMLImageElement;
+    private playerSprite: HTMLImageElement = new Image();
     private equationText: Konva.Text;
-
     /**
      * Initializes default values for the View
      */
-    constructor(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => boolean) {
+    constructor(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void) {
 
         // Add layers for static and dynamic elements
 
@@ -135,8 +129,7 @@ export class GraphScreenView implements View {
     /**
      * Creates equation input buttons
      */
-    createInputButtons(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => boolean): Konva.Group {
-        const fill = "#5F5050";
+    createInputButtons(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void): Konva.Group {
         const smallOffset = OFFSET * (1/4);
         const rows = 3;
         const columns = 5;
@@ -175,7 +168,7 @@ export class GraphScreenView implements View {
                 y: 0,
                 width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
                 height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
-                text: (i + 1) as string,
+                text: String(i + 1),
                 fontSize: 24,
                 fontFamily: "Arial",
                 fill: "white",
@@ -311,19 +304,19 @@ export class GraphScreenView implements View {
     }
 
     getDialogue(): string {
-        return this.dialogueText;
+        return this.dialogueText.text();
     }
 
     getEquation(): string {
-        return this.equationText;
+        return this.equationText.text();
     }
 
     /**
      * 
      * @returns The Group this View belongs to
      */
-    getGroup(): Konva.Group[] {
-        return [this.staticGroup, this.graphGroup];
+    getGroup(): Konva.Group {
+        return this.staticGroup;
     }
 
     /**

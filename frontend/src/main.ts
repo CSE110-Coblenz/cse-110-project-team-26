@@ -9,7 +9,6 @@ import { TitleScreenController } from "./screens/title-screen/TitleScreenControl
 import { TutorialScreenController } from "./screens/tutorial-screen/TutorialScreenController.ts";
 import { StatisticsScreenController } from "./screens/statistics/StatisticsScreenController.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
-import type { TupleType } from "@cortex-js/compute-engine";
 
 /**
  * Main Application - Coordinates all screens
@@ -57,7 +56,9 @@ class App implements ScreenSwitcher {
 
 		// Add all screen groups to the layer
 		// All screens exist simultaneously but only one is visible at a time
-		this.stage.add(...this.graphScreenController.getView().getLayers());
+		this.graphScreenController.getView().getLayers().forEach((layer) => {
+			this.stage.add(layer);
+		});
 		this.layer.add(this.menuTestController.getView().getGroup());
 		this.layer.add(this.matchingScreenController.getView().getGroup());
 		this.layer.add(this.mazeScreenController.getView().getGroup());
