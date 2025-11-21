@@ -17,6 +17,8 @@ export class MazeTutorialView {
         });
         this.group.add(bg);
         this.tutorialText = new Konva.Text({
+            x: STAGE_WIDTH / 2 - 200,
+            y: STAGE_HEIGHT / 2 - 100,
             text: "",
             fontSize: 18,
             fontFamily: "Arial",
@@ -27,16 +29,16 @@ export class MazeTutorialView {
         this.updateTutorialText(tutorialText);
         this.group.add(this.tutorialText);
         this.nextButton = new Konva.Rect({
-            x: 150,
-            y: 300,
+            x: STAGE_WIDTH / 2 - 50,
+            y: STAGE_HEIGHT - 100,
             width: 100,
             height: 50,
             fill: "blue",
             cornerRadius: 10,
         });
         const nextButtonText = new Konva.Text({
-            x: 175,
-            y: 315,
+            x: STAGE_WIDTH / 2 - 20,
+            y: STAGE_HEIGHT - 85,
             text: "Next",
             fontSize: 20,
             fontFamily: "Arial",

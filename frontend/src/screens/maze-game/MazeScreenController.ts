@@ -20,7 +20,7 @@ export class MazeScreenController extends ScreenController {
 		super();
 		this.screenSwitcher = screenSwitcher;
 		this.model = new MazeScreenModel();
-        this.view = new MazeScreenView((choice: ChoiceModel) => this.handleChoiceClick(choice));
+        this.view = new MazeScreenView((choice: ChoiceModel, x:number, y:number) => this.handleChoiceClick(choice, x, y));
 		const tutorialText = `Welcome to the Maze Game Tutorial!
 
 In this game, you'll solve linear equations step-by-step.
@@ -77,8 +77,11 @@ Good luck and have fun!`;
 	}
 
 	// Handle choice click
-	private handleChoiceClick(choice : ChoiceModel): void {
+	private handleChoiceClick(choice : ChoiceModel, x:number, y:number): void {
 		console.log("Choice clicked:", choice.getText());
+
+		console.log("Moving circle to:", x, y);
+		this.view.moveCircleTo(x, y);
 		if (choice.getIsCorrect()) {
 			// Update model
 			this.model.incrementScore();
@@ -105,7 +108,6 @@ Good luck and have fun!`;
 			this.view.updateProblem(this.problem.getProblemStatement());
 			this.view.updateChoices(this.problem.getChoices());
 		}
-		this.view.fadeToBlack().then(() => this.view.fadeFromBlack());
 		this.stopTimer();
 		this.startTimer();
 	}

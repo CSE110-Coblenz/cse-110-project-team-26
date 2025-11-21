@@ -7,10 +7,13 @@ import { ChoiceModel } from "./MazeModels.ts";
 export class ChoiceView {
     private group: Konva.Group;
     private choice: ChoiceModel | null = null;
+    private x: number;
+    private y: number;
 
     constructor(x: number, y: number) {
         this.group = new Konva.Group();
-
+        this.x = x;
+        this.y = y;
         const rectWidth = 100;
         const rectHeight = 100;
 
@@ -48,8 +51,9 @@ export class ChoiceView {
     // Get the associated ChoiceModel
     getChoice() { return this.choice; }
     // Register click handler for this choice
-    onClick(handler: (choice: ChoiceModel) => void) {
-        this.group.on('click', () => handler(this.choice as ChoiceModel));
+    onClick(handler: (choice: ChoiceModel, x:number, y:number) => void) {
+        this.group.on('click', () => handler(this.choice as ChoiceModel, this.x+50, this.y+50));
+        console.log("Registered click handler for choice at:", this.x, this.y);
     }
 }
 
@@ -67,7 +71,7 @@ export class MazeScreenView implements View {
     private transitionScreen: Konva.Rect;
     private player: Konva.Circle;
 
-	constructor(handler: (choice : ChoiceModel) => void) {
+	constructor(handler: (choice : ChoiceModel, x:number, y:number) => void) {
 		this.group = new Konva.Group({ visible: false });
 
         // overlay for transition effect
@@ -181,14 +185,18 @@ export class MazeScreenView implements View {
         this.group.getLayer()?.draw();
     }
 
-    fadeToBlack(duration: number = 0.5): Promise<void> {
+    fadeToBlack(duration: number = 0.2): Promise<void> {
     this.transitionScreen.moveToTop();
     return new Promise((resolve) => {
         new Konva.Tween({
         node: this.transitionScreen,
         opacity: 1,
         duration,
-        onFinish: resolve,
+        onFinish: () => {
+        this.fadeFromBlack();
+        this.resetCirclePosition();
+        resolve();
+    },
         }).play();
     });
     }
@@ -198,11 +206,28 @@ export class MazeScreenView implements View {
         node: this.transitionScreen,
         opacity: 0,
         duration,
-        onFinish: resolve,
-        }).play(), this.transitionScreen.moveToBottom();
+        onFinish: () => {
+        this.transitionScreen.moveToBottom();
+        resolve();
+    },
+        }).play();
     });
     }
-    
+    moveCircleTo(x: number, y: number) {
+    new Konva.Tween({
+        node: this.player,
+        x,
+        y,
+        duration: 0.5,
+        easing: Konva.Easings.EaseInOut,
+        onFinish: () => { this.fadeToBlack(); }
+    }).play();
+    }
+    resetCirclePosition() {
+        console.log("Resetting player position");
+        this.player.position({ x: STAGE_WIDTH / 2, y: STAGE_HEIGHT - 100 });
+        this.group.getLayer()?.draw();
+    }
 	/**
 	 * Show the screen
 	 */
