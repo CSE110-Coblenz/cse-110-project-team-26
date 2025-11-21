@@ -20,8 +20,7 @@ export class GraphScreenController extends ScreenController {
             this.view = new GraphScreenView(
                 (input: number) => this.handleNumberInput(input),
                 () => this.handleEquationReset(),
-                () => this.handleEquationSubmission(),
-                () => this.handleProfileClick()
+                () => this.handleEquationSubmission()
             );
             this.screenSwitcher = screenSwitcher;
             this.setupEscapeKeyHandler();

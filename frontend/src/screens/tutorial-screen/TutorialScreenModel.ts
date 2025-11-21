@@ -1,7 +1,5 @@
 /**
  * Model for the Tutorial screen.
- *
- * Manages tutorial state, progress, and content.
  * Steps:
  * 0: Welcome/Introduction
  * 1: Main Game (Graph Game) tutorial

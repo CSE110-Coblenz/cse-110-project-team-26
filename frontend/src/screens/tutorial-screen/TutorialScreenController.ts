@@ -33,8 +33,8 @@ export class TutorialScreenController extends ScreenController {
 				this.updateView();
 			},
 			onSkip: () => {
-				// Skip tutorial and go directly to main game
-				this.screenSwitcher.switchToScreen({ type: "main-game" });
+				// Skip tutorial and go directly to the menu (temporary)
+				this.screenSwitcher.switchToScreen({ type: "menu" });
 			},
 		});
 
@@ -63,4 +63,3 @@ export class TutorialScreenController extends ScreenController {
 		super.show();
 	}
 }
-

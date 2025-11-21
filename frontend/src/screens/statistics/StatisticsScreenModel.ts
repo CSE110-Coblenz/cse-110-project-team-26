@@ -63,7 +63,7 @@ export class StatisticsScreenModel {
 		this.state = { ...this.state, loading: true, error: null };
 
 		try {
-			// Get auth token from localStorage (adjust based on your auth implementation)
+			// Get auth token from localStorage
 			const token = localStorage.getItem("authToken");
 
 			if (!token) {
