@@ -40,8 +40,8 @@ const GRAPH_GROUP_PROPERTIES = {
 const GRAPH_BACKGROUND_PROPERTIES = {
   x: OFFSET,
   y: OFFSET,
-  width: Math.floor((GRAPH_GROUP_PROPERTIES.width - (OFFSET * 2)) / 100) * 100,
-  height: Math.floor((GRAPH_GROUP_PROPERTIES.height - (OFFSET * 2)) / 20) * 20,
+  width: Math.floor((GRAPH_GROUP_PROPERTIES.width - (OFFSET * 2)) / 40) * 40,
+  height: Math.floor((GRAPH_GROUP_PROPERTIES.height - (OFFSET * 2)) / 40) * 40,
   fill: "#161313"
 };
 
@@ -122,7 +122,6 @@ const EQUATION_TEXT_PROPERTIES = {
   y: EQUATION_BOX_PROPERTIES.y,
   width: EQUATION_BOX_PROPERTIES.width,
   height: EQUATION_BOX_PROPERTIES.height,
-  text: "y=_x+_",
   fontSize: 16,
   fontFamily: "Arial",
   fill: "white",
