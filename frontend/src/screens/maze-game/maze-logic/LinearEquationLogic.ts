@@ -141,12 +141,17 @@ class LinearEquation {
         if (RandomUtils.yesNo(0.4) && this.difficulty > 3) {
             result = EquationBuilder.divisionEquation(result);
         }
+        console.log("Generated Equation String: ", result);
         let temp = this.ce.parse(result);
         //let temp = this.ce.parse("-6(2x-10)-4x+1=-35")
         //let temp = this.ce.parse("3x+9x+10x=440");
         //let temp = this.ce.parse("5x(4+7)-10x+7x=208");
         //let temp = this.ce.parse("x + 8x - 4=14");
         //let temp = this.ce.parse("4(4x + 3) + 5(3x - 9) + 7x=271"); // BUG: rearranges x terms to the front
+        //let temp = this.ce.parse("x+3(x+3)+10x=37"); // BUG: rearranges x terms to the front
+        //let temp = this.ce.parse("3x(10-10)-7x+6x=-11"); // BUG: handle zero better
+        //let temp = this.ce.parse("-4x+8x-x+8=52") // really bad bug with negate
+        //let temp = this.ce.parse("3x(4-6)-5x-3(x+10)+5=-277") // really bad bug that skips over combining x terms
         try {
             this.setY(temp.subs({x: x}).evaluate());
         } catch (error) {
@@ -155,6 +160,8 @@ class LinearEquation {
         }
         const expression = JSON.parse(JSON.stringify(temp.toMathJson())) as MathJson;
         const final : MathJson = ['Equal', expression, this.y as string];
+        console.log("GENERATION")
+        console.log(JSON.parse(JSON.stringify(final)));
         return final;
     }
 
@@ -176,7 +183,7 @@ class LinearEquation {
     }
     // returns the LaTeX representation of the equation
     public getEquationLaTeX(): string {
-        return this.ce.box(this.equation as any).toString();
+        return this.ce.box(this.equation as any).toLatex();
     }
 
     
@@ -211,7 +218,7 @@ class EquationSolver {
         this.SolveX(); // isolate x with steps
         this.steps.push({ // final step showing solution
             description: `x = ${this.steps[this.steps.length -1].result}`,
-            current: this.ce.box(this.equation as any,{canonical:["InvisibleOperator"]}).toString(),
+            current: this.ce.box(this.equation as any,{canonical:["InvisibleOperator"]}).toLatex(),
             stepNumber: this.stepNumber,
             result: this.ce.box(this.equation[2] as any).toString()
         });
@@ -226,7 +233,10 @@ class EquationSolver {
         }
         return this.steps.pop() as Step;
     }
-
+    // get the number of remaining steps
+    public getStepsCount(): number {
+        return this.steps.length;
+    }
     // breaks down the equation into steps
     private breakDownEquation(equationPart: MathJson): void {
         for (let i = 1; i < equationPart.length; i++) {
@@ -269,7 +279,7 @@ class EquationSolver {
             // Add step to steps array
             this.steps.push({
                 description: `Add ${term1}, ${term2}`,
-                current: this.ce.box(current as any, {canonical:["InvisibleOperator"]}).toString(),
+                current: this.ce.box(current as any, {canonical:["InvisibleOperator"]}).toLatex(),
                 stepNumber: this.stepNumber++,
                 result: sum
             });
@@ -304,7 +314,7 @@ class EquationSolver {
             this.terms.push(sum.toString());
             this.steps.push({
                 description: `Add ${constant1},${constant2}`,
-                current: this.ce.box(current as any,{canonical:["InvisibleOperator"]}).toString(),
+                current: this.ce.box(current as any,{canonical:["InvisibleOperator"]}).toLatex(),
                 stepNumber: this.stepNumber++,
                 result: sum
             });
@@ -430,7 +440,7 @@ class EquationSolver {
             console.log("Adding step: ", `${expr[0]}, ${JSON.stringify(expr.slice(1))}`);
             this.steps.push({
                 description: `${expr[0]} ${this.ce.box(expr as any).toString()}`,
-                current: this.ce.box(JSON.parse(JSON.stringify(this.equation)),{canonical:false}).toString(),
+                current: this.ce.box(JSON.parse(JSON.stringify(this.equation)),{canonical:false}).toLatex(),
                 stepNumber: this.stepNumber++,
                 result: JSON.parse(JSON.stringify(this.ce.box(expr as any).simplify().toMathJson())) as MathJson
             });

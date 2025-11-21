@@ -4,6 +4,7 @@ import type { ScreenSwitcher, Screen } from "./types.ts";
 import { MenuTestScreenController } from "./screens/MenuTestScreen/MenuTestScreenController.ts";
 import { MatchingScreenController } from "./screens/MatchingScreen/MatchingScreenController.ts";
 import { MazeScreenController } from "./screens/maze-game/MazeScreenController.ts";
+import { MazeTutorialView } from "./screens/maze-game/MazeTutorialView.ts";
 import { MainScreenController } from "./screens/MainScreen/MainScreenController.ts";
 import { TitleScreenController } from "./screens/title-screen/TitleScreenController.ts";
 import { TutorialScreenController } from "./screens/tutorial-screen/TutorialScreenController.ts";
@@ -57,6 +58,7 @@ class App implements ScreenSwitcher {
 		this.layer.add(this.menuTestController.getView().getGroup());
 		this.layer.add(this.matchingScreenController.getView().getGroup());
 		this.layer.add(this.mazeScreenController.getView().getGroup());
+		this.layer.add(this.mazeScreenController.getTutorialView().getGroup());
 		this.layer.add(this.mainScreenController.getView().getGroup());
 		this.layer.add(this.titleController.getView().getGroup());
 		this.layer.add(this.tutorialController.getView().getGroup());

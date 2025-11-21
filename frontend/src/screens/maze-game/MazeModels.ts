@@ -49,10 +49,32 @@ export class ProblemModel {
         console.log("Generated Problem: ", this.problemStatement);
         }
     // Need logic to see when it is the last step
-    private generateChoices(correctChoice: Step){
+    private generateChoices(correctChoice: Step, isLastStep: boolean = false) {
         this.choices.push(new ChoiceModel(correctChoice.description, true));
-        this.choices.push(new ChoiceModel("Incorrect Choice 1", false));
-        this.choices.push(new ChoiceModel("Incorrect Choice 2", false));
+        const operations = ["Add", "Divide", "Subtract", "Multiply"] as const;
+        let randomNumber1: number;
+        let randomNumber2: number;
+        if (!isLastStep) {
+            // Second choice
+            let randomOperation = operations[Math.floor(Math.random() * operations.length)];
+            randomNumber1 = Math.floor(Math.random() * 10) + 1;
+            randomNumber2 = Math.floor(Math.random() * 10) + 1;
+            this.choices.push(new ChoiceModel(`${randomOperation} ${randomNumber1}, ${randomNumber2}`, false));
+            // Third choice
+            randomOperation = operations[Math.floor(Math.random() * operations.length)];
+            randomNumber1 = Math.floor(Math.random() * 10) + 1;
+            /* randomNumber2 = numberMatches.length
+                ? numberMatches[Math.floor(Math.random() * numberMatches.length)]
+                : String(Math.floor(Math.random() * 10) + 1); */
+            randomNumber2 = Math.floor(Math.random() * 10) + 1;
+            this.choices.push(new ChoiceModel(`${randomOperation} ${randomNumber1}, ${randomNumber2}`, false));
+        } else { 
+            // NEED TO MAKE SURE INCORRECT CHOICES ARE NOT THE SOLUTION
+            randomNumber1 = Math.floor(Math.random() * 10) + 1;
+            this.choices.push(new ChoiceModel(`x = ${randomNumber1}`, false));
+            randomNumber2 = Math.floor(Math.random() * 10) + 1;
+            this.choices.push(new ChoiceModel(`x = ${randomNumber2}`, false));
+        }
         this.shuffleChoices();
     }
     // Shuffle choices to randomize their order
@@ -76,12 +98,16 @@ export class ProblemModel {
         return this.choices;
     }
     // Clear current choices and generate new ones based on the next step
-    public nextMove() {
+    public nextMove(): boolean {
         this.choices = [];
+        if (this.solver.getStepsCount() === 0) {
+            return false;
+        }
         const newStep = this.solver.getStep(); // advance to next step
         console.log("Next Step: ", newStep);
-        this.generateChoices(newStep);
+        this.generateChoices(newStep, this.solver.getStepsCount() === 0? true : false);
         this.setProblemStatement(newStep.current);
+        return true;
     }
 }
 /**

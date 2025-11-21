@@ -64,9 +64,22 @@ export class MazeScreenView implements View {
     private choiceOne : ChoiceView;
     private choiceTwo : ChoiceView;
     private choiceThree : ChoiceView;
+    private transitionScreen: Konva.Rect;
+    private player: Konva.Circle;
 
 	constructor(handler: (choice : ChoiceModel) => void) {
 		this.group = new Konva.Group({ visible: false });
+
+        // overlay for transition effect
+        this.transitionScreen = new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            fill: "black",
+            opacity: 0.0,
+        });
+        this.group.add(this.transitionScreen);
 
 		// Background
 		const bg = new Konva.Rect({
@@ -127,6 +140,14 @@ export class MazeScreenView implements View {
         this.choiceOne.onClick(handler);
         this.choiceTwo.onClick(handler);
         this.choiceThree.onClick(handler);
+
+        this.player = new Konva.Circle({
+            x: STAGE_WIDTH / 2,
+            y: STAGE_HEIGHT - 100,
+            radius: 50,
+            fill: "#e43a3aff",
+        });
+        this.group.add(this.player);
 	}
 
 	/**
@@ -160,6 +181,28 @@ export class MazeScreenView implements View {
         this.group.getLayer()?.draw();
     }
 
+    fadeToBlack(duration: number = 0.5): Promise<void> {
+    this.transitionScreen.moveToTop();
+    return new Promise((resolve) => {
+        new Konva.Tween({
+        node: this.transitionScreen,
+        opacity: 1,
+        duration,
+        onFinish: resolve,
+        }).play();
+    });
+    }
+    fadeFromBlack(duration: number = 0.5): Promise<void> {
+    return new Promise((resolve) => {
+        new Konva.Tween({
+        node: this.transitionScreen,
+        opacity: 0,
+        duration,
+        onFinish: resolve,
+        }).play(), this.transitionScreen.moveToBottom();
+    });
+    }
+    
 	/**
 	 * Show the screen
 	 */
@@ -180,3 +223,4 @@ export class MazeScreenView implements View {
 		return this.group;
 	}
 }
+
