@@ -11,3 +11,6 @@ export const MAZE = "maze";
 export const MATCH = "match";
 export const TITLE = "title";
 */
+export const LINEAR = "LINEAR";
+export const QUADRATIC = "QUADRATIC";
+export const ABSVAL = "ABSVAL";
