@@ -523,9 +523,6 @@ export class MatchingScreenView implements View {
             const a = this.paired_answers[i];
             for (let j = 0; j < this.q_a_list.length; j++) {
                 if (q == this.q_a_list[j][0]) {
-                    console.log(q);
-                    console.log(a);
-                    console.log(this.q_a_list[j][1]);
                     if (a == this.q_a_list[j][1]) {
                         arrow.fill("green");
                         arrow.stroke("green");
@@ -533,11 +530,20 @@ export class MatchingScreenView implements View {
                     else {
                         arrow.fill("red");
                         arrow.stroke("red");
+                        console.log(this.return_incorrect(q,a,this.q_a_list[j][1]));
                         flameBlowUp(arrow.points()[0] - this.box_size / 2,arrow.points()[1],this.stage);
                     }
                     break;
                 }
             }
+        }
+    }
+
+    private return_incorrect(question: String, user_answer: String, correct_answer: String): any {
+        return {
+            question: question,
+            given_answer: user_answer,
+            correct_answer: correct_answer
         }
     }
 
