@@ -43,7 +43,7 @@ class App implements ScreenSwitcher {
 		// Each controller manages a Model, View, and handles user interactions
 		this.menuTestController = new MenuTestScreenController(this);
 		this.matchingScreenController = new MatchingScreenController(this, this.stage);
-		this.mazeScreenController = new MazeScreenController(this);
+		this.mazeScreenController = new MazeScreenController(this, this.stage);
 		this.mainScreenController = new MainScreenController(this);
 
 		// Add all screen groups to the layer
@@ -58,7 +58,7 @@ class App implements ScreenSwitcher {
 		this.layer.draw();
 
 		// Start with menu screen visible
-		this.switchToScreen({ type: "menu" });
+		this.switchToScreen({ type: "matching-game" });
 	}
 
 	/**

@@ -1,7 +1,7 @@
 import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH,STAGE_HEIGHT } from "../../constants.ts";
-import { generate_linear_equation } from "./EquationGenerator.ts";
+import { generate_quadratic_equation_1, generate_linear_equation } from "./EquationGenerator.ts";
 
 /**
  * MenuScreenView - Renders the menu screen
@@ -9,6 +9,8 @@ import { generate_linear_equation } from "./EquationGenerator.ts";
 export class MatchingScreenView implements View {
     private group: Konva.Group;
     private stage: Konva.Stage;
+
+    private box_size = 200;
 
     private leftRect_1: Konva.Rect;
     private leftRect_2: Konva.Rect;
@@ -30,21 +32,21 @@ export class MatchingScreenView implements View {
     private paired_questions: string[] = [];
     private paired_answers: string[] = [];
 
-    private q_a_1: ReturnType<typeof generate_linear_equation>;
-    private q_a_2: ReturnType<typeof generate_linear_equation>;
-    private q_a_3: ReturnType<typeof generate_linear_equation>;
+    private q_a_1: ReturnType<typeof generate_linear_equation> = ["",""];
+    private q_a_2: ReturnType<typeof generate_linear_equation> = ["",""];
+    private q_a_3: ReturnType<typeof generate_linear_equation> = ["",""];
 
     private answer_sequence: string[] = [];
     private q_a_list: string[][] = [];
+
+    private difficulty: string = "linear"
 
     constructor(onStartClick: () => void, stage:Konva.Stage) {
         this.group = new Konva.Group({ visible: true });
         this.stage = stage;
 
-        this.q_a_1 = generate_linear_equation();
-        this.q_a_2 = generate_linear_equation();
-        this.q_a_3 = generate_linear_equation();
-
+        this.generate_equation()
+        
         this.q_a_list= [
             this.q_a_1, 
             this.q_a_2,
@@ -86,9 +88,9 @@ export class MatchingScreenView implements View {
         // Question 1
         this.leftRect_1 = new Konva.Rect({
             x: 150,
-            y: STAGE_HEIGHT / 4 - 25,
-            width: 120,
-            height: 150,
+            y: STAGE_HEIGHT / 4 - 100,
+            width: this.box_size,
+            height: this.box_size,
             fill: "#4A90E2",
             stroke: "navy",
             strokeWidth: 4,
@@ -98,10 +100,10 @@ export class MatchingScreenView implements View {
             this.arrowAnimation(this.leftRect_1, this.leftText_1.text());
         });
         this.leftText_1 = new Konva.Text({
-            x: 150 + 60,
-            y: STAGE_HEIGHT / 4 - 25 + 60,
+            x: this.leftRect_1.x() + this.leftRect_1.width() / 2,
+            y: this.leftRect_1.y() + this.leftRect_1.height() / 2,
             text: this.q_a_1[0],
-            fontSize: 18,
+            fontSize: 28,
             fontFamily: "Arial",
             fill: "white",
             align: "center",
@@ -115,9 +117,9 @@ export class MatchingScreenView implements View {
         // Question 2
         this.leftRect_2 = new Konva.Rect({
             x: 150,
-            y: STAGE_HEIGHT / 2 - 25,
-            width: 120,
-            height: 150,
+            y: STAGE_HEIGHT / 2 - 100,
+            width: this.box_size,
+            height: this.box_size,
             fill: "#4A90E2",
             stroke: "navy",
             strokeWidth: 4,
@@ -127,10 +129,10 @@ export class MatchingScreenView implements View {
             this.arrowAnimation(this.leftRect_2, this.leftText_2.text());
         });
         this.leftText_2 = new Konva.Text({
-            x: 150 + 60,
-            y: STAGE_HEIGHT / 2 - 25 + 60,
+            x: this.leftRect_2.x() + this.leftRect_2.width() / 2,
+            y: this.leftRect_2.y() + this.leftRect_2.height() / 2,
             text: this.q_a_2[0],
-            fontSize: 18,
+            fontSize: 28,
             fontFamily: "Arial",
             fill: "white",
             align: "center",
@@ -144,9 +146,9 @@ export class MatchingScreenView implements View {
         // Question 3
         this.leftRect_3 = new Konva.Rect({
             x: 150,
-            y: 3 * STAGE_HEIGHT / 4 - 25,
-            width: 120,
-            height: 150,
+            y: 3 * STAGE_HEIGHT / 4 - 100,
+            width: this.box_size,
+            height: this.box_size,
             fill: "#4A90E2",
             stroke: "navy",
             strokeWidth: 4,
@@ -156,10 +158,10 @@ export class MatchingScreenView implements View {
             this.arrowAnimation(this.leftRect_3, this.leftText_3.text());
         });
         this.leftText_3 = new Konva.Text({
-            x: 150 + 60,
-            y: 3 * STAGE_HEIGHT / 4 - 25 + 60,
+            x: this.leftRect_3.x() + this.leftRect_3.width() / 2,
+            y: this.leftRect_3.y() + this.leftRect_3.height() / 2,
             text: this.q_a_3[0],
-            fontSize: 18,
+            fontSize: 28,
             fontFamily: "Arial",
             fill: "white",
             align: "center",
@@ -173,19 +175,19 @@ export class MatchingScreenView implements View {
         // Answer 1
         this.rightRect_1 = new Konva.Rect({
             x: STAGE_WIDTH - 270,
-            y: STAGE_HEIGHT / 4 - 25,
-            width: 120,
-            height: 150,
+            y: STAGE_HEIGHT / 4 - 100,
+            width: this.box_size,
+            height: this.box_size,
             fill: "darkgreen",
             stroke: "black",
             strokeWidth: 4,
             cornerRadius: 12,
         });
         this.rightText_1 = new Konva.Text({
-            x: STAGE_WIDTH - 270 + 60,
-            y: STAGE_HEIGHT / 4 - 25 + 60,
+            x: this.rightRect_1.x() + this.rightRect_1.width() / 2,
+            y: this.rightRect_1.y() + this.rightRect_1.height() / 2,
             text: this.answer_sequence[0],
-            fontSize: 18,
+            fontSize: 28,
             fontFamily: "Arial",
             fill: "white",
             align: "center",
@@ -199,19 +201,19 @@ export class MatchingScreenView implements View {
         // Answer 2
         this.rightRect_2 = new Konva.Rect({
             x: STAGE_WIDTH - 270,
-            y: STAGE_HEIGHT / 2 - 25,
-            width: 120,
-            height: 150,
+            y: STAGE_HEIGHT / 2 - 100,
+            width: this.box_size,
+            height: this.box_size,
             fill: "darkgreen",
             stroke: "black",
             strokeWidth: 4,
             cornerRadius: 12,
         });
         this.rightText_2 = new Konva.Text({
-            x: STAGE_WIDTH - 270 + 60,
-            y: 2 * STAGE_HEIGHT / 4 - 25 + 60,
+            x: this.rightRect_2.x() + this.rightRect_2.width() / 2,
+            y: this.rightRect_2.y() + this.rightRect_2.height() / 2,
             text: this.answer_sequence[1],
-            fontSize: 18,
+            fontSize: 28,
             fontFamily: "Arial",
             fill: "white",
             align: "center",
@@ -225,19 +227,19 @@ export class MatchingScreenView implements View {
         // Answer 3
         this.rightRect_3 = new Konva.Rect({
             x: STAGE_WIDTH - 270,
-            y: 3 * STAGE_HEIGHT / 4 - 25,
-            width: 120,
-            height: 150,
+            y: 3 * STAGE_HEIGHT / 4 - 100,
+            width: this.box_size,
+            height: this.box_size,
             fill: "darkgreen",
             stroke: "black",
             strokeWidth: 4,
             cornerRadius: 12,
         });
         this.rightText_3 = new Konva.Text({
-            x: STAGE_WIDTH - 270 + 60,
-            y: 3 * STAGE_HEIGHT / 4 -25 + 60,
+            x: this.rightRect_3.x() + this.rightRect_3.width() / 2,
+            y: this.rightRect_3.y() + this.rightRect_3.height() / 2,
             text: this.answer_sequence[2],
-            fontSize: 18,
+            fontSize: 28,
             fontFamily: "Arial",
             fill: "white",
             align: "center",
@@ -251,7 +253,7 @@ export class MatchingScreenView implements View {
         const startButtonGroup = new Konva.Group();
         const startButton = new Konva.Rect({
             x: 0,
-            y: 860,
+            y: STAGE_HEIGHT-100,
             width: 200,
             height: 60,
             fill: "green",
@@ -260,8 +262,8 @@ export class MatchingScreenView implements View {
             strokeWidth: 3,
         });
         const startText = new Konva.Text({
-            x: 100,
-            y: 875,
+            x: startButton.x() + 100,
+            y: startButton.y() + 15,
             text: "SWITCH TO MENU",
             fontSize: 16,
             fontFamily: "Arial",
@@ -278,10 +280,68 @@ export class MatchingScreenView implements View {
         });
         this.group.add(startButtonGroup);
 
+        const level1ButtonGroup = new Konva.Group();
+        const level1Button = new Konva.Rect({
+            x: 0,
+            y: 50,
+            width: 200,
+            height: 60,
+            fill: "green",
+            cornerRadius: 10,
+            stroke: "darkgreen",
+            strokeWidth: 3,
+        });
+        const level1Text = new Konva.Text({
+            x: level1Button.x() + 100,
+            y: level1Button.y() + 15,
+            text: "LEVEL 1",
+            fontSize: 16,
+            fontFamily: "Arial",
+            fill: "white",
+            align: "center",
+        });
+        level1Text.offsetX(level1Text.width() / 2);
+        level1ButtonGroup.add(level1Button);
+        level1ButtonGroup.add(level1Text);
+        level1ButtonGroup.on("click", () => {
+            this.difficulty = "linear";
+            this.new_questions()                    
+        });
+        this.group.add(level1ButtonGroup);
+
+        const level2ButtonGroup = new Konva.Group();
+        const level2Button = new Konva.Rect({
+            x: 205,
+            y: 50,
+            width: 200,
+            height: 60,
+            fill: "green",
+            cornerRadius: 10,
+            stroke: "darkgreen",
+            strokeWidth: 3,
+        });
+        const level2Text = new Konva.Text({
+            x: level2Button.x() + 100,
+            y: level2Button.y() + 15,
+            text: "LEVEL 2",
+            fontSize: 16,
+            fontFamily: "Arial",
+            fill: "white",
+            align: "center",
+        });
+        level2Text.offsetX(level2Text.width() / 2);
+        level2ButtonGroup.add(level2Button);
+        level2ButtonGroup.add(level2Text);
+        level2ButtonGroup.on("click", () => {
+            this.difficulty = "quadratic_1";  // or maybe "quadratic" for level 2?
+            this.new_questions();
+        });
+        this.group.add(level2ButtonGroup);
+
         const submitButtonGroup = new Konva.Group();
         const submitButton = new Konva.Rect({
             x: STAGE_WIDTH / 2 - 100,
-            y: 860,
+            y: STAGE_HEIGHT - 100,
             width: 200,
             height: 60,
             fill: "green",
@@ -291,7 +351,7 @@ export class MatchingScreenView implements View {
         });
         const submitText = new Konva.Text({
             x: STAGE_WIDTH / 2,
-            y: 875,
+            y: submitButton.y() + 15,
             text: "SUBMIT",
             fontSize: 16,
             fontFamily: "Arial",
@@ -310,7 +370,7 @@ export class MatchingScreenView implements View {
         const newQuestionButtonGroup = new Konva.Group();
         const newQuestionButton = new Konva.Rect({
             x: STAGE_WIDTH / 2 + 150,
-            y: 860,
+            y: STAGE_HEIGHT - 100,
             width: 200,
             height: 60,
             fill: "white",
@@ -320,7 +380,7 @@ export class MatchingScreenView implements View {
         });
         const newQuestionText = new Konva.Text({
             x: STAGE_WIDTH / 2 + 250,
-            y: 875,
+            y: newQuestionButton.y() + 15,
             text: "NEW QUESTIONS",
             fontSize: 16,
             fontFamily: "Arial",
@@ -331,37 +391,7 @@ export class MatchingScreenView implements View {
         newQuestionButtonGroup.add(newQuestionButton);
         newQuestionButtonGroup.add(newQuestionText);
         newQuestionButtonGroup.on("click", () => {
-            this.cleanupArrows();
-            this.cleanupQA(); 
-            this.q_a_1 = generate_linear_equation();
-            this.q_a_2 = generate_linear_equation();
-            this.q_a_3 = generate_linear_equation();
-            this.q_a_list = [this.q_a_1, this.q_a_2, this.q_a_3];
-
-            const answers = [this.q_a_1[1], this.q_a_2[1], this.q_a_3[1]];
-            for (let i = answers.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [answers[i], answers[j]] = [answers[j], answers[i]];
-            }
-            this.answer_sequence = answers;
-
-            // Update texts
-            this.leftText_1.text(this.q_a_1[0]);
-            this.leftText_2.text(this.q_a_2[0]);
-            this.leftText_3.text(this.q_a_3[0]);
-
-            this.rightText_1.text(this.answer_sequence[0]);
-            this.rightText_2.text(this.answer_sequence[1]);
-            this.rightText_3.text(this.answer_sequence[2]);
-
-            // Re-center
-            [this.leftText_1, this.leftText_2, this.leftText_3,
-            this.rightText_1, this.rightText_2, this.rightText_3].forEach(t => {
-                t.offsetX(t.width() / 2);
-                t.offsetY(t.height() / 2);
-            });
-
-            this.group.getLayer()?.batchDraw();
+            this.new_questions();
         });
         this.group.add(newQuestionButtonGroup);
 
@@ -369,7 +399,7 @@ export class MatchingScreenView implements View {
         const resetButtonGroup = new Konva.Group();
         const resetButton = new Konva.Rect({
             x: STAGE_WIDTH-200,
-            y: 860,
+            y: STAGE_HEIGHT - 100,
             width: 200,
             height: 60,
             fill: "white",
@@ -379,7 +409,7 @@ export class MatchingScreenView implements View {
         });
         const resetText = new Konva.Text({
             x: STAGE_WIDTH - 100,
-            y: 875,
+            y: resetButton.y() + 15,
             text: "RESET",
             fontSize: 16,
             fontFamily: "Arial",
@@ -511,6 +541,51 @@ export class MatchingScreenView implements View {
                 }
             }
         }
+    }
+
+    private generate_equation(): void {
+        if (this.difficulty == "linear") {
+            this.q_a_1 = generate_linear_equation();
+            this.q_a_2 = generate_linear_equation();
+            this.q_a_3 = generate_linear_equation();
+        }
+        else {
+            this.q_a_1 = generate_quadratic_equation_1();
+            this.q_a_2 = generate_quadratic_equation_1();
+            this.q_a_3 = generate_quadratic_equation_1();
+        }
+    }
+
+    private new_questions(): void {
+        this.cleanupArrows();
+            this.cleanupQA(); 
+            this.generate_equation();
+            this.q_a_list = [this.q_a_1, this.q_a_2, this.q_a_3];
+
+            const answers = [this.q_a_1[1], this.q_a_2[1], this.q_a_3[1]];
+            for (let i = answers.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [answers[i], answers[j]] = [answers[j], answers[i]];
+            }
+            this.answer_sequence = answers;
+
+            // Update texts
+            this.leftText_1.text(this.q_a_1[0]);
+            this.leftText_2.text(this.q_a_2[0]);
+            this.leftText_3.text(this.q_a_3[0]);
+
+            this.rightText_1.text(this.answer_sequence[0]);
+            this.rightText_2.text(this.answer_sequence[1]);
+            this.rightText_3.text(this.answer_sequence[2]);
+
+            // Re-center
+            [this.leftText_1, this.leftText_2, this.leftText_3,
+            this.rightText_1, this.rightText_2, this.rightText_3].forEach(t => {
+                t.offsetX(t.width() / 2);
+                t.offsetY(t.height() / 2);
+            });
+
+            this.group.getLayer()?.batchDraw();
     }
 
     // Destroy all arrows

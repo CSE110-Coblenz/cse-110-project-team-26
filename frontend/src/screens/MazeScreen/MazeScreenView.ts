@@ -1,15 +1,18 @@
 import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH } from "../../constants.ts";
+import { addLinearPlot } from "./plot.ts";
 
 /**
  * MenuScreenView - Renders the menu screen
  */
 export class MazeScreenView implements View {
     private group: Konva.Group;
+    private stage: Konva.Stage
 
-    constructor(onStartClick: () => void) {
+    constructor(onStartClick: () => void, stage: Konva.Stage) {
         this.group = new Konva.Group({ visible: true });
+        this.stage = stage;
 
         // Title text
         const title = new Konva.Text({
@@ -52,6 +55,9 @@ export class MazeScreenView implements View {
         startButtonGroup.add(startText);
         startButtonGroup.on("click", onStartClick);
         this.group.add(startButtonGroup);
+
+        const gp1 = addLinearPlot(this.stage,2,3,{x:STAGE_WIDTH-200,y:200});
+        this.group.add(gp1);
     }
 
     /**
