@@ -2,6 +2,8 @@ import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH,STAGE_HEIGHT } from "../../constants.ts";
 import { generate_quadratic_equation_1, generate_linear_equation } from "./EquationGenerator.ts";
+import galaxyBg from './assets/galaxy.jpg';
+import { createNeonMetalBox, createPlanetBox, flameBlowUp} from "./ArtEffect.ts";
 
 /**
  * MenuScreenView - Renders the menu screen
@@ -45,6 +47,55 @@ export class MatchingScreenView implements View {
         this.group = new Konva.Group({ visible: true });
         this.stage = stage;
 
+        // ===== ADD GALAXY BACKGROUND HERE =====
+        const img = new Image();
+        img.src = galaxyBg;
+        const background = new Konva.Image({
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            image: img,  // ← directly use the imported image (it's already loaded by Vite!)
+            listening: false,
+        });
+
+        const overlay = new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            fill: 'rgba(0, 0, 50, 0.75)',  // dark overlay for text readability
+            listening: false,
+        });
+
+        // ADD THEM FIRST — THIS IS CRITICAL
+        this.group.add(background);
+        this.group.add(overlay);
+
+        // Add twinkling stars
+        for (let i = 0; i < 80; i++) {
+            const star = new Konva.Circle({
+                x: Math.random() * STAGE_WIDTH,
+                y: Math.random() * STAGE_HEIGHT,
+                radius: Math.random() * 2,
+                fill: 'white',
+                opacity: Math.random() * 0.8 + 0.2,
+                listening: false,
+            });
+
+            // Animate twinkling
+            new Konva.Tween({
+                node: star,
+                duration: Math.random() * 3 + 2,
+                opacity: Math.random() * 0.5 + 0.5,
+                easing: Konva.Easings.EaseInOut,
+                yoyo: true,
+                repeat: -1,
+            }).play();
+
+            this.group.add(star);
+        }
+
         this.generate_equation()
         
         this.q_a_list= [
@@ -86,16 +137,7 @@ export class MatchingScreenView implements View {
         this.group.add(title);
 
         // Question 1
-        this.leftRect_1 = new Konva.Rect({
-            x: 150,
-            y: STAGE_HEIGHT / 4 - 100,
-            width: this.box_size,
-            height: this.box_size,
-            fill: "#4A90E2",
-            stroke: "navy",
-            strokeWidth: 4,
-            cornerRadius: 12,
-        });
+        this.leftRect_1 = createNeonMetalBox(150, STAGE_HEIGHT / 4 - 100, this.box_size);
         this.leftRect_1.on('mousedown touchstart', () => {
             this.arrowAnimation(this.leftRect_1, this.leftText_1.text());
         });
@@ -115,16 +157,7 @@ export class MatchingScreenView implements View {
         this.group.add(this.leftText_1);
 
         // Question 2
-        this.leftRect_2 = new Konva.Rect({
-            x: 150,
-            y: STAGE_HEIGHT / 2 - 100,
-            width: this.box_size,
-            height: this.box_size,
-            fill: "#4A90E2",
-            stroke: "navy",
-            strokeWidth: 4,
-            cornerRadius: 12,
-        });
+        this.leftRect_2 = createNeonMetalBox(150,STAGE_HEIGHT / 2 - 100,200);
         this.leftRect_2.on('mousedown touchstart', () => {
             this.arrowAnimation(this.leftRect_2, this.leftText_2.text());
         });
@@ -144,16 +177,7 @@ export class MatchingScreenView implements View {
         this.group.add(this.leftText_2);
 
         // Question 3
-        this.leftRect_3 = new Konva.Rect({
-            x: 150,
-            y: 3 * STAGE_HEIGHT / 4 - 100,
-            width: this.box_size,
-            height: this.box_size,
-            fill: "#4A90E2",
-            stroke: "navy",
-            strokeWidth: 4,
-            cornerRadius: 12,
-        });
+        this.leftRect_3 = createNeonMetalBox(150, 3 * STAGE_HEIGHT / 4 - 100)
         this.leftRect_3.on('mousedown touchstart', () => {
             this.arrowAnimation(this.leftRect_3, this.leftText_3.text());
         });
@@ -173,16 +197,7 @@ export class MatchingScreenView implements View {
         this.group.add(this.leftText_3);
 
         // Answer 1
-        this.rightRect_1 = new Konva.Rect({
-            x: STAGE_WIDTH - 270,
-            y: STAGE_HEIGHT / 4 - 100,
-            width: this.box_size,
-            height: this.box_size,
-            fill: "darkgreen",
-            stroke: "black",
-            strokeWidth: 4,
-            cornerRadius: 12,
-        });
+        this.rightRect_1 = createPlanetBox(STAGE_WIDTH - 350, STAGE_HEIGHT / 4 - 100)
         this.rightText_1 = new Konva.Text({
             x: this.rightRect_1.x() + this.rightRect_1.width() / 2,
             y: this.rightRect_1.y() + this.rightRect_1.height() / 2,
@@ -199,16 +214,7 @@ export class MatchingScreenView implements View {
         this.group.add(this.rightText_1);
 
         // Answer 2
-        this.rightRect_2 = new Konva.Rect({
-            x: STAGE_WIDTH - 270,
-            y: STAGE_HEIGHT / 2 - 100,
-            width: this.box_size,
-            height: this.box_size,
-            fill: "darkgreen",
-            stroke: "black",
-            strokeWidth: 4,
-            cornerRadius: 12,
-        });
+        this.rightRect_2 = createPlanetBox(STAGE_WIDTH - 350,STAGE_HEIGHT / 2 - 100);
         this.rightText_2 = new Konva.Text({
             x: this.rightRect_2.x() + this.rightRect_2.width() / 2,
             y: this.rightRect_2.y() + this.rightRect_2.height() / 2,
@@ -225,16 +231,7 @@ export class MatchingScreenView implements View {
         this.group.add(this.rightText_2);
 
         // Answer 3
-        this.rightRect_3 = new Konva.Rect({
-            x: STAGE_WIDTH - 270,
-            y: 3 * STAGE_HEIGHT / 4 - 100,
-            width: this.box_size,
-            height: this.box_size,
-            fill: "darkgreen",
-            stroke: "black",
-            strokeWidth: 4,
-            cornerRadius: 12,
-        });
+        this.rightRect_3 = createPlanetBox(STAGE_WIDTH - 350, 3 * STAGE_HEIGHT / 4 - 100);
         this.rightText_3 = new Konva.Text({
             x: this.rightRect_3.x() + this.rightRect_3.width() / 2,
             y: this.rightRect_3.y() + this.rightRect_3.height() / 2,
@@ -432,7 +429,7 @@ export class MatchingScreenView implements View {
         }
         const mousePos = this.stage.getPointerPosition();
         const layer = this.stage.getLayers()[0];
-        const arrowtail_x = leftRect.x() + leftRect.width();
+        const arrowtail_x = leftRect.x() + leftRect.width() + leftRect.strokeWidth();
         const arrowtail_y = leftRect.y() + leftRect.height() / 2;
         let arrow: Konva.Arrow | null = null; // allow type to be Konva.Arrow/null
         arrow = new Konva.Arrow({
@@ -444,8 +441,8 @@ export class MatchingScreenView implements View {
             ],
             pointerLength: 10,
             pointerWidth: 10,
-            fill: 'black',
-            stroke: 'black',
+            fill: 'white',
+            stroke: 'white',
             strokeWidth: 4,
         });
         if (mousePos){
@@ -484,25 +481,25 @@ export class MatchingScreenView implements View {
 
                 if (isOnA1) {
                     // Finalize arrow: Snap head to center of a
-                    arrow.points([arrowtail_x, arrowtail_y, a_1_Pos.x, a_1_Pos.y + this.rightRect_1.height() / 2]);
-                    arrow.fill("black");
-                    arrow.stroke("black");
+                    arrow.points([arrowtail_x, arrowtail_y, a_1_Pos.x - 18, a_1_Pos.y + this.rightRect_1.height() / 2]);
+                    arrow.fill("white");
+                    arrow.stroke("white");
                     this.arrows.push(arrow);
                     this.paired_answers.push(this.rightText_1.text());
                     this.paired_questions.push(question);  
                 } 
                 else if (isOnA2){
-                    arrow.points([arrowtail_x, arrowtail_y, a_2_Pos.x, a_2_Pos.y + this.rightRect_2.height() / 2]);
-                    arrow.fill("black");
-                    arrow.stroke("black");
+                    arrow.points([arrowtail_x, arrowtail_y, a_2_Pos.x - 18, a_2_Pos.y + this.rightRect_2.height() / 2]);
+                    arrow.fill("white");
+                    arrow.stroke("white");
                     this.arrows.push(arrow);
                     this.paired_answers.push(this.rightText_2.text());
                     this.paired_questions.push(question);    
                 }
                 else if (isOnA3){
-                    arrow.points([arrowtail_x, arrowtail_y, a_3_Pos.x, a_3_Pos.y + this.rightRect_2.height() / 2]);
-                    arrow.fill("black");
-                    arrow.stroke("black");
+                    arrow.points([arrowtail_x, arrowtail_y, a_3_Pos.x - 18, a_3_Pos.y + this.rightRect_2.height() / 2]);
+                    arrow.fill("white");
+                    arrow.stroke("white");
                     this.arrows.push(arrow);
                     this.paired_answers.push(this.rightText_3.text());
                     this.paired_questions.push(question);    
@@ -536,6 +533,7 @@ export class MatchingScreenView implements View {
                     else {
                         arrow.fill("red");
                         arrow.stroke("red");
+                        flameBlowUp(arrow.points()[0] - this.box_size / 2,arrow.points()[1],this.stage);
                     }
                     break;
                 }

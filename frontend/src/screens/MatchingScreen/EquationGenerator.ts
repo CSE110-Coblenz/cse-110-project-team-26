@@ -35,7 +35,12 @@
     const c = x_1 * x_2;
     let q = "x²";
     if (b < 0) {
-        q += String(b)+"x";
+        if ( b == -1) {
+            q += "-x";
+        }
+        else{
+            q += String(b)+"x";
+        }
     }
     else if (b == 0) {
         q += "";
