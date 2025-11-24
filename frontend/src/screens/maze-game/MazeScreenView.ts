@@ -2,6 +2,7 @@ import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
 import { ChoiceModel } from "./MazeModels.ts";
+import '../../styles.css';
 
 // Component to represent a choice in the maze game
 export class ChoiceView {
@@ -25,8 +26,8 @@ export class ChoiceView {
 
         const text = new Konva.Text({
             text: "Choice",
-            fontSize: 14,
-            fontFamily: "Arial",
+            fontSize: 24,
+            fontFamily: "medodica",
             fill: "white",
             width: rectWidth,
             align: "center",
@@ -52,7 +53,7 @@ export class ChoiceView {
     getChoice() { return this.choice; }
     // Register click handler for this choice
     onClick(handler: (choice: ChoiceModel, x:number, y:number) => void) {
-        this.group.on('click', () => handler(this.choice as ChoiceModel, this.x+50, this.y+50));
+        this.group.on('click', () => handler(this.choice as ChoiceModel, this.x, this.y+50));
         console.log("Registered click handler for choice at:", this.x, this.y);
     }
 }
@@ -64,12 +65,12 @@ export class MazeScreenView implements View {
 	private group: Konva.Group;
 	private scoreText: Konva.Text;
 	private timerText: Konva.Text;
-    private problemText: Konva.Text = new Konva.Text();
+    private problemText: Konva.Image;
     private choiceOne : ChoiceView;
     private choiceTwo : ChoiceView;
     private choiceThree : ChoiceView;
     private transitionScreen: Konva.Rect;
-    private player: Konva.Circle;
+    private player: Konva.Sprite|null = null;
 
 	constructor(handler: (choice : ChoiceModel, x:number, y:number) => void) {
 		this.group = new Konva.Group({ visible: false });
@@ -86,12 +87,16 @@ export class MazeScreenView implements View {
         this.group.add(this.transitionScreen);
 
 		// Background
-		const bg = new Konva.Rect({
+		const bg = new Konva.Image({
 			x: 0,
 			y: 0,
 			width: STAGE_WIDTH,
 			height: STAGE_HEIGHT,
-			fill: "#616567ff", // Sky blue
+            image: (() => {
+                const image = new Image();
+                image.src = "/cave.png";
+                return image;
+            })()
 		});
 		this.group.add(bg);
 
@@ -101,7 +106,7 @@ export class MazeScreenView implements View {
 			y: 20,
 			text: "Score: 0",
 			fontSize: 32,
-			fontFamily: "Arial",
+			fontFamily: "medodica",
 			fill: "black",
 		});
 		this.group.add(this.scoreText);
@@ -119,20 +124,18 @@ export class MazeScreenView implements View {
 
 		// Objects in scene
         // Problem statement
-        this.problemText = new Konva.Text({
-            text: "Problem Statement",
-            fontSize: 40,
-            fontFamily: "Arial",
-            fill: "white",
-            width: STAGE_WIDTH,
-            align: "center",
+        this.problemText = new Konva.Image({
+            x: 0,
+            y: 0,
+            image: new Image(),
         });
-        this.problemText.y((STAGE_HEIGHT - this.problemText.height() - 200) / 2);
+        this.problemText.x((STAGE_WIDTH - this.problemText.width()) / 2-100);
+        this.problemText.y((STAGE_HEIGHT - this.problemText.height() - 350) / 2);
         // Choices
         // 50 = half width of choice rectangle
 		this.choiceOne = new ChoiceView(STAGE_WIDTH/2-50, STAGE_HEIGHT/2);
-        this.choiceTwo = new ChoiceView(STAGE_WIDTH/2-250, STAGE_HEIGHT/2);
-        this.choiceThree = new ChoiceView(STAGE_WIDTH/2+150, STAGE_HEIGHT/2);
+        this.choiceTwo = new ChoiceView(STAGE_WIDTH/2-350, STAGE_HEIGHT/2+20);
+        this.choiceThree = new ChoiceView(STAGE_WIDTH/2+250, STAGE_HEIGHT/2+20);
         // Add to group
         this.group.add(
             this.choiceOne.getGroup(),
@@ -145,13 +148,42 @@ export class MazeScreenView implements View {
         this.choiceTwo.onClick(handler);
         this.choiceThree.onClick(handler);
 
-        this.player = new Konva.Circle({
-            x: STAGE_WIDTH / 2,
-            y: STAGE_HEIGHT - 100,
-            radius: 50,
-            fill: "#e43a3aff",
-        });
-        this.group.add(this.player);
+
+        // Player circle
+        const image = new Image();
+        image.src = "/mazegame.png";
+        image.onload = () => {
+            console.log("Sprite image loaded");
+            this.player = new Konva.Sprite({
+                x: STAGE_WIDTH / 2 - 64,
+                y: STAGE_HEIGHT - 150,
+                image: image,
+                animation: "idle",
+                animations: {
+                idle: [
+                    0, 0, 160, 160,
+                    160, 0, 160, 160,
+                    320, 0, 160, 160,
+                    480, 0, 160, 160,
+                ],
+                walk: [
+                    640, 0, 160, 160,
+                    800, 0, 160, 160,
+                    960, 0, 160, 160,
+                    1120, 0, 160, 160,
+                    1280, 0, 160, 160,
+                    1440, 0, 160, 160,
+                    1600, 0, 160, 160,
+                    1760, 0, 160, 160,
+                ]
+                },
+                frameRate: 3,
+                frameIndex: 0,
+                scale: { x: 0.8, y: 0.8 },
+            });
+            this.group.add(this.player);
+            this.player.start();
+        };
 	}
 
 	/**
@@ -171,10 +203,16 @@ export class MazeScreenView implements View {
 	}
 
     // Update problem display
-    updateProblem(problemStatement: string): void {
-        this.problemText.text(problemStatement);
-        this.group.getLayer()?.draw();
+    async updateProblem(latex: string) {
+        const canvas = await this.loadLatexImage(latex);
+        this.problemText.image(canvas);
+        this.problemText.width(canvas.width);
+        this.problemText.height(canvas.height);
+        this.problemText.x((STAGE_WIDTH - this.problemText.width()) / 2);
+        this.problemText.y((STAGE_HEIGHT - this.problemText.height() - 400) / 2);
+        this.problemText.getLayer()?.draw();
     }
+    
 
     // Update choices display
     updateChoices(choices: ChoiceModel[]): void {
@@ -187,49 +225,95 @@ export class MazeScreenView implements View {
     // Fade to black transition
     fadeToBlack(duration: number = 0.2): Promise<void> {
     this.transitionScreen.moveToTop();
-    return new Promise((resolve) => {
-        new Konva.Tween({
-        node: this.transitionScreen,
-        opacity: 1,
-        duration,
-        onFinish: () => {
-        this.fadeFromBlack();
-        this.resetCirclePosition();
-        resolve();
-    },
-        }).play();
-    });
+        return new Promise((resolve) => {
+            new Konva.Tween({
+            node: this.transitionScreen,
+            opacity: 1,
+            duration,
+            onFinish: () => {
+            this.fadeFromBlack();
+            this.resetPlayerPosition();
+            this.player?.scaleX(0.8);
+            this.player?.scaleY(0.8);
+            resolve();
+        },
+            }).play();
+        });
     }
     // Fade from black transition
     fadeFromBlack(duration: number = 0.5): Promise<void> {
-    return new Promise((resolve) => {
-        new Konva.Tween({
-        node: this.transitionScreen,
-        opacity: 0,
-        duration,
-        onFinish: () => {
-        this.transitionScreen.moveToBottom();
-        resolve();
-    },
-        }).play();
-    });
+        return new Promise((resolve) => {
+            new Konva.Tween({
+            node: this.transitionScreen,
+            opacity: 0,
+            duration,
+            onFinish: () => {
+            this.transitionScreen.moveToBottom();
+            resolve();
+        },
+            }).play();
+        });
+    }
+    // Helper function to set player animation
+    setAnimation(name: string) {
+        if (!this.player) return;
+        if (name === "idle") {
+            this.player.frameRate(3);
+        }
+        if (name === "walk") {
+            this.player.frameRate(10);
+        }
+        this.player.animation(name);
+        this.player.start();
     }
     // Move the player circle to new position
-    moveCircleTo(x: number, y: number) {
-    new Konva.Tween({
-        node: this.player,
-        x,
-        y,
-        duration: 0.5,
-        easing: Konva.Easings.EaseInOut,
-        onFinish: () => { this.fadeToBlack(); }
-    }).play();
+    movePlayerTo(x: number, y: number) {
+        if (!this.player) return;
+        const dx = x - this.player.x();
+        const dy = y - this.player.y();
+        const distance = Math.sqrt(dx * dx + dy * dy);
+
+        // Constant speed
+        const SPEED = Math.abs(x-(STAGE_WIDTH/2-50))<50? 75:200; 
+        const duration = distance / SPEED;
+        this.setAnimation("walk");
+        new Konva.Tween({
+            node: this.player as Konva.Sprite,
+            x,
+            y,
+            duration,
+            scaleX: 0.6,
+            scaleY: 0.6,
+            easing: Konva.Easings.Linear,
+            onFinish: () => { 
+                this.fadeToBlack();
+                this.setAnimation("idle");
+            }
+        }).play();
     }
-    resetCirclePosition() {
+    resetPlayerPosition() {
         console.log("Resetting player position");
-        this.player.position({ x: STAGE_WIDTH / 2, y: STAGE_HEIGHT - 100 });
+        if (!this.player) return;
+        this.player.position({ x: STAGE_WIDTH / 2 - 64, y: STAGE_HEIGHT - 150 });
         this.group.getLayer()?.draw();
     }
+    // Helper function to render LaTeX to Konva canvas
+    async loadLatexImage(latex: string): Promise<HTMLImageElement> {
+        const img = new Image();
+        // encode LaTeX for URL
+        console.log("Loading LaTeX image for:", latex);
+        const encoded = encodeURIComponent(`\\large&space;\\dpi{200}\\bg{black}{\\color{White}\\mathbf ${latex}`);
+        img.src = `https://latex.codecogs.com/png.image?${encoded}`;
+
+        // wait for it to load
+        await new Promise<void>((resolve, reject) => {
+            img.onload = () => resolve();
+            img.onerror = reject;
+        });
+    
+        return img;
+    }
+    
 	/**
 	 * Show the screen
 	 */
@@ -250,4 +334,3 @@ export class MazeScreenView implements View {
 		return this.group;
 	}
 }
-

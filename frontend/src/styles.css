@@ -1,0 +1,16 @@
+@font-face {
+    font-family: 'medodica';
+    src: url('/fonts/MedodicaRegular.otf') format('opentype');
+}
+@font-face {
+    font-family: 'boldpixel';
+    src: url('/fonts/BoldPixels.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'editundo';
+    src: url('/fonts/editundo.ttf') format('truetype');
+}
+@font-face {
+    font-family: 'edunline';
+    src: url('/fonts/edunline.ttf') format('truetype');
+}

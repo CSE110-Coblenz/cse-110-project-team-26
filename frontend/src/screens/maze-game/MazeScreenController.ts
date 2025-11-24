@@ -79,9 +79,8 @@ Good luck and have fun!`;
 	// Handle choice click
 	private handleChoiceClick(choice : ChoiceModel, x:number, y:number): void {
 		console.log("Choice clicked:", choice.getText());
-
-		console.log("Moving circle to:", x, y);
-		this.view.moveCircleTo(x, y);
+		console.log("Moving player to:", x, y);
+		this.view.movePlayerTo(x, y);
 		if (choice.getIsCorrect()) {
 			// Update model
 			this.model.incrementScore();
@@ -90,7 +89,7 @@ Good luck and have fun!`;
 			this.view.updateScore(this.model.getScore());
 
 			// Ensure a problem exists and advance or create as needed
-			const prob = this.problem ?? (this.problem = new ProblemModel(3));
+			const prob = this.problem as ProblemModel;
 			if(prob.nextMove()){
 				this.view.updateProblem(prob.getProblemStatement());
 				this.view.updateChoices(prob.getChoices());

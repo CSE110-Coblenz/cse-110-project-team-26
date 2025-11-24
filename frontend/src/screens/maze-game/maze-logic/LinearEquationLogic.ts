@@ -143,6 +143,8 @@ class LinearEquation {
         }
         console.log("Generated Equation String: ", result);
         let temp = this.ce.parse(result);
+
+        // Test cases for debugging equation generation
         //let temp = this.ce.parse("-6(2x-10)-4x+1=-35")
         //let temp = this.ce.parse("3x+9x+10x=440");
         //let temp = this.ce.parse("5x(4+7)-10x+7x=208");
@@ -153,10 +155,13 @@ class LinearEquation {
         //let temp = this.ce.parse("-4x+8x-x+8=52") // really bad bug with negate
         //let temp = this.ce.parse("3x(4-6)-5x-3(x+10)+5=-277") // really bad bug that skips over combining x terms
         //let temp = this.ce.parse("9 + x(4 - 6) + x") // incompatible type
+        //let temp = this.ce.parse("-x-1+10=-3") // solve x error
         if(!(JSON.stringify(temp).includes("Undefined")||JSON.stringify(temp).includes("Error"))){
             this.setY(temp.subs({x: x}).evaluate());
         } else {
             console.error("Error evaluating equation");
+            this.ce._reset(); // reset compute engine to clear any errors
+             // regenerate if invalid
         }
         const expression = JSON.parse(JSON.stringify(temp.toMathJson())) as MathJson;
         const final : MathJson = ['Equal', expression, this.y as string];
@@ -394,6 +399,7 @@ class EquationSolver {
 
             }
             else{
+                // BUG here: Cannot assign to read only property '2' of string '4x=68' [9*x - 7*x + 2*x = 68]
                 tempEquation[2] = this.ce.box(tempEquation[2]).evaluate().toMathJson() as unknown as MathJson;
                 tempEquation = this.ce.box(tempEquation).toLatex();
                 console.log("tempEquation in Final: " + tempEquation);
