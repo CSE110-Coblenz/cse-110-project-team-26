@@ -98,3 +98,55 @@ describe("linear question", () => {
 });
 
 
+describe("quadratic question", () => {
+    it("should not have values if it isn't the answer", () => {
+        const question = new Quadratic(false);
+        expect(question.root1).toBeNull();
+        expect(question.root2).toBeNull();
+    });
+
+    it("generateAnswerValues should update fields", () => {
+        const question = new Quadratic(false);
+        question.generateAnswerValues();
+        expect(question.root1).toBeTypeOf("number");
+        expect(question.root2).toBeTypeOf("number");
+    });
+
+    it("verifyAnswer should verify answer", () => {
+        const question = new Quadratic(false);
+        question.setRoot1(1);
+        question.setRoot2(2);
+        
+        const incorrectRoot1 = new Quadratic(false);
+        incorrectRoot1.setRoot1(2);
+        incorrectRoot1.setRoot2(2);
+
+        const incorrectRoot2 = new Quadratic(false);
+        incorrectRoot2.setRoot1(1);
+        incorrectRoot2.setRoot2(1);
+
+        const correct = new Quadratic(false);
+        correct.setRoot1(1);
+        correct.setRoot2(2);
+
+        expect(question.verifyAnswer(incorrectRoot1)).toBe(false);
+        expect(question.verifyAnswer(incorrectRoot2)).toBe(false);
+        expect(question.verifyAnswer(correct)).toBe(true);
+    });
+
+    it("checkCompleteSubmission should check submission", () => {
+        const complete = new Quadratic(false);
+        complete.setRoot1(1);
+        complete.setRoot2(1);
+        
+        const noRoot2 = new Quadratic(false);
+        noRoot2.setRoot1(1);
+
+        const noRoot1 = new Quadratic(false);
+        noRoot1.setRoot2(1);
+
+        expect(complete.checkCompleteSubmission()).toBe(true);
+        expect(noRoot1.checkCompleteSubmission()).toBe(false);
+        expect(noRoot2.checkCompleteSubmission()).toBe(false);
+    });
+});
