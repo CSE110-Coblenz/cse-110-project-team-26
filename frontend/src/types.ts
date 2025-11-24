@@ -267,9 +267,9 @@ export class AbsoluteValue implements EquationAnswerFormat {
 	}
 
 	verifyAnswer(submission: AbsoluteValue): boolean {
-		if ((this.coefficient.numerator !== submission.coefficient.denominator) || (this.coefficient.denominator !== submission.coefficient.denominator)) return false;
+		if ((this.coefficient.numerator !== submission.coefficient.numerator) || (this.coefficient.denominator !== submission.coefficient.denominator)) return false;
 		else if (this.xShift !== submission.xShift) return false;
-		else if (this.yShift !== this.yShift) return false
+		else if (this.yShift !== submission.yShift) return false;
 		return true;
 	}
 

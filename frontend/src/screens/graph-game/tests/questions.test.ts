@@ -43,33 +43,39 @@ describe("linear question", () => {
     it("verifyAnswer should verify answer", () => {
         const question = new Linear(false);
         question.setNumerator(1);
-        question.setDenominator(1);
+        question.setDenominator(2);
         question.setIntercept(1);
         
         const incorrectNumerator = new Linear(false);
         incorrectNumerator.setNumerator(2);
-        incorrectNumerator.setDenominator(1);
+        incorrectNumerator.setDenominator(2);
         incorrectNumerator.setIntercept(1);
 
         const incorrectDenominator = new Linear(false);
         incorrectDenominator.setNumerator(1);
-        incorrectDenominator.setDenominator(2);
+        incorrectDenominator.setDenominator(1);
         incorrectDenominator.setIntercept(1);
 
         const incorrectIntercept = new Linear(false);
         incorrectIntercept.setNumerator(1);
-        incorrectIntercept.setDenominator(1);
+        incorrectIntercept.setDenominator(2);
         incorrectIntercept.setIntercept(2);
 
         const correct = new Linear(false);
         correct.setNumerator(1);
-        correct.setDenominator(1);
+        correct.setDenominator(2);
         correct.setIntercept(1);
+
+        const unsimplifiedCorrect = new Linear(false);
+        unsimplifiedCorrect.setNumerator(3);
+        unsimplifiedCorrect.setDenominator(6);
+        unsimplifiedCorrect.setIntercept(1);
 
         expect(question.verifyAnswer(incorrectNumerator)).toBe(false);
         expect(question.verifyAnswer(incorrectDenominator)).toBe(false);
         expect(question.verifyAnswer(incorrectIntercept)).toBe(false);
         expect(question.verifyAnswer(correct)).toBe(true);
+        expect(question.verifyAnswer(unsimplifiedCorrect)).toBe(true);
     });
 
     it("checkCompleteSubmission should check submission", () => {
@@ -129,9 +135,14 @@ describe("quadratic question", () => {
         correct.setRoot1(1);
         correct.setRoot2(2);
 
+        const switchedCorrect = new Quadratic(false);
+        switchedCorrect.setRoot1(2);
+        switchedCorrect.setRoot2(1);
+
         expect(question.verifyAnswer(incorrectRoot1)).toBe(false);
         expect(question.verifyAnswer(incorrectRoot2)).toBe(false);
         expect(question.verifyAnswer(correct)).toBe(true);
+        expect(question.verifyAnswer(switchedCorrect)).toBe(true);
     });
 
     it("checkCompleteSubmission should check submission", () => {
@@ -171,7 +182,7 @@ describe("absolute value question", () => {
 
     it("verifyAnswer should verify answer", () => {
         const question = new AbsoluteValue(false);
-        question.setNumerator(1);
+        question.setNumerator(4);
         question.setDenominator(1);
         question.setXShift(1);
         question.setYShift(1);
@@ -183,20 +194,27 @@ describe("absolute value question", () => {
         incorrectCoefficients.setYShift(1);
 
         const incorrectShifts = new AbsoluteValue(false);
-        incorrectShifts.setNumerator(1);
+        incorrectShifts.setNumerator(4);
         incorrectShifts.setDenominator(1);
         incorrectShifts.setXShift(2);
         incorrectShifts.setYShift(2);
 
         const correct = new AbsoluteValue(false);
-        correct.setNumerator(1);
+        correct.setNumerator(4);
         correct.setDenominator(1);
         correct.setXShift(1);
         correct.setYShift(1);
 
+        const unsimplifiedCorrect = new AbsoluteValue(false);
+        unsimplifiedCorrect.setNumerator(8);
+        unsimplifiedCorrect.setDenominator(2);
+        unsimplifiedCorrect.setXShift(1);
+        unsimplifiedCorrect.setYShift(1);
+
         expect(question.verifyAnswer(incorrectCoefficients)).toBe(false);
         expect(question.verifyAnswer(incorrectShifts)).toBe(false);
         expect(question.verifyAnswer(correct)).toBe(true);
+        expect(question.verifyAnswer(unsimplifiedCorrect)).toBe(true);
     });
 
     it("checkCompleteSubmission should check submission", () => {
