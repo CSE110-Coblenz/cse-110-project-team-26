@@ -174,6 +174,8 @@ export class Quadratic implements EquationAnswerFormat {
 	}
 
 	generateAnswerValues(): void {
+    this.root1 = generateRandomNumber(-5, 5);
+    this.root2 = generateRandomNumber(-5, 5);
 		while (this.root1 === 0) {
 			this.root1 = generateRandomNumber(-5, 5);
 		}
