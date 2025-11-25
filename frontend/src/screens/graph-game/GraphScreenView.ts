@@ -544,6 +544,14 @@ export class GraphScreenView implements View {
 
     /**
      * 
+     * @returns The View's static Group
+     */
+    getGroup(): Konva.Group {
+        return this.staticGroup;
+    }
+
+    /**
+     * 
      * @returns The Groups this View belongs to
      */
     getGroups(): Konva.Group[] {
