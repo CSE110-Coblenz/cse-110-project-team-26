@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import userRoutes from "./src/routes/user";
 import mazeRoutes from "./src/routes/Game/maze";
+import matchingRoutes from "./src/routes/Game/matching";
 import cors from "cors";
 import path from "path";
 
@@ -24,6 +25,7 @@ app.use(
 // Mount routes
 app.use("/auth", userRoutes);
 app.use("/game/maze", mazeRoutes);
+app.use("/game/matching", matchingRoutes);
 
 export async function connectDB(uri?: string) {
   const mongoUri = uri ?? process.env.MONGO_URI;
