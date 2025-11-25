@@ -1,6 +1,5 @@
 import { it, expect, describe, vi } from "vitest";
-import { Question, Linear, Quadratic, AbsoluteValue, generateRandomNumber } from "../../../types";
-import { LINEAR, ABSVAL, QUADRATIC } from "../../../constants"
+import { Linear, Quadratic, AbsoluteValue, generateRandomNumber } from "../../../types";
 
 describe("generateRandomNumber", () => {
     const max = 100;
