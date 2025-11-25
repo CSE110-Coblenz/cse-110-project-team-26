@@ -2,8 +2,6 @@ import { Question, Linear, Quadratic, AbsoluteValue, generateRandomNumber } from
 import type { EquationAnswerFormat } from "../../types.ts";
 import { LINEAR, ABSVAL, QUADRATIC } from "../../constants"
 
-type parameter = number | null;
-
 /**
  * Model for the Graphing Game Module
  */
@@ -80,7 +78,6 @@ class GraphQuestion extends Question {
             default: 
                 console.log("BAD TYPE INPUT");
         }
-        console.log(67);
         console.log("Type: " + type);
     }
 
