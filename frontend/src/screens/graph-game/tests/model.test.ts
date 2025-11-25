@@ -1,8 +1,8 @@
 import { describe, it, expect, beforeEach } from "vitest";
-import { GraphScreenModel } from "./GraphScreenModel";
-import { LINEAR, ABSVAL, QUADRATIC } from "../../constants";
-import { Linear, AbsoluteValue, Quadratic } from "../../types";
-import type { EquationAnswerFormat } from "../../types";
+import { GraphScreenModel } from "../GraphScreenModel";
+import { LINEAR, ABSVAL, QUADRATIC } from "../../../constants";
+import { Linear, AbsoluteValue, Quadratic } from "../../../types";
+import type { EquationAnswerFormat } from "../../../types";
 
 describe("model", () => {
     describe("constructor", () => {
@@ -33,18 +33,20 @@ describe("model", () => {
     });
 
     describe("verifyAnswer", () => {
-        const model = new GraphScreenModel(0);
-        const answer = model.getAnswer();
-        expect(model.verifyAnswer(answer)).toBe(true);
+        const linearModel = new GraphScreenModel(0);
+        const answer = linearModel.getAnswer();
+        expect(linearModel.verifyAnswer(answer)).toBe(true);
 
         const incorrectLinear = new Linear(false);
-        expect(model.verifyAnswer(incorrectLinear)).toBe(false);
+        expect(linearModel.verifyAnswer(incorrectLinear)).toBe(false);
 
+        const quadraticModel = new GraphScreenModel(1);
         const incorrectQuadratic = new Quadratic(false);
-        expect(model.verifyAnswer(incorrectAbsoluteValue)).toBe(false);
+        expect(quadraticModel.verifyAnswer(incorrectAbsoluteValue)).toBe(false);
 
+        const absoluteValueModel = new GraphScreenModel(2);
         const incorrectAbsoluteValue = new AbsoluteValue(false);
-        expect(model.verifyAnswer(incorrectAbsoluteValue)).toBe(false);
+        expect(absoluteValueModel.verifyAnswer(incorrectAbsoluteValue)).toBe(false);
     });
 
     describe("dialogue", () => {
