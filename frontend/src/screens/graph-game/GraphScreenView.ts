@@ -22,7 +22,7 @@ import {
   EQUATION_TEXT_PROPERTIES,
   PIX_PER_UNIT
 } from "./GraphScreenConstants";
-import { ABSVAL, LINEAR, QUADRATIC } from "../../constants";
+import { ABSVAL, LINEAR, QUADRATIC, X_MAX, X_MIN } from "../../constants";
 
 /**
  * View for the Graphing game module
@@ -35,6 +35,7 @@ export class GraphScreenView implements View {
     private dialogueText: Konva.Text;
     private playerSprite: HTMLImageElement;
     private equationText: Konva.Text;
+    private graphScreenGroup: Konva.Group;
 
     private width: number = GRAPH_BACKGROUND_PROPERTIES.width;
     private height: number = GRAPH_BACKGROUND_PROPERTIES.height;
@@ -137,13 +138,13 @@ export class GraphScreenView implements View {
         });
         switch (type) {
             case 0:
-                this.equationText.text("y=(_/_)+_");
+                this.equationText.text("y=(_/_)x+_");
             break;
             case 1:
                 this.equationText.text("y=(x+_)(x+_)");
             break;
             case 2:
-                this.equationText.text("y=(_/_)|x+_|+_");
+                this.equationText.text("y=|(_/_)x+_|+_");
             break;
         }
         console.log(this.equationText.text());
@@ -157,6 +158,7 @@ export class GraphScreenView implements View {
         this.staticGroup.add(background, spriteGroup, dialogueGroup, inputAndEquationGroup);
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
+
     }
 
     addPOIRectangle(x: number, y: number, color: string) {
@@ -314,6 +316,7 @@ export class GraphScreenView implements View {
         zeroButtonGroup.add(zeroButton);
         zeroButtonGroup.add(zeroButtonText);
         keypadGroup.add(zeroButtonGroup);
+
         minusButtonGroup.on("click", () => onNumberInput(-1));
         minusButtonGroup.add(minusButton);
         minusButtonGroup.add(minusButtonText);
@@ -442,16 +445,31 @@ export class GraphScreenView implements View {
         }
     }
 
+    plotLinearGraph(isPreview: boolean, type: string, submission: EquationAnswerFormat) {
+        let linearSubmission = submission as Linear;
+
+        let numerator = linearSubmission.getCoefficient().numerator;
+        let denominator = linearSubmission.getCoefficient().denominator;
+        let intercept = linearSubmission.getIntercept();
+
+        let leftIntercept = (denominator * (X_MIN - intercept)) / numerator;
+        let rightIntercept = (denominator * (X_MAX - intercept)) / numerator;
+
+        let plotLine = new Konva.Line({
+            points: [this.convertCoordToKonva(X_MIN, true), this.convertCoordToKonva(leftIntercept, false),
+                    this.convertCoordToKonva(X_MAX, true), this.convertCoordToKonva(rightIntercept, false)],
+            strokeWidth: 3,
+            lineCap: 'round'
+        })
+        if (isPreview) plotLine.stroke('green');
+        else plotLine.stroke('red');
+        this.graphGroup.add(plotLine);
+    }
+
     plotGraph(isPreview: boolean, type: string, submission: EquationAnswerFormat) {
         switch(type) {
             case LINEAR:
-                let linearSubmission = submission as Linear;
-                this.addGuessRectangle(0, linearSubmission.getIntercept(), 'white');
-                let yPOI = -linearSubmission.getIntercept();
-                yPOI *= linearSubmission.getCoefficient().denominator;
-                yPOI /= linearSubmission.getCoefficient().numerator;
-                this.addGuessRectangle(yPOI, 0, 'green');
-                console.log(yPOI);
+                this.plotLinearGraph(isPreview, type, submission);
             break;
             case QUADRATIC:
                 this.addGuessRectangle((submission as Quadratic).getRoot1(), 0, 'red');
