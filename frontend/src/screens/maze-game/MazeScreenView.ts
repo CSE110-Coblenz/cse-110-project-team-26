@@ -299,43 +299,7 @@ export class MazeScreenView implements View {
         this.player.position({ x: STAGE_WIDTH / 2 - 64, y: STAGE_HEIGHT - 150 });
         this.group.getLayer()?.draw();
     }
-    displayIncorrectMessage(){
-        const bg = new Konva.Image({
-        x: 0,
-        y: 0,
-        width: STAGE_WIDTH,
-        height: STAGE_HEIGHT,
-        image: (() => {
-            const image = new Image();
-            image.src = "/backgroundMessage.png";
-            return image;
-            })()
-        });
-        
-        const message = new Konva.Text({
-            x: 10,
-            y: STAGE_HEIGHT/3,
-            align: 'center',
-            verticalAlign: 'middle',
-            text: "Tunnel Choice Incorrect \n Try another route from the beginning",
-            fontSize: 60,
-            fontFamily: "medodica",
-            fill: "white",
-        }); 
-        
-        setTimeout(()=>{
-            this.group.add(bg)
-            this.group.add(message);
-
-        },325);
-
-        setTimeout(()=>{
-            bg.destroy();
-            message.destroy();
-        },5000);
-    }
-
-    displayCorrectMessage(){
+    displayMessage(correctness : string){
         const bg = new Konva.Image({
         x: 0,
         y: 0,
@@ -353,59 +317,44 @@ export class MazeScreenView implements View {
             y: STAGE_HEIGHT/3,
             align: 'center',
             verticalAlign: 'middle',
-            text: "Tunnel Choice Correct! \n Keep Moving Forward",
             fontSize: 60,
             fontFamily: "medodica",
             fill: "white",
         }); 
         
-        setTimeout(()=>{
+        switch (correctness){
+            case "Correct":
+                message.text("Tunnel Choice Correct! \n Keep Moving Forward");
+                break;
+            case "Incorrect":
+                message.text("Tunnel Choice Incorrect \n Try another route from the beginning");
+                message.x(10);
+                break;
+            case "Congrats": 
+                message.text("Congratulations!!! \n You escaped the Maze")
+        }
+
+        setTimeout(()=>{ // Delays the message display to let fadeIn Animation finish
             this.group.add(bg)
             this.group.add(message);
 
         },325);
 
-        setTimeout(()=>{
+        bg.on('click', () => {
             bg.destroy();
             message.destroy();
-        },5000);
-    }
-
-    displayCongratsMessage(){
-        const bg = new Konva.Image({
-        x: 0,
-        y: 0,
-        width: STAGE_WIDTH,
-        height: STAGE_HEIGHT,
-        image: (() => {
-            const image = new Image();
-            image.src = "/backgroundMessage.png";
-            return image;
-            })()
+            clearTimeout(timeOut);
+            console.log("destroyed on click")
         });
-        
-        const message = new Konva.Text({
-            x: 200,
-            y: STAGE_HEIGHT/3,
-            align: 'center',
-            verticalAlign: 'middle',
-            text: "Congratulations!!! \n You escaped the Maze",
-            fontSize: 60,
-            fontFamily: "medodica",
-            fill: "white",
-        }); 
-        
-        setTimeout(()=>{
-            this.group.add(bg)
-            this.group.add(message);
-
-        },325);
-
-        setTimeout(()=>{
+                
+        const timeOut = setTimeout(()=>{
             bg.destroy();
             message.destroy();
+            console.log("destroyed on time")
         },5000);
+
     }
+
     // Helper function to render LaTeX to Konva canvas
     async loadLatexImage(latex: string): Promise<HTMLImageElement> {
         const img = new Image();
