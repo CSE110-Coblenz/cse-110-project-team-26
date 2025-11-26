@@ -145,7 +145,7 @@ class LinearEquation {
         let temp = this.ce.parse(result);
 
         // Test cases for debugging equation generation
-        //let temp = this.ce.parse("-6(2x-10)-4x+1=-35")
+        //let temp = this.ce.parse("-6(2x-10)-4x+1=-35") Tested similar structure and no bugs
         //let temp = this.ce.parse("3x+9x+10x=440");
         //let temp = this.ce.parse("5x(4+7)-10x+7x=208");
         //let temp = this.ce.parse("x + 8x - 4=14");
@@ -328,28 +328,14 @@ class EquationSolver {
 
     private SolveX(){ // 
         console.log("equation: " + this.equation);
-        var tempEquation = JSON.parse(JSON.stringify(this.equation));
+        var tempEquation = JSON.parse(JSON.stringify(this.equation)); //Does a deep copy of overarching equation
         tempEquation = this.ce.box(tempEquation).toLatex(); 
         console.log("tempEquation: " + tempEquation);
         var lhs = this.ce.box(this.lhs as any).toString(); // this.lhs -> parse -> toString()
         var rhs = this.equation[2].toString();
         var currentStep;
         var div;
-/*         if(lhs != currentStep.toString()){ // Simplification needed
-            console.log("Step: Must combine like terms: " + lhs);
-            lhs = currentStep.toString();
-            var stepJson = {
-                description: `${simplify.toMathJson()}`,
-                current: simplify.toMathJson(),
-                stepNumber: this.stepNumber++,
-                result: currentStep.toString()
-            }
-            this.steps.push(stepJson as Step);
-            this.equation[1] = lhs; //Updates the lhs of the expression
-            return stepJson as Step;
-        } */
-
-        while(lhs != "x"){ // 9x + 8 = 188 -> 9x = 180
+        while(lhs != "x"){ 
             const lhsExpr = this.ce.parse(lhs).toMathJson().toString();
             if(lhsExpr[0] === "A"){
                 console.log("Ran Addition in SOlvex")
@@ -368,9 +354,9 @@ class EquationSolver {
                 this.steps.push(stepJson as Step);
                 this.equation[1] = lhs;
                 this.equation[2] = rhs;
-                console.log("Overarching Equation: " + this.ce.box(this.equation.toString()).toLatex());
+                //console.log("Overarching Equation: " +  this.equation);//this.ce.box(this.equation.toString()).toLatex());
                 tempEquation = this.equation;
-                console.log("tempEquation in Add: " + tempEquation);
+                console.log("tempEquation in Add after operation: " + tempEquation);
 
 
             }
@@ -393,14 +379,13 @@ class EquationSolver {
                 this.steps.push(stepJson as Step);
                 this.equation[1] = lhs;
                 this.equation[2] = rhs;
+                console.log(this.equation)
                 console.log("Overarching Equation: " + this.equation);
                 tempEquation = this.equation;
-                console.log("tempEquation in Add: " + tempEquation);
+                console.log("tempEquation in Subtract: " + tempEquation);
 
             }
             else{
-                // BUG here: Cannot assign to read only property '2' of string '4x=68' [9*x - 7*x + 2*x = 68]
-                tempEquation[2] = this.ce.box(tempEquation[2]).evaluate().toMathJson() as unknown as MathJson;
                 tempEquation = this.ce.box(tempEquation).toLatex();
                 console.log("tempEquation in Final: " + tempEquation);
                 div = rhs + "/" + lhs.slice(0,lhs.indexOf("x"));
@@ -426,13 +411,10 @@ class EquationSolver {
                 console.log("Overarching Equation: " + this.equation);
                 this.steps.push(stepJson as Step);
                 console.log("x is : " + currentStep.toString());
+                this.equation[1] = "x"; //Updates the lhs of the expression 
+                this.equation[2] = this.ce.box(div, {canonical:false}).toMathJson() as unknown as MathJson; //Updates the rhs of the expression
                 lhs = "x";
             }
-            this.equation[1] = lhs; //Updates the lhs of the expression
-            this.equation[2] = this.ce.box(div, {canonical:false}).toMathJson() as unknown as MathJson; //Updates the rhs of the expression
-            console.log("LHS Expr: " + this.equation[1]);
-            console.log("RHS Expr: " + this.equation[2]);
-            console.log("DIV: " + div);
         }
     }
 
@@ -466,11 +448,11 @@ class EquationSolver {
 /* const compute = new ComputeEngine;
 const linearEquationTest = new LinearEquation(3,compute);
 console.log("Latex Form: " + linearEquationTest.getEquationLaTeX())
-console.log("MathJson Form: " + linearEquationTest.getEquation())
+console.log("MathJson Form: " + linearEquationTest.getEquation()) 
 const solver = new EquationSolver(linearEquationTest.getEquation(), compute);
- */
 
-/* 
+
+
 console.log(solver.steps); */
 
 
