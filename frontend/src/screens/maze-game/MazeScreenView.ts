@@ -267,7 +267,7 @@ export class MazeScreenView implements View {
         this.player.start();
     }
     // Move the player circle to new position
-    movePlayerTo(x: number, y: number) {
+    movePlayerTo(x: number, y: number, onArrive?:() => void) {
         if (!this.player) return;
         const dx = x - this.player.x();
         const dy = y - this.player.y();
@@ -288,6 +288,8 @@ export class MazeScreenView implements View {
             onFinish: () => { 
                 this.fadeToBlack();
                 this.setAnimation("idle");
+
+                if(onArrive) onArrive();
             }
         }).play();
     }
@@ -296,6 +298,113 @@ export class MazeScreenView implements View {
         if (!this.player) return;
         this.player.position({ x: STAGE_WIDTH / 2 - 64, y: STAGE_HEIGHT - 150 });
         this.group.getLayer()?.draw();
+    }
+    displayIncorrectMessage(){
+        const bg = new Konva.Image({
+        x: 0,
+        y: 0,
+        width: STAGE_WIDTH,
+        height: STAGE_HEIGHT,
+        image: (() => {
+            const image = new Image();
+            image.src = "/backgroundMessage.png";
+            return image;
+            })()
+        });
+        
+        const message = new Konva.Text({
+            x: 10,
+            y: STAGE_HEIGHT/3,
+            align: 'center',
+            verticalAlign: 'middle',
+            text: "Tunnel Choice Incorrect \n Try another route from the beginning",
+            fontSize: 60,
+            fontFamily: "medodica",
+            fill: "white",
+        }); 
+        
+        setTimeout(()=>{
+            this.group.add(bg)
+            this.group.add(message);
+
+        },325);
+
+        setTimeout(()=>{
+            bg.destroy();
+            message.destroy();
+        },5000);
+    }
+
+    displayCorrectMessage(){
+        const bg = new Konva.Image({
+        x: 0,
+        y: 0,
+        width: STAGE_WIDTH,
+        height: STAGE_HEIGHT,
+        image: (() => {
+            const image = new Image();
+            image.src = "/backgroundMessage.png";
+            return image;
+            })()
+        });
+        
+        const message = new Konva.Text({
+            x: 200,
+            y: STAGE_HEIGHT/3,
+            align: 'center',
+            verticalAlign: 'middle',
+            text: "Tunnel Choice Correct! \n Keep Moving Forward",
+            fontSize: 60,
+            fontFamily: "medodica",
+            fill: "white",
+        }); 
+        
+        setTimeout(()=>{
+            this.group.add(bg)
+            this.group.add(message);
+
+        },325);
+
+        setTimeout(()=>{
+            bg.destroy();
+            message.destroy();
+        },5000);
+    }
+
+    displayCongratsMessage(){
+        const bg = new Konva.Image({
+        x: 0,
+        y: 0,
+        width: STAGE_WIDTH,
+        height: STAGE_HEIGHT,
+        image: (() => {
+            const image = new Image();
+            image.src = "/backgroundMessage.png";
+            return image;
+            })()
+        });
+        
+        const message = new Konva.Text({
+            x: 200,
+            y: STAGE_HEIGHT/3,
+            align: 'center',
+            verticalAlign: 'middle',
+            text: "Congratulations!!! \n You escaped the Maze",
+            fontSize: 60,
+            fontFamily: "medodica",
+            fill: "white",
+        }); 
+        
+        setTimeout(()=>{
+            this.group.add(bg)
+            this.group.add(message);
+
+        },325);
+
+        setTimeout(()=>{
+            bg.destroy();
+            message.destroy();
+        },5000);
     }
     // Helper function to render LaTeX to Konva canvas
     async loadLatexImage(latex: string): Promise<HTMLImageElement> {
