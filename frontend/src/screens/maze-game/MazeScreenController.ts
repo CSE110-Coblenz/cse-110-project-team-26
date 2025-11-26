@@ -80,7 +80,7 @@ Good luck and have fun!`;
 	private handleChoiceClick(choice : ChoiceModel, x:number, y:number): void {
 		console.log("Choice clicked:", choice.getText());
 		console.log("Moving player to:", x, y);
-		this.view.movePlayerTo(x, y);
+		this.view.movePlayerTo(x, y,() =>{
 		if (choice.getIsCorrect()) {
 			// Update model
 			this.model.incrementScore();
@@ -88,13 +88,18 @@ Good luck and have fun!`;
 			// Update view
 			this.view.updateScore(this.model.getScore());
 
+
 			// Ensure a problem exists and advance or create as needed
 			const prob = this.problem as ProblemModel;
 			if(prob.nextMove()){
+				//add correct message
+				this.view.displayCorrectMessage();
 				this.view.updateProblem(prob.getProblemStatement());
 				this.view.updateChoices(prob.getChoices());
 			} else {
 				// If no more moves, generate a new problem
+				//add congratulations screen
+				this.view.displayCongratsMessage();
 				console.log("Solved the equation! Generating new problem.");
 				this.problem = new ProblemModel(3);
 				this.view.updateProblem(this.problem.getProblemStatement());
@@ -103,12 +108,15 @@ Good luck and have fun!`;
 		}
 		else {
 			// For incorrect choice, just generate new problem
+			this.view.displayIncorrectMessage();
 			this.problem = new ProblemModel(3);
 			this.view.updateProblem(this.problem.getProblemStatement());
 			this.view.updateChoices(this.problem.getChoices());
 		}
 		this.stopTimer();
 		this.startTimer();
+		});
+
 	}
 
 	// End the game
