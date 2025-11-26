@@ -93,13 +93,13 @@ Good luck and have fun!`;
 			const prob = this.problem as ProblemModel;
 			if(prob.nextMove()){
 				//add correct message
-				this.view.displayCorrectMessage();
+				this.view.displayMessage("Correct");
 				this.view.updateProblem(prob.getProblemStatement());
 				this.view.updateChoices(prob.getChoices());
 			} else {
 				// If no more moves, generate a new problem
 				//add congratulations screen
-				this.view.displayCongratsMessage();
+				this.view.displayMessage("Congrats");
 				console.log("Solved the equation! Generating new problem.");
 				this.problem = new ProblemModel(3);
 				this.view.updateProblem(this.problem.getProblemStatement());
@@ -108,7 +108,7 @@ Good luck and have fun!`;
 		}
 		else {
 			// For incorrect choice, just generate new problem
-			this.view.displayIncorrectMessage();
+			this.view.displayMessage("Incorrect");
 			this.problem = new ProblemModel(3);
 			this.view.updateProblem(this.problem.getProblemStatement());
 			this.view.updateChoices(this.problem.getChoices());
