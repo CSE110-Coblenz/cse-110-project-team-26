@@ -1,7 +1,7 @@
 import Konva from "konva";
-import type { ScreenSwitcher, Screen } from "../../types.ts";
-import { GraphScreenController } from "./GraphScreenController.ts";
-import { STAGE_WIDTH, STAGE_HEIGHT } from  "../../constants.ts";
+import type { ScreenSwitcher, Screen } from "../../../types.ts";
+import { GraphScreenController } from "../GraphScreenController.ts";
+import { STAGE_WIDTH, STAGE_HEIGHT } from  "../../../constants.ts";
 
 class App implements ScreenSwitcher {
   private stage: Konva.Stage;

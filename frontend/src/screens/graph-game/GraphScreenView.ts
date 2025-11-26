@@ -2,11 +2,7 @@ import Konva from "konva";
 import type { AbsoluteValue, EquationAnswerFormat, Linear, Quadratic, View } from "../../types";
 import {
   OFFSET,
-  SIDEBAR_WIDTH,
   BOX_WIDTH,
-  SMALL_BOX_HEIGHT,
-  LARGE_BOX_HEIGHT,
-  GRAPH_WIDTH,
   BACKGROUND_PROPERTIES,
   STATIC_GROUP_PROPERTIES,
   GRAPH_GROUP_PROPERTIES,
@@ -234,7 +230,7 @@ export class GraphScreenView implements View {
                 y: 0,
                 width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
                 height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
-                fill: "#5F5050"
+                fill: fill
             });
 
             const buttonText = new Konva.Text({
@@ -268,7 +264,7 @@ export class GraphScreenView implements View {
             y: 0,
             width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
-            fill: "#5F5050"
+            fill: fill
         });
       
         const zeroButtonText = new Konva.Text({
@@ -296,7 +292,7 @@ export class GraphScreenView implements View {
             y: 0,
             width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
-            fill: "#5F5050"
+            fill: fill
         });
       
         const minusButtonText = new Konva.Text({
@@ -334,7 +330,7 @@ export class GraphScreenView implements View {
             y: 0,
             width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
-            fill: "#5F5050"
+            fill: fill
         });
 
         const resetButtonText = new Konva.Text({
@@ -367,7 +363,7 @@ export class GraphScreenView implements View {
             y: 0,
             width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
-            fill: "#5F5050"
+            fill: fill
         });
 
         const submitButtonText = new Konva.Text({
@@ -566,9 +562,17 @@ export class GraphScreenView implements View {
 
     /**
      * 
-     * @returns The Group this View belongs to
+     * @returns The View's static Group
      */
-    getGroup(): Konva.Group[] {
+    getGroup(): Konva.Group {
+        return this.staticGroup;
+    }
+
+    /**
+     * 
+     * @returns The Groups this View belongs to
+     */
+    getGroups(): Konva.Group[] {
         return [this.staticGroup, this.graphGroup];
     }
 

@@ -305,10 +305,10 @@ export class GraphScreenController extends ScreenController {
     }
 
     private switchToMazeGame(): void {
-        // TODO: switch to maze game
+        this.screenSwitcher.switchToScreen({ type: "maze-game" });
     }
 
     private switchToMatchGame(): void {
-        // TODO: switch to match game
+        this.screenSwitcher.switchToScreen({ type: "matching-game" });
     }
 }

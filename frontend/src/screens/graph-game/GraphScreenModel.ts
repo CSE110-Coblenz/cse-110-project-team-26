@@ -25,9 +25,9 @@ export class GraphScreenModel {
         return this.question.getQuestionType();
     }
     
-    verifyAnswer(submission: EquationAnswerFormat) {
+    verifyAnswer(submission: EquationAnswerFormat): boolean {
         this.question.enterSubmission(submission);
-        this.question.verifyAnswer();
+        return this.question.verifyAnswer();
     }
 
     getAnswer(): EquationAnswerFormat {
