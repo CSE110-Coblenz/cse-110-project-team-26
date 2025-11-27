@@ -3,6 +3,7 @@ import { GraphScreenView } from "./GraphScreenView";
 import { GraphScreenModel } from "./GraphScreenModel";
 import { AbsoluteValue, Quadratic, type EquationAnswerFormat, type ScreenSwitcher } from "../../types";
 import { LINEAR, QUADRATIC, ABSVAL } from "../../constants";
+import { DIALOGUE } from "./GraphScreenConstants";
 import { Linear } from "../../types";
 
 // REFACTOR CODE TO HAVE VARIABLE ORIGIN POINT
@@ -282,23 +283,24 @@ export class GraphScreenController extends ScreenController {
         if (submission.checkCompleteSubmission()) {
             console.log(submission);
             this.model.enterSubmission(submission);
+            this.submitEquationInput();
+        } else {
+            this.view.updateDialogue(DIALOGUE.incomplete);
+            this.handleEquationReset();
         }
-        this.submitEquationInput();
     }
 
     private submitEquationInput(): void {
         this.plotGraphGame(false); // isPreview = false
         if (this.model.getAnswer().verifyAnswer(this.submission)) {
             this.view.showTransitionButton((game: string) => this.switchGame(game), "maze-game");
-            console.log("Correct!");
+            this.view.updateDialogue(DIALOGUE.success);
+            console.log(DIALOGUE.success);
         } else {
             this.view.showTransitionButton((game: string) => this.switchGame(game), "matching-game");
-            console.log("Incorrect.");
+            this.view.updateDialogue(DIALOGUE.failure);
+            console.log(DIALOGUE.failure);
         }
-    }
-
-    private handleWrongAnswer(): void {
-        
     }
 
     private previewEquationInput(): void {
@@ -310,14 +312,8 @@ export class GraphScreenController extends ScreenController {
     }
 
     private switchGame(game: string): void {
+        this.view.hideTransitionButton();
+        this.view.updateDialogue(DIALOGUE.level);
         this.screenSwitcher.switchToScreen({ type: game })
-    }
-
-    private switchToMazeGame(): void {
-        this.screenSwitcher.switchToScreen({ type: "maze-game" });
-    }
-
-    private switchToMatchGame(): void {
-        this.screenSwitcher.switchToScreen({ type: "matching-game" });
     }
 }

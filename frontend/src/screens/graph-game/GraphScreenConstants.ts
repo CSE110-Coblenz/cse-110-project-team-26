@@ -1,5 +1,14 @@
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 
+// Dialogue components
+
+const DIALOGUE = {
+  level: "<Dialogue>\nOh no, an asteroid field! Plot a safe path for your spaceship to the planet!",
+  success: "<Dialogue>\nYou did it! Now you will go to the planet and search for resources.",
+  failure: "<Dialogue>\nUnfortunately, your spaceship has sustained damage. Click the button to fix your engine!",
+  incomplete: "Make sure that you've filled every parameter!"
+};
+
 // SCREEN SPECIFIC CONSTANTS
 
 const OFFSET = STAGE_WIDTH * 0.02;
@@ -86,7 +95,7 @@ const DIALOGUE_TEXT_PROPERTIES = {
   y: DIALOGUE_BOX_PROPERTIES.y + (OFFSET * 0.5),
   width: DIALOGUE_BOX_PROPERTIES.width - OFFSET,
   height: DIALOGUE_BOX_PROPERTIES.height - OFFSET,
-  text: "<Dialogue>\nOh no, an asteroid field! Let's safely plot a path to <destination>",
+  text: DIALOGUE.level,
   fontSize: 24,
   fontFamily: "Arial",
   fill: "white"
@@ -94,9 +103,9 @@ const DIALOGUE_TEXT_PROPERTIES = {
 
 const TRANSITION_GROUP_PROPERTIES = {
   x: DIALOGUE_BOX_PROPERTIES.x,
-  y: DIALOGUE_BOX_PROPERTIES.height * (4/5) - OFFSET * 2,
+  y: DIALOGUE_BOX_PROPERTIES.height * (9/10) - OFFSET * 2,
   width: DIALOGUE_BOX_PROPERTIES.width,
-  height: DIALOGUE_BOX_PROPERTIES.height * (1/5) + OFFSET * 2
+  height: DIALOGUE_BOX_PROPERTIES.height * (1/10) + OFFSET * 2
 };
 
 const TRANSITION_BUTTON_PROPERTIES = {
@@ -108,12 +117,12 @@ const TRANSITION_BUTTON_PROPERTIES = {
 };
 
 const TRANSITION_TEXT_PROPERTIES = {
-  x: 0,
-  y: 0,
+  x: OFFSET * 0.5,
+  y: OFFSET * 0.5,
   width: TRANSITION_BUTTON_PROPERTIES.width,
   height: TRANSITION_BUTTON_PROPERTIES.height,
-  text: "Go to next game",
-  fontSize: 30,
+  text: "Go to minigame",
+  fontSize: 24,
   fontFamily: "Arial",
   fill: "white",
   align: "center",
@@ -158,6 +167,7 @@ const EQUATION_TEXT_PROPERTIES = {
 };
 
 export {
+  DIALOGUE,
   OFFSET,
   SIDEBAR_WIDTH,
   BOX_WIDTH,
@@ -180,5 +190,5 @@ export {
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,
   EQUATION_TEXT_PROPERTIES,
-  PIX_PER_UNIT
+  PIX_PER_UNIT,
 };
