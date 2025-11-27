@@ -92,6 +92,34 @@ const DIALOGUE_TEXT_PROPERTIES = {
   fill: "white"
 };
 
+const TRANSITION_GROUP_PROPERTIES = {
+  x: DIALOGUE_BOX_PROPERTIES.x,
+  y: DIALOGUE_BOX_PROPERTIES.height * (4/5) - OFFSET * 2,
+  width: DIALOGUE_BOX_PROPERTIES.width,
+  height: DIALOGUE_BOX_PROPERTIES.height * (1/5) + OFFSET * 2
+};
+
+const TRANSITION_BUTTON_PROPERTIES = {
+  x: OFFSET * 0.5,
+  y: OFFSET * 0.5,
+  width: TRANSITION_GROUP_PROPERTIES.width - OFFSET,
+  height: TRANSITION_GROUP_PROPERTIES.height - OFFSET,
+  fill: "#110808"
+};
+
+const TRANSITION_TEXT_PROPERTIES = {
+  x: 0,
+  y: 0,
+  width: TRANSITION_BUTTON_PROPERTIES.width,
+  height: TRANSITION_BUTTON_PROPERTIES.height,
+  text: "Go to next game",
+  fontSize: 30,
+  fontFamily: "Arial",
+  fill: "white",
+  align: "center",
+  verticalAlign: "middle"
+};
+
 // Equation/Input group and elements
 
 const INPUT_AND_EQUATION_GROUP_PROPERTIES = {
@@ -145,6 +173,9 @@ export {
   DIALOGUE_GROUP_PROPERTIES,
   DIALOGUE_BOX_PROPERTIES,
   DIALOGUE_TEXT_PROPERTIES,
+  TRANSITION_GROUP_PROPERTIES,
+  TRANSITION_BUTTON_PROPERTIES,
+  TRANSITION_TEXT_PROPERTIES,
   INPUT_AND_EQUATION_GROUP_PROPERTIES,
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,

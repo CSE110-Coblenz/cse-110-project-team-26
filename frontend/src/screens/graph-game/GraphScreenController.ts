@@ -276,7 +276,7 @@ export class GraphScreenController extends ScreenController {
         this.view.resetGraph();
     }
 
-    private handleEquationSubmission(submission: EquationAnswerFormat): boolean {
+    private handleEquationSubmission(submission: EquationAnswerFormat): void {
         console.log('Submit button clicked');
         console.log(submission);
         if (submission.checkCompleteSubmission()) {
@@ -284,16 +284,21 @@ export class GraphScreenController extends ScreenController {
             this.model.enterSubmission(submission);
         }
         this.submitEquationInput();
-        return false;
     }
 
     private submitEquationInput(): void {
         this.plotGraphGame(false); // isPreview = false
         if (this.model.getAnswer().verifyAnswer(this.submission)) {
-            this.view.updateEquation("CORRECT")
+            this.view.showTransitionButton((game: string) => this.switchGame(game), "maze-game");
+            console.log("Correct!");
         } else {
-            this.view.updateEquation("WRONG");
+            this.view.showTransitionButton((game: string) => this.switchGame(game), "matching-game");
+            console.log("Incorrect.");
         }
+    }
+
+    private handleWrongAnswer(): void {
+        
     }
 
     private previewEquationInput(): void {
@@ -302,6 +307,10 @@ export class GraphScreenController extends ScreenController {
 
     private plotGraphGame(isPreview: boolean): void {
         this.view.plotGraph(isPreview, this.type, this.submission);
+    }
+
+    private switchGame(game: string): void {
+        this.screenSwitcher.switchToScreen({ type: game })
     }
 
     private switchToMazeGame(): void {

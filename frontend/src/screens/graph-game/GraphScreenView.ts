@@ -12,6 +12,9 @@ import {
   DIALOGUE_GROUP_PROPERTIES,
   DIALOGUE_BOX_PROPERTIES,
   DIALOGUE_TEXT_PROPERTIES,
+  TRANSITION_GROUP_PROPERTIES,
+  TRANSITION_BUTTON_PROPERTIES,
+  TRANSITION_TEXT_PROPERTIES,
   INPUT_AND_EQUATION_GROUP_PROPERTIES,
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,
@@ -28,6 +31,7 @@ export class GraphScreenView implements View {
     private dynamicLayer: Konva.Layer;
     private staticGroup: Konva.Group;
     private graphGroup: Konva.Group;
+    private transitionGroup: Konva.Group;
     private dialogueText: Konva.Text;
     private playerSprite: HTMLImageElement;
     private equationText: Konva.Text;
@@ -44,7 +48,7 @@ export class GraphScreenView implements View {
     /**
      * Initializes default values for the View
      */
-    constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => boolean) {
+    constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void) {
 
         // Add layers for static and dynamic elements
 
@@ -113,7 +117,21 @@ export class GraphScreenView implements View {
             ...DIALOGUE_TEXT_PROPERTIES
         });
 
-        dialogueGroup.add(dialogueBox, this.dialogueText);
+        this.transitionGroup = new Konva.Group({
+            ...TRANSITION_GROUP_PROPERTIES
+        })
+
+        const transitionButton = new Konva.Rect({
+            ...TRANSITION_BUTTON_PROPERTIES
+        });
+
+        const transitionText = new Konva.Text({
+            ...TRANSITION_TEXT_PROPERTIES
+        });
+
+        this.transitionGroup.add(transitionButton, transitionText);
+        dialogueGroup.add(dialogueBox, this.dialogueText, this.transitionGroup);
+        this.transitionGroup.hide();
 
         // Input/Equation group elements
 
@@ -132,6 +150,7 @@ export class GraphScreenView implements View {
         this.equationText = new Konva.Text({
             ...EQUATION_TEXT_PROPERTIES
         });
+
         switch (type) {
             case 0:
                 this.equationText.text("y=(_/_)x+_");
@@ -143,6 +162,7 @@ export class GraphScreenView implements View {
                 this.equationText.text("y=|(_/_)x+_|+_");
             break;
         }
+
         console.log(this.equationText.text());
         
         const keypadGroup = this.createInputButtons(onNumberInput, onEquationReset, onEquationSubmission);
@@ -195,10 +215,20 @@ export class GraphScreenView implements View {
         }
     }
 
+    showTransitionButton(switchGame: (game: string) => void, game: string) {
+        this.transitionGroup.show();
+        this.transitionGroup.off("click");
+        this.transitionGroup.on("click", () => switchGame(game));
+    }
+
+    hideTransitionButton() {
+        this.transitionGroup.hide();
+    }
+
     /**
-     * Creates equation input buttons
+     * Creates equation/input group buttons
      */
-    createInputButtons(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => boolean): Konva.Group {
+    createInputButtons(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void): Konva.Group {
         const fill = "#5F5050";
         const smallOffset = OFFSET * (1/4);
         const rows = 3;
