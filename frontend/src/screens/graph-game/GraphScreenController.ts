@@ -312,7 +312,27 @@ export class GraphScreenController extends ScreenController {
     }
 
     private switchGame(game: string): void {
-        this.view.hideTransitionButton();
+        let type = generateRandomNumber(0, 2);
+        this.model = new GraphScreenModel(type);
+        this.type = this.model.getQuestionType();
+        switch(this.type) {
+            case LINEAR:
+                this.submission = new Linear(false);
+            break;
+            case QUADRATIC:
+                this.submission = new Quadratic(false);
+            break;
+            case ABSVAL:
+                this.submission = new AbsoluteValue(false);
+            break;
+        }
+        this.view.reset(
+                type,
+                (input: number) => this.handleNumberInput(input),
+                () => this.handleEquationReset(),
+                () => this.handleEquationSubmission(this.submission)
+        );
+        this.view.plotPOI(this.model.getAnswer());
         this.view.updateDialogue(DIALOGUE.level);
         this.screenSwitcher.switchToScreen({ type: game })
     }

@@ -35,7 +35,7 @@ export class GraphScreenView implements View {
     private dialogueText: Konva.Text;
     private playerSprite: HTMLImageElement;
     private equationText: Konva.Text;
-    private graphScreenGroup: Konva.Group;
+    private inputAndEquationGroup: Konva.Group;
 
     private width: number = GRAPH_BACKGROUND_PROPERTIES.width;
     private height: number = GRAPH_BACKGROUND_PROPERTIES.height;
@@ -63,7 +63,6 @@ export class GraphScreenView implements View {
         this.staticGroup = new Konva.Group({
             ...STATIC_GROUP_PROPERTIES
         });
-        this.graphGroup = this.createGraphGroup();
 
         // TEST!!!!!
 
@@ -135,7 +134,7 @@ export class GraphScreenView implements View {
 
         // Input/Equation group elements
 
-        const inputAndEquationGroup = new Konva.Group({
+        this.inputAndEquationGroup = new Konva.Group({
             ...INPUT_AND_EQUATION_GROUP_PROPERTIES
         });
 
@@ -167,14 +166,61 @@ export class GraphScreenView implements View {
         
         const keypadGroup = this.createInputButtons(onNumberInput, onEquationReset, onEquationSubmission);
 
-        inputAndEquationGroup.add(inputAndEquationBox, equationBox, this.equationText, keypadGroup);
+        this.inputAndEquationGroup.add(inputAndEquationBox, equationBox, this.equationText, keypadGroup);
         
         // Graph group elements
 
-        this.staticGroup.add(background, spriteGroup, dialogueGroup, inputAndEquationGroup);
+        this.graphGroup = this.createGraphGroup();
+        this.staticGroup.add(background, spriteGroup, dialogueGroup, this.inputAndEquationGroup);
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
 
+    }
+
+    reset(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void): void {
+        this.inputAndEquationGroup.destroy();
+        this.graphGroup.destroy();
+        this.hideTransitionButton();
+
+        this.inputAndEquationGroup = new Konva.Group({
+            ...INPUT_AND_EQUATION_GROUP_PROPERTIES
+        });
+
+        const inputAndEquationBox = new Konva.Rect({
+            ...INPUT_AND_EQUATION_BOX_PROPERTIES
+        });
+
+        const equationBox = new Konva.Rect({
+            ...EQUATION_BOX_PROPERTIES
+        });
+
+        this.equationText = new Konva.Text({
+            ...EQUATION_TEXT_PROPERTIES
+        });
+
+        switch (type) {
+            case 0:
+                this.equationText.text("y=(_/_)x+_");
+            break;
+            case 1:
+                this.equationText.text("y=(x+_)(x+_)");
+            break;
+            case 2:
+                this.equationText.text("y=|(_/_)x+_|+_");
+            break;
+        }
+
+        console.log(this.equationText.text());
+        
+        const keypadGroup = this.createInputButtons(onNumberInput, onEquationReset, onEquationSubmission);
+
+        this.inputAndEquationGroup.add(inputAndEquationBox, equationBox, this.equationText, keypadGroup);
+
+        this.graphGroup = this.createGraphGroup();
+        this.staticGroup.add(this.inputAndEquationGroup);
+
+        this.staticLayer.add(this.staticGroup);
+        this.dynamicLayer.add(this.graphGroup);
     }
 
     addPOIRectangle(x: number, y: number, color: string) {
