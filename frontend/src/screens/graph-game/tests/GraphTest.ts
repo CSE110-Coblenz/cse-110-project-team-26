@@ -31,7 +31,7 @@ class App implements ScreenSwitcher {
 	private titleController: TitleScreenController;
 	private tutorialController: TutorialScreenController;
 
-	constructor(container: string) {
+	constructor(container: string, level: number) {
 		// Initialize Konva stage (the main canvas)
 		this.stage = new Konva.Stage({
 			container,
@@ -48,8 +48,8 @@ class App implements ScreenSwitcher {
 		this.menuTestController = new MenuTestScreenController(this);
 		this.matchingScreenController = new MatchingScreenController(this, this.stage);
 		this.mazeScreenController = new MazeScreenController(this);
-		this.graphScreenController = new GraphScreenController(this);
-    	this.titleController = new TitleScreenController(this);
+		this.graphScreenController = new GraphScreenController(this, level);
+    this.titleController = new TitleScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
 
 		// Add all screen groups to the layer
@@ -117,4 +117,4 @@ class App implements ScreenSwitcher {
 }
 
 // Initialize the application
-new App("container");
+new App("container", 1);

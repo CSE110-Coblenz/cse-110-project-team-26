@@ -14,6 +14,7 @@ import { Linear } from "../../types";
 export class GraphScreenController extends ScreenController {
     private model: GraphScreenModel;
     private view: GraphScreenView;
+    private level: number;
     private type: string;
     private screenSwitcher: ScreenSwitcher;
     private submission: EquationAnswerFormat;
@@ -21,8 +22,9 @@ export class GraphScreenController extends ScreenController {
     /**
      * Initializes default values for the Controller
      */
-    constructor(screenSwitcher: ScreenSwitcher) {
+    constructor(screenSwitcher: ScreenSwitcher, level: number) {
         super();
+            this.level = level;
             let type = generateRandomNumber(0, 2);
             // let type = 1;
             this.model = new GraphScreenModel(type);
@@ -45,6 +47,7 @@ export class GraphScreenController extends ScreenController {
                 () => this.handleEquationSubmission(this.submission)
             );
             this.view.plotPOI(this.model.getAnswer());
+            this.view.updateDialogue(DIALOGUE[`level${this.level}`]);
             this.screenSwitcher = screenSwitcher;
     }
 
@@ -296,6 +299,7 @@ export class GraphScreenController extends ScreenController {
             this.view.showTransitionButton((game: string) => this.switchGame(game), "maze-game");
             this.view.updateDialogue(DIALOGUE.success);
             console.log(DIALOGUE.success);
+            this.level++;
         } else {
             this.view.showTransitionButton((game: string) => this.switchGame(game), "matching-game");
             this.view.updateDialogue(DIALOGUE.failure);
@@ -333,7 +337,7 @@ export class GraphScreenController extends ScreenController {
                 () => this.handleEquationSubmission(this.submission)
         );
         this.view.plotPOI(this.model.getAnswer());
-        this.view.updateDialogue(DIALOGUE.level);
+        this.view.updateDialogue(DIALOGUE[`level${this.level}`]);
         this.screenSwitcher.switchToScreen({ type: game })
     }
 }

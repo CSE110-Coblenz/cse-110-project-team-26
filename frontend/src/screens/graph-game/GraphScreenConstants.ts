@@ -3,10 +3,15 @@ import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 // Dialogue components
 
 const DIALOGUE = {
-  level: "<Dialogue>\nOh no, an asteroid field! Plot a safe path for your spaceship to the planet!",
-  success: "<Dialogue>\nYou did it! Now you will go to the planet and search for resources.",
+  level1: "<Dialogue>\nWelcome space traveler! The first step in our journey involves flying to the planet Kepler-7b. Plot a path for the spaceship around the obstacles!",
+  level2: "<Dialogue>\nNext stop is the planet KS-157d. There's some space debris in your way, make sure to avoid it!",
+  level3: "<Dialogue>\nYou've been flying for a while traveler. Make your way to Hailey's comet for some rest.",
+  level4: "<Dialogue>\nWe're in the home stretch now. Avoid the obstacles and plot your way to Pluto!",
+  level5: "<Dialogue>\nYou can see the finish line! Avoid the asteroid belt and make your way to Earth!",
+  success: "<Dialogue>\nYou made it! Time to search for resources.",
   failure: "<Dialogue>\nUnfortunately, your spaceship has sustained damage. Click the button to fix your engine!",
-  incomplete: "Make sure that you've filled every parameter!"
+  incomplete: "Make sure that you've filled every parameter of the equation!",
+  finish: "<Dialogue>\nWelcome home space traveler! You've gone quite a journey to get back to Earth. Congratulations on using your knowledge of algebra to make it back!"
 };
 
 // SCREEN SPECIFIC CONSTANTS
