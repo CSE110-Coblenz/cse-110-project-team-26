@@ -80,44 +80,35 @@ Good luck and have fun!`;
 	private handleChoiceClick(choice : ChoiceModel, x:number, y:number): void {
 		console.log("Choice clicked:", choice.getText());
 		console.log("Moving player to:", x, y);
-		this.view.movePlayerTo(x, y,() =>{
-		if (choice.getIsCorrect()) {
-			// Update model
-			this.model.incrementScore();
+		this.view.movePlayerTo(x, y).then(() => {
+			this.view.fadeToBlack().then(() => {
+				if (choice.getIsCorrect()) {
+					// Update model
+					this.model.incrementScore();
+					// Update view
+					this.view.updateScore(this.model.getScore());
 
-			// Update view
-			this.view.updateScore(this.model.getScore());
-
-
-			// Ensure a problem exists and advance or create as needed
-			const prob = this.problem as ProblemModel;
-			if(prob.nextMove()){
-				//add correct message
-				this.view.displayMessage("Correct");
-				this.view.updateProblem(prob.getProblemStatement());
-				this.view.updateChoices(prob.getChoices());
-			} else {
-				// If no more moves, generate a new problem
-				//add congratulations screen
-				this.view.displayMessage("Congrats");
-				console.log("Solved the equation! Generating new problem.");
-				this.problem = new ProblemModel(3);
-				this.view.updateProblem(this.problem.getProblemStatement());
-				this.view.updateChoices(this.problem.getChoices());
-			}
-		}
-		else {
-			// For incorrect choice, just generate new problem
-			this.view.displayMessage("Incorrect");
-			this.problem = new ProblemModel(3);
-			this.view.updateProblem(this.problem.getProblemStatement());
-			this.view.updateChoices(this.problem.getChoices());
-		}
+					// Ensure a problem exists and advance or create as needed
+					const prob = this.problem as ProblemModel;
+					if(prob.nextMove()){
+						this.view.updateProblem(prob.getProblemStatement());
+						this.view.updateChoices(prob.getChoices());
+					} else {
+						// If no more moves, generate a new problem
+						console.log("Solved the equation! Generating new problem.");
+						this.view.destroy();
+						this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" }));
+					}
+				}
+				else {
+					// For incorrect choice, just generate new problem
+					this.problem = new ProblemModel(3);
+					this.view.updateProblem(this.problem.getProblemStatement());
+					this.view.updateChoices(this.problem.getChoices());
+				}})});
 		this.stopTimer();
 		this.startTimer();
-		});
-
-	}
+	};
 
 	// End the game
 	private endGame(): void {
