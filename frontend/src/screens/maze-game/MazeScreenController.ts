@@ -99,7 +99,7 @@ Good luck and have fun!`;
 						this.view.displayMessage("Congrats");
 						console.log("Solved the equation! Generating new problem.");
 						this.view.destroy();
-						this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" }));
+						this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
 					}
 				}
 				else {
