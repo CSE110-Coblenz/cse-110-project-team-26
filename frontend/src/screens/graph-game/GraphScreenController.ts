@@ -15,6 +15,7 @@ export class GraphScreenController extends ScreenController {
     private model: GraphScreenModel;
     private view: GraphScreenView;
     private level: number;
+    private difficulty: number;
     private type: string;
     private screenSwitcher: ScreenSwitcher;
     private submission: EquationAnswerFormat;
@@ -22,10 +23,11 @@ export class GraphScreenController extends ScreenController {
     /**
      * Initializes default values for the Controller
      */
-    constructor(screenSwitcher: ScreenSwitcher, level: number) {
+    constructor(screenSwitcher: ScreenSwitcher, level: number, difficulty: number) {
         super();
             this.level = level;
-            let type = generateRandomNumber(0, 2);
+            this.difficulty = difficulty;
+            let type = generateRandomNumber(0, this.difficulty);
             // let type = 1;
             this.model = new GraphScreenModel(type);
             this.type = this.model.getQuestionType();
@@ -296,10 +298,15 @@ export class GraphScreenController extends ScreenController {
     private submitEquationInput(): void {
         this.plotGraphGame(false); // isPreview = false
         if (this.model.getAnswer().verifyAnswer(this.submission)) {
-            this.view.showTransitionButton((game: string) => this.switchGame(game), "maze-game");
-            this.view.updateDialogue(DIALOGUE.success);
-            console.log(DIALOGUE.success);
-            this.level++;
+            if(this.level === 5) {
+                this.view.showGameFinishButton((game: string) => this.switchGame(game));
+                this.view.update(DIALOGUE.gameOver);
+                this.level++;
+            } else {
+                this.view.showTransitionButton((game: string) => this.switchGame(game), "maze-game");
+                this.view.updateDialogue(DIALOGUE.success);
+                this.level++;
+            }
         } else {
             this.view.showTransitionButton((game: string) => this.switchGame(game), "matching-game");
             this.view.updateDialogue(DIALOGUE.failure);
@@ -316,7 +323,7 @@ export class GraphScreenController extends ScreenController {
     }
 
     private switchGame(game: string): void {
-        let type = generateRandomNumber(0, 2);
+        let type = generateRandomNumber(0, this.difficulty);
         this.model = new GraphScreenModel(type);
         this.type = this.model.getQuestionType();
         switch(this.type) {

@@ -9,9 +9,9 @@ const DIALOGUE = {
   level4: "<Dialogue>\nWe're in the home stretch now. Avoid the obstacles and plot your way to Pluto!",
   level5: "<Dialogue>\nYou can see the finish line! Avoid the asteroid belt and make your way to Earth!",
   success: "<Dialogue>\nYou made it! Time to search for resources.",
-  failure: "<Dialogue>\nUnfortunately, your spaceship has sustained damage. Click the button to fix your engine!",
+  failure: "<Dialogue>\nOops! You ran into an obstacle and your spaceship has sustained damage. Click the button to fix your engine!",
   incomplete: "Make sure that you've filled every parameter of the equation!",
-  finish: "<Dialogue>\nWelcome home space traveler! You've gone quite a journey to get back to Earth. Congratulations on using your knowledge of algebra to make it back!"
+  gameOver: "<Dialogue>\nWelcome home space traveler! You've gone quite a journey to get back to Earth. Congratulations on using your knowledge of algebra to make it back!"
 };
 
 // SCREEN SPECIFIC CONSTANTS

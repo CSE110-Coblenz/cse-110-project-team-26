@@ -31,7 +31,7 @@ class App implements ScreenSwitcher {
 	private titleController: TitleScreenController;
 	private tutorialController: TutorialScreenController;
 
-	constructor(container: string, level: number) {
+	constructor(container: string, level: number, difficulty: number) {
 		// Initialize Konva stage (the main canvas)
 		this.stage = new Konva.Stage({
 			container,
@@ -48,7 +48,7 @@ class App implements ScreenSwitcher {
 		this.menuTestController = new MenuTestScreenController(this);
 		this.matchingScreenController = new MatchingScreenController(this, this.stage);
 		this.mazeScreenController = new MazeScreenController(this);
-		this.graphScreenController = new GraphScreenController(this, level);
+		this.graphScreenController = new GraphScreenController(this, level, difficulty);
     this.titleController = new TitleScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
 
@@ -116,5 +116,6 @@ class App implements ScreenSwitcher {
 	}
 }
 
-// Initialize the application
-new App("container", 1);
+// Levels range from 1-6. 1-5 are levels and 6 indicates a completed game
+// Difficulty ranges from 0-2, with the difficulties as easy, medium, and hard respectively
+new App("container", 1, 2);
