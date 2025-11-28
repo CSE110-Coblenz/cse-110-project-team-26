@@ -134,6 +134,34 @@ const TRANSITION_TEXT_PROPERTIES = {
   verticalAlign: "middle"
 };
 
+const RESULTS_GROUP_PROPERTIES = {
+  x: DIALOGUE_BOX_PROPERTIES.x,
+  y: DIALOGUE_BOX_PROPERTIES.height * (9/10) - OFFSET * 2,
+  width: DIALOGUE_BOX_PROPERTIES.width,
+  height: DIALOGUE_BOX_PROPERTIES.height * (1/10) + OFFSET * 2
+};
+
+const RESULTS_BUTTON_PROPERTIES = {
+  x: OFFSET * 0.5,
+  y: OFFSET * 0.5,
+  width: RESULTS_GROUP_PROPERTIES.width - OFFSET,
+  height: RESULTS_GROUP_PROPERTIES.height - OFFSET,
+  fill: "#110808"
+};
+
+const RESULTS_TEXT_PROPERTIES = {
+  x: OFFSET * 0.5,
+  y: OFFSET * 0.5,
+  width: RESULTS_BUTTON_PROPERTIES.width,
+  height: RESULTS_BUTTON_PROPERTIES.height,
+  text: "Go to results",
+  fontSize: 24,
+  fontFamily: "Arial",
+  fill: "white",
+  align: "center",
+  verticalAlign: "middle"
+};
+
 // Equation/Input group and elements
 
 const INPUT_AND_EQUATION_GROUP_PROPERTIES = {
@@ -191,6 +219,9 @@ export {
   TRANSITION_GROUP_PROPERTIES,
   TRANSITION_BUTTON_PROPERTIES,
   TRANSITION_TEXT_PROPERTIES,
+  RESULTS_GROUP_PROPERTIES,
+  RESULTS_BUTTON_PROPERTIES,
+  RESULTS_TEXT_PROPERTIES,
   INPUT_AND_EQUATION_GROUP_PROPERTIES,
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,

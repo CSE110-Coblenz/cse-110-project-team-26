@@ -299,8 +299,8 @@ export class GraphScreenController extends ScreenController {
         this.plotGraphGame(false); // isPreview = false
         if (this.model.getAnswer().verifyAnswer(this.submission)) {
             if(this.level === 5) {
-                this.view.showGameFinishButton((game: string) => this.switchGame(game));
-                this.view.update(DIALOGUE.gameOver);
+                this.view.showResultsButton(() => this.switchGame("result"));
+                this.view.updateDialogue(DIALOGUE.gameOver);
                 this.level++;
             } else {
                 this.view.showTransitionButton((game: string) => this.switchGame(game), "maze-game");
