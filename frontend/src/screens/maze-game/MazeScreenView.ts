@@ -351,7 +351,7 @@ export class MazeScreenView implements View {
             this.group.add(bg)
             this.group.add(message);
 
-        },325);
+        },100);
 
         bg.on('click', () => {
             bg.destroy();
