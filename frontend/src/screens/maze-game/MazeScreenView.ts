@@ -175,6 +175,16 @@ export class MazeScreenView implements View {
                     1440, 0, 160, 160,
                     1600, 0, 160, 160,
                     1760, 0, 160, 160,
+                ],
+                win: [
+                    1920, 0, 160, 160,
+                    2080, 0, 160, 160,
+                    2240, 0, 160, 160,
+                    2400, 0, 160, 160,
+                    2560, 0, 160, 160,
+                    2720, 0, 160, 160,
+                    2880, 0, 160, 160,
+                    3040, 0, 160, 160,
                 ]
                 },
                 frameRate: 3,
@@ -263,12 +273,15 @@ export class MazeScreenView implements View {
         if (name === "walk") {
             this.player.frameRate(10);
         }
+        if (name === "win") {
+            this.player.frameRate(2);
+        }
         this.player.animation(name);
         this.player.start();
     }
     // Move the player circle to new position
-    movePlayerTo(x: number, y: number, onArrive?:() => void) {
-        if (!this.player) return;
+    movePlayerTo(x: number, y: number): Promise<void> {
+        if (!this.player) return Promise.resolve();
         const dx = x - this.player.x();
         const dy = y - this.player.y();
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -277,21 +290,21 @@ export class MazeScreenView implements View {
         const SPEED = Math.abs(x-(STAGE_WIDTH/2-50))<50? 75:200; 
         const duration = distance / SPEED;
         this.setAnimation("walk");
-        new Konva.Tween({
-            node: this.player as Konva.Sprite,
-            x,
-            y,
-            duration,
-            scaleX: 0.6,
-            scaleY: 0.6,
-            easing: Konva.Easings.Linear,
-            onFinish: () => { 
-                this.fadeToBlack();
-                this.setAnimation("idle");
-
-                if(onArrive) onArrive();
-            }
-        }).play();
+        return new Promise((resolve) => {
+            new Konva.Tween({
+                node: this.player as Konva.Sprite,
+                x,
+                y,
+                duration,
+                scaleX: 0.6,
+                scaleY: 0.6,
+                easing: Konva.Easings.Linear,
+                onFinish: () => { 
+                    this.setAnimation("idle");
+                    resolve();
+                }
+            }).play();
+        });
     }
     resetPlayerPosition() {
         console.log("Resetting player position");
@@ -371,7 +384,24 @@ export class MazeScreenView implements View {
     
         return img;
     }
-    
+    // Clean up resources
+    destroy(): void {
+        // remove choice groups from the scene
+        this.choiceOne.getGroup().destroy();
+        this.choiceTwo.getGroup().destroy();
+        this.choiceThree.getGroup().destroy();
+        this.problemText.destroy();
+    }
+    // Animation when winning
+    playWinAnimation(): Promise<void> {
+        return this.movePlayerTo(STAGE_WIDTH / 2 - 64, STAGE_HEIGHT / 2)
+            .then(() => {
+                this.setAnimation("win");
+                return new Promise<void>(resolve => {
+                    setTimeout(resolve, 4000); // length of win animation
+                });
+            });
+    }
 	/**
 	 * Show the screen
 	 */
