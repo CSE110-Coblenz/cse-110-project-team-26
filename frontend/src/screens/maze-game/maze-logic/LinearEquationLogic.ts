@@ -156,6 +156,8 @@ class LinearEquation {
         //let temp = this.ce.parse("3x(4-6)-5x-3(x+10)+5=-277") // really bad bug that skips over combining x terms
         //let temp = this.ce.parse("9 + x(4 - 6) + x") // incompatible type
         //let temp = this.ce.parse("-x-1+10=-3") // solve x error
+        // "5x-x+2=62" error
+        //2x+x(5+7)-x=182
         if(!(JSON.stringify(temp).includes("Undefined")||JSON.stringify(temp).includes("Error"))){
             this.setY(temp.subs({x: x}).evaluate());
         } else {
@@ -199,8 +201,8 @@ class EquationSolver {
     public steps: Step[] = [];             //remind me to set it private
     private stepNumber: number = 1;
     public lhs: MathJson|string|number;
-    private terms: string[] = [];
-    private constants: string[] = [];
+    public terms: string[] = [];
+    public constants: string[] = [];
     public equation: MathJson;
 
     constructor(equation: MathJson, computeEngine: ComputeEngine) {
@@ -215,11 +217,13 @@ class EquationSolver {
         this.stepNumber--;
         // Turn lhs to string and back to MathJson to flatten any nested structures without changing order of terms
         this.lhs = this.ce.box(this.lhs as any, {canonical:false}).toString();
-        this.lhs = this.ce.parse(this.lhs as string, {canonical:false}).toMathJson() as unknown as MathJson;
+        this.lhs = this.ce.parse(this.lhs as string).toMathJson() as unknown as MathJson;
 
         this.breakDownEquation(this.lhs); // break down lhs into terms and constants and group them into arrays
         this.groupTerms(); // combine x terms with steps
+        console.log("Equation after grouping terms: ", JSON.parse(JSON.stringify(this.equation)));
         this.groupConstants(); // combine constant terms with steps
+        console.log("Equation after grouping constants: ", JSON.parse(JSON.stringify(this.equation)));
         this.SolveX(); // isolate x with steps
         this.steps.push({ // final step showing solution
             description: `x = ${this.steps[this.steps.length -1].result}`,
@@ -246,6 +250,7 @@ class EquationSolver {
     private breakDownEquation(equationPart: MathJson): void {
         for (let i = 1; i < equationPart.length; i++) {
             if(equationPart[i].toString().includes('x')) {
+                console.log("Term found: " + equationPart[i]);
                 this.terms.push(this.ce.box(equationPart[i] as any).toString());
             }
             else {
@@ -272,13 +277,17 @@ class EquationSolver {
             // Remove spaces and update lhs by replacing the two terms with their sum
             this.lhs = this.ce.box(this.lhs as any, {canonical:["InvisibleOperator"]}).toString().replace(/\s+/g, '');
             this.lhs = this.lhs.replace(term1 as string, sum);
-            if(parseInt(term2 as string) < 0){ // if negative, replace with nothing
+            console.log("term1 to be removed: ", term1);
+            console.log("term2 to be removed: ", term2);
+            if(parseInt(term2WithoutX as string) < 0){ // if negative, replace with nothing because the - will be included when removing
                 this.lhs = this.lhs.replace(term2 as string, '');
+            } else{ // else replace with 0 to avoid not removing plus sign
+                this.lhs = this.lhs.replace(term2 as string, '0');
             }
-            this.lhs = this.lhs.replace(term2 as string, '0');
-            this.lhs = this.ce.parse(this.lhs as string, {canonical:["Add"]}).toMathJson() as unknown as MathJson;
+            this.lhs = this.ce.parse(this.lhs as string, {canonical:["Add","InvisibleOperator"]}).toMathJson() as unknown as MathJson;
             // Update the overarching equation's lhs
             this.equation[1] = this.lhs;
+            console.log("Updated LHS after combining terms: ", JSON.parse(JSON.stringify(this.lhs)));
             // Push the sum back to terms array just in case more grouping is needed (because it add 2 terms at a time)
             this.terms.push(sum);
             // Add step to steps array
@@ -287,10 +296,9 @@ class EquationSolver {
                 current: this.ce.box(current as any, {canonical:["InvisibleOperator"]}).toLatex(),
                 stepNumber: this.stepNumber++,
                 result: sum
-            });
+            });      
+            this.lhs = this.ce.box(this.lhs as any).toMathJson() as unknown as MathJson;
         }
-        // Update lhs to flattened MathJson
-        this.lhs = this.ce.box(this.lhs as any).toMathJson() as unknown as MathJson;
     }
     // groups constants together
     private groupConstants(): void {
@@ -316,7 +324,7 @@ class EquationSolver {
             // Update the overarching equation's lhs
             this.equation[1] = this.lhs;
             // Push the sum back to constants array just in case more grouping is needed (because it add 2 constants at a time)
-            this.terms.push(sum.toString());
+            this.constants.push(sum.toString());
             this.steps.push({
                 description: `Add ${constant1},${constant2}`,
                 current: this.ce.box(current as any,{canonical:["InvisibleOperator"]}).toLatex(),

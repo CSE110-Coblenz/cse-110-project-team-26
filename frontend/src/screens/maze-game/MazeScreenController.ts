@@ -96,7 +96,6 @@ Good luck and have fun!`;
 						this.view.updateChoices(prob.getChoices());
 					} else {
 						// If no more moves, generate a new problem
-						this.view.displayMessage("Congrats");
 						console.log("Solved the equation! Generating new problem.");
 						this.view.destroy();
 						this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
