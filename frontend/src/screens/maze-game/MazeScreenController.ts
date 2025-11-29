@@ -109,13 +109,22 @@ Good luck and have fun!`;
 					this.view.updateProblem(this.problem.getProblemStatement());
 					this.view.updateChoices(this.problem.getChoices());
 				}})});
+		
 		this.stopTimer();
 		this.startTimer();
 	};
 
 	// End the game
 	private endGame(): void {
+		this.view.fadeToBlack().then(() => {
+			this.view.displayMessage("Timeout");
+			this.problem = new ProblemModel(3);
+			this.view.updateProblem(this.problem.getProblemStatement());
+			this.view.updateChoices(this.problem.getChoices());	
+		})
 		this.stopTimer();
+		this.startTimer();
+
 	}
 
 	// Get the final score
