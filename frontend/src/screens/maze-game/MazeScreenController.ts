@@ -23,9 +23,9 @@ export class MazeScreenController extends ScreenController {
         this.view = new MazeScreenView((choice: ChoiceModel, x:number, y:number) => this.handleChoiceClick(choice, x, y));
 		const tutorialText = `Welcome to the Maze Game Tutorial!
 
-In this game, you'll solve linear equations step-by-step.
+Your rocket is stranded in deep space, and you're running out of fuel.
 
-At each step, choose the correct operation to isolate the variable.
+Navigate through the cosmic maze, solve each challenge, and collect enough fuel to continue your journey.
 
 Good luck and have fun!`;
 		this.tutorial = new MazeTutorialView(() => this.handleNextClick(), tutorialText);
