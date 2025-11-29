@@ -25,36 +25,15 @@ export class GraphScreenController extends ScreenController {
     /**
      * Initializes default values for the Controller
      */
-    constructor(screenSwitcher: ScreenSwitcher, tutorialScreenController: TutorialScreenController, level: number, difficulty: number) {
+    constructor(screenSwitcher: ScreenSwitcher, level: number, difficulty: number) {
         super();
-        this.level = level;
-        this.difficulty = difficulty;
-        let type = generateRandomNumber(0, this.difficulty);
-        // let type = 1;
-        this.model = new GraphScreenModel(type);
-        this.type = this.model.getQuestionType();
-        switch(this.type) {
-            case LINEAR:
-                this.submission = new Linear(false);
-            break;
-            case QUADRATIC:
-                this.submission = new Quadratic(false);
-            break;
-            case ABSVAL:
-                this.submission = new AbsoluteValue(false);
-            break;
-        }
-        this.view = new GraphScreenView(
-            type,
-            (input: number) => this.handleNumberInput(input),
-            () => this.handleEquationReset(),
-            () => this.handleEquationSubmission(this.submission)
-        );
-        this.view.plotPOI(this.model.getAnswer());
-        this.view.updateDialogue(DIALOGUE[`level${this.level}`]);
-        this.screenSwitcher = screenSwitcher;
-        this.tutorialScreenController = tutorialScreenController;
-        this.tutorialScreenController.configure("main-game", 3, TUTORIAL);
+            this.model = new GraphScreenModel();
+            this.view = new GraphScreenView(
+                (input: number) => this.handleNumberInput(input),
+                () => this.handleEquationReset(),
+                () => this.handleEquationSubmission()
+            );
+            this.screenSwitcher = screenSwitcher;
     }
 
     /**
@@ -286,7 +265,7 @@ export class GraphScreenController extends ScreenController {
         this.view.resetGraph();
     }
 
-    private handleEquationSubmission(submission: EquationAnswerFormat): void {
+    private handleEquationSubmission(): boolean {
         console.log('Submit button clicked');
         console.log(submission);
         if (submission.checkCompleteSubmission()) {
@@ -319,37 +298,21 @@ export class GraphScreenController extends ScreenController {
     }
 
     private previewEquationInput(): void {
+        // TODO: update model
         this.plotGraphGame(true); // isPreview = true
     }
 
     private plotGraphGame(isPreview: boolean): void {
-        this.view.plotGraph(isPreview, this.type, this.submission);
+        // if isPreview, then plot color will be different
+        // TODO: update view
     }
 
-    private switchGame(game: string): void {
-        let type = generateRandomNumber(0, this.difficulty);
-        this.model = new GraphScreenModel(type);
-        this.type = this.model.getQuestionType();
-        switch(this.type) {
-            case LINEAR:
-                this.submission = new Linear(false);
-            break;
-            case QUADRATIC:
-                this.submission = new Quadratic(false);
-            break;
-            case ABSVAL:
-                this.submission = new AbsoluteValue(false);
-            break;
-        }
-        this.view.reset(
-                type,
-                (input: number) => this.handleNumberInput(input),
-                () => this.handleEquationReset(),
-                () => this.handleEquationSubmission(this.submission)
-        );
-        this.view.plotPOI(this.model.getAnswer());
-        if(this.level === 6) this.view.updateDialogue(DIALOGUE.gameOver);
-        else this.view.updateDialogue(DIALOGUE[`level${this.level}`]);
-        this.screenSwitcher.switchToScreen({ type: game })
+    private switchToMazeGame(): void {
+        // TODO: switch to maze game
     }
+
+    private switchToMatchGame(): void {
+        // TODO: switch to match game
+    }
+
 }

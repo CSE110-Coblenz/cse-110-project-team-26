@@ -7,8 +7,8 @@ import { MazeScreenController } from "./screens/maze-game/MazeScreenController.t
 import { GraphScreenController } from "./screens/graph-game/GraphScreenController.ts";
 import { TitleScreenController } from "./screens/title-screen/TitleScreenController.ts";
 import { TutorialScreenController } from "./screens/tutorial-screen/TutorialScreenController.ts";
+import { StatisticsScreenController } from "./screens/statistics/StatisticsScreenController.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
-import type { TupleType } from "@cortex-js/compute-engine";
 
 /**
  * Main Application - Coordinates all screens
@@ -30,6 +30,7 @@ class App implements ScreenSwitcher {
 	private graphScreenController: GraphScreenController;
 	private titleController: TitleScreenController;
 	private tutorialController: TutorialScreenController;
+	private statisticsController: StatisticsScreenController;
 
 	constructor(container: string, level: number, difficulty: number) {
 		// Initialize Konva stage (the main canvas)
@@ -49,17 +50,21 @@ class App implements ScreenSwitcher {
 		this.matchingScreenController = new MatchingScreenController(this, this.stage);
 		this.mazeScreenController = new MazeScreenController(this);
 		this.graphScreenController = new GraphScreenController(this, level, difficulty);
-    this.titleController = new TitleScreenController(this);
+    	this.titleController = new TitleScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
+		this.statisticsController = new StatisticsScreenController(this);
 
 		// Add all screen groups to the layer
 		// All screens exist simultaneously but only one is visible at a time
-		this.stage.add(...this.graphScreenController.getView().getLayers());
+		this.graphScreenController.getView().getLayers().forEach((layer) => {
+			this.stage.add(layer);
+		});
 		this.layer.add(this.menuTestController.getView().getGroup());
 		this.layer.add(this.matchingScreenController.getView().getGroup());
 		this.layer.add(this.mazeScreenController.getView().getGroup());
 		this.layer.add(this.titleController.getView().getGroup());
 		this.layer.add(this.tutorialController.getView().getGroup());
+		this.layer.add(this.statisticsController.getView().getGroup());
 
 		// Draw the layer (render everything to the canvas)
 		this.layer.draw();
@@ -85,6 +90,7 @@ class App implements ScreenSwitcher {
 		this.graphScreenController.hide();
     	this.titleController.hide();
 		this.tutorialController.hide();
+		this.statisticsController.hide();
 		
 
 		// Show the requested screen based on the screen type
@@ -105,12 +111,17 @@ class App implements ScreenSwitcher {
 				this.graphScreenController.show();
 				break;
         
-      case "title":
-				this.titleController.show();
-				break;
+			case "title":
+						this.titleController.show();
+						break;
 
 			case "tutorial":
 				this.tutorialController.show();
+				break;
+
+			case "statistics":
+				// Statistics screen uses async show() to fetch data
+				void this.statisticsController.show();
 				break;
 		}
 	}

@@ -1,7 +1,5 @@
 import type { Group } from "konva/lib/Group";
-import { LINEAR, QUADRATIC, ABSVAL,
-		Y_MAX, Y_MIN, X_MAX, X_MIN
- 	} from "../src/constants";
+import { LINEAR, QUADRATIC, ABSVAL } from "../src/constants";
 
 /**
  * Generates an integer in [min, max]
@@ -44,8 +42,9 @@ export type Screen =
 	| { type: "maze-game" }
 	| { type: "main-game" }
 	| { type: "result"; score: number }
-  | { type: "title" }
-	| { type: "tutorial" };
+  	| { type: "title" }
+	| { type: "tutorial" }
+	| { type: "statistics" };
 
 
 export abstract class ScreenController {
@@ -357,19 +356,26 @@ export abstract class Question {
 	protected answer: EquationAnswerFormat;
 	protected submission: EquationAnswerFormat;
 
-	constructor() {
-		this.submission = null;
-		this.answer = null;
+constructor() {
+	this.submission = null;
+	this.answer = null;
+}
+
+generateAnswerValues(): void {
+	this.answer?.generateAnswerValues();
+}
+
+enterSubmission(submission: EquationAnswerFormat): void {
+	this.submission = submission;
+}
+
+verifyAnswer(): boolean {
+	if (!this.answer || !this.submission) {
+		return false;
 	}
 
-	enterSubmission(submission: EquationAnswerFormat): void {
-		this.submission = submission;
-	}
-
-	verifyAnswer(): boolean {
-		return this.submission.verifyAnswer(this.submission);
-	}
-
+	return this.answer.verifyAnswer(this.submission);
+}
 }
 
 export {

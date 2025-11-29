@@ -1,7 +1,5 @@
 import { compute } from "../../constants.ts";
 import { LinearEquation, EquationSolver } from "./maze-logic/LinearEquationLogic";
-import type { Step, MathJson } from "../../types.ts";
-
 
 /**
  * GameScreenModel - Manages game state
