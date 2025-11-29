@@ -52,7 +52,8 @@ export class GraphScreenView implements View {
     constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void) {
 
         // Add layers for static and dynamic elements
-
+        console.log(this.xMax);
+        console.log(this.xRange);
         console.log(GRAPH_BACKGROUND_PROPERTIES.width);
         console.log(GRAPH_BACKGROUND_PROPERTIES.height);
         
@@ -525,12 +526,12 @@ export class GraphScreenView implements View {
         let denominator = linearSubmission.getCoefficient().denominator;
         let intercept = linearSubmission.getIntercept();
 
-        let leftIntercept = numerator * (this.xMin) / denominator + intercept;
-        let rightIntercept = numerator * (this.xMax) / denominator + intercept;
+        let leftIntercept = numerator * (this.xMin - 1) / denominator + intercept;
+        let rightIntercept = numerator * (this.xMax + 1) / denominator + intercept;
 
         let plotLine = new Konva.Line({
-            points: [this.convertCoordToKonva(this.xMin, true), this.convertCoordToKonva(leftIntercept, false),
-                    this.convertCoordToKonva(this.xMax, true), this.convertCoordToKonva(rightIntercept, false)],
+            points: [this.convertCoordToKonva(this.xMin - 1, true), this.convertCoordToKonva(leftIntercept, false),
+                    this.convertCoordToKonva(this.xMax + 1, true), this.convertCoordToKonva(rightIntercept, false)],
             strokeWidth: 3,
             lineCap: 'round',
             name: "PLOT"
@@ -542,11 +543,11 @@ export class GraphScreenView implements View {
 
     plotQuadraticGraph(isPreview: boolean, submission: EquationAnswerFormat) {
         let numLines = 200;
-        let dx = (this.xMax - this.xMin) / numLines;
+        let dx = (this.xMax - this.xMin + 2) / numLines;
         let quadraticSubmission = submission as Quadratic;
 
         for (let i = 0; i < numLines; i++) {
-            let xStart = this.xMin + dx * i;
+            let xStart = this.xMin - 1 + dx * i;
             let xEnd = this.xMin + dx * (i + 1);
             let yStart = (xStart + quadraticSubmission.getRoot1()) * (xStart + quadraticSubmission.getRoot2());
             let yEnd = (xEnd + quadraticSubmission.getRoot1()) * (xEnd + quadraticSubmission.getRoot2());

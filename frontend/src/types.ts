@@ -110,9 +110,23 @@ export class Linear implements EquationAnswerFormat {
 		};
 		if (!this.coefficientIsPos) this.coefficient.numerator *= -1;
 		this.intercept = generateRandomNumber(-5, 5);
+		this.interceptIsPos = this.intercept > -1;
+		this.simplify();
+	}
+
+	simplify() {
+		for (let i = 4; i > 1; i--) {
+			if (this.coefficient.numerator % i == 0 && this.coefficient.denominator % i == 0) {
+				this.coefficient.numerator /= i;
+				this.coefficient.denominator /= i;
+			}
+		}
+		
 	}
 
 	verifyAnswer(submission: Linear): boolean {
+		if (!submission.checkCompleteSubmission()) return false;
+		submission.simplify();
 		if (this.coefficient.numerator != submission.coefficient.numerator) {
 			console.log("numerators unequal");
 			return false;
@@ -125,6 +139,7 @@ export class Linear implements EquationAnswerFormat {
 			console.log("intercepts unequal");
 			return false
 		}
+		console.log("All clear");
 		return true;
 	}
 
@@ -195,12 +210,9 @@ export class Quadratic implements EquationAnswerFormat {
 	}
 
 	verifyAnswer(submission: Quadratic): boolean {
+		if (!submission.checkCompleteSubmission()) return false;
 		if ((this.root1 == submission.root1 && this.root2 == submission.root2) ||
 			(this.root2 == submission.root1 && this.root1 == submission.root2)) {
-				return true;
-			}
-		if ((this.root1IsPos == submission.root1IsPos) && (this.root2IsPos == submission.root2IsPos) ||
-			(this.root2IsPos == submission.root1IsPos) && (this.root2IsPos == submission.root1IsPos)) {
 				return true;
 			}
 		return false;
@@ -279,9 +291,22 @@ export class AbsoluteValue implements EquationAnswerFormat {
 		if (!this.coefficientIsPos) this.coefficient.numerator *= -1;
 		this.xShift = generateRandomNumber(-4, 4);
 		this.yShift = generateRandomNumber(-4, 4);
+		this.simplify();
+	}
+
+	simplify() {
+		for (let i = 4; i > 1; i--) {
+			if (this.coefficient.numerator % i == 0 && this.coefficient.denominator % i == 0) {
+				this.coefficient.numerator /= i;
+				this.coefficient.denominator /= i;
+			}
+		}
+		
 	}
 
 	verifyAnswer(submission: AbsoluteValue): boolean {
+		if (!submission.checkCompleteSubmission()) return false;
+		submission.simplify();
 		if (this.coefficient.numerator != submission.coefficient.numerator) return false;
 		else if (this.coefficient.denominator != submission.coefficient.denominator) return false;
 		else if (this.xShift != submission.xShift) return false;

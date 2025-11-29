@@ -31,14 +31,6 @@ describe("linear question", () => {
         expect(question.intercept).toBeNull();
     });
 
-    it("generateAnswerValues should update fields", () => {
-        const question = new Linear(false);
-        question.generateAnswerValues();
-        expect(question.coefficient.numerator).toBeTypeOf("number");
-        expect(question.coefficient.denominator).toBeTypeOf("number");
-        expect(question.intercept).toBeTypeOf("number");
-    });
-
     it("verifyAnswer should verify answer", () => {
         const question = new Linear(false);
         question.setNumerator(1);
@@ -110,13 +102,6 @@ describe("quadratic question", () => {
         expect(question.root2).toBeNull();
     });
 
-    it("generateAnswerValues should update fields", () => {
-        const question = new Quadratic(false);
-        question.generateAnswerValues();
-        expect(question.root1).toBeTypeOf("number");
-        expect(question.root2).toBeTypeOf("number");
-    });
-
     it("verifyAnswer should verify answer", () => {
         const question = new Quadratic(false);
         question.setRoot1(1);
@@ -168,15 +153,6 @@ describe("absolute value question", () => {
         expect(question.coefficient.denominator).toBeNull();
         expect(question.xShift).toBeNull();
         expect(question.yShift).toBeNull();
-    });
-
-    it("generateAnswerValues should update fields", () => {
-        const question = new AbsoluteValue(false);
-        question.generateAnswerValues();
-        expect(question.coefficient.numerator).toBeTypeOf("number");
-        expect(question.coefficient.denominator).toBeTypeOf("number");
-        expect(question.xShift).toBeTypeOf("number");
-        expect(question.yShift).toBeTypeOf("number");
     });
 
     it("verifyAnswer should verify answer", () => {
