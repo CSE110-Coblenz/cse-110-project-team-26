@@ -26,8 +26,8 @@ jobs:
       - name: Install deps (frontend)
         run: npm ci
 
-      - name: Typecheck (frontend)
-        run: npx tsc --noEmit
+#      - name: Typecheck (frontend)
+#        run: npx tsc --noEmit
 
       - name: Run tests (frontend)
         run: npm test

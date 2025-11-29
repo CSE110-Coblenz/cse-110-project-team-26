@@ -1,5 +1,37 @@
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 
+// Tutorial text
+
+const TUTORIAL = {
+  title: "Graphing Game Tutorial",
+  step0: ""
+    + "Hello space traveler! You've been on a mission for years "
+    + "which has taken you all around the universe! You've gained "
+    + "much treasure and fame, but now it's time to return to Earth.",
+  step1: ""
+    + "You will be plotting graphs to help your spaceship navigate space safely! "
+    + "The goal is to submit a graph that goes through both points on the graph. "
+    + "Use the keypad in the bottom to fill in the empty spaces in the equations. "
+    + "Once you're satisfied, hit the submit button and see if you flew safely!",
+  step2: ""
+    + "If you ever need to see this tutorial again, hit the help button "
+    + "in the top left of the screen. Have a safe mission!"
+};
+
+// Dialogue components
+
+const DIALOGUE = {
+  level1: "<Dialogue>\nWelcome space traveler! The first step in our journey involves flying to the planet Kepler-7b. Plot a path for the spaceship around the obstacles!",
+  level2: "<Dialogue>\nNext stop is the planet KS-157d. There's some space debris in your way, make sure to avoid it!",
+  level3: "<Dialogue>\nYou've been flying for a while traveler. Make your way to Hailey's comet for some rest.",
+  level4: "<Dialogue>\nWe're in the home stretch now. Avoid the obstacles and plot your way to Pluto!",
+  level5: "<Dialogue>\nYou can see the finish line! Avoid the asteroid belt and make your way to Earth!",
+  success: "<Dialogue>\nYou made it! Time to search for resources.",
+  failure: "<Dialogue>\nOops! You ran into an obstacle and your spaceship has sustained damage. Click the button to fix your engine!",
+  incomplete: "Make sure that you've filled every parameter of the equation!",
+  gameOver: "<Dialogue>\nWelcome home space traveler! You've gone quite a journey to get back to Earth. Congratulations on using your knowledge of algebra to make it back!"
+};
+
 // SCREEN SPECIFIC CONSTANTS
 
 const OFFSET = STAGE_WIDTH * 0.02;
@@ -40,8 +72,8 @@ const GRAPH_GROUP_PROPERTIES = {
 const GRAPH_BACKGROUND_PROPERTIES = {
   x: OFFSET,
   y: OFFSET,
-  width: Math.floor((GRAPH_GROUP_PROPERTIES.width - (OFFSET * 2)) / 100) * 100,
-  height: Math.floor((GRAPH_GROUP_PROPERTIES.height - (OFFSET * 2)) / 20) * 20,
+  width: Math.floor((GRAPH_GROUP_PROPERTIES.width - (OFFSET * 2)) / 40) * 40,
+  height: Math.floor((GRAPH_GROUP_PROPERTIES.height - (OFFSET * 2)) / 40) * 40,
   fill: "#161313"
 };
 
@@ -86,10 +118,66 @@ const DIALOGUE_TEXT_PROPERTIES = {
   y: DIALOGUE_BOX_PROPERTIES.y + (OFFSET * 0.5),
   width: DIALOGUE_BOX_PROPERTIES.width - OFFSET,
   height: DIALOGUE_BOX_PROPERTIES.height - OFFSET,
-  text: "<Dialogue>\nOh no, an asteroid field! Let's safely plot a path to <destination>",
+  text: DIALOGUE.level,
   fontSize: 24,
   fontFamily: "Arial",
   fill: "white"
+};
+
+const TRANSITION_GROUP_PROPERTIES = {
+  x: DIALOGUE_BOX_PROPERTIES.x,
+  y: DIALOGUE_BOX_PROPERTIES.height * (9/10) - OFFSET * 2,
+  width: DIALOGUE_BOX_PROPERTIES.width,
+  height: DIALOGUE_BOX_PROPERTIES.height * (1/10) + OFFSET * 2
+};
+
+const TRANSITION_BUTTON_PROPERTIES = {
+  x: OFFSET * 0.5,
+  y: OFFSET * 0.5,
+  width: TRANSITION_GROUP_PROPERTIES.width - OFFSET,
+  height: TRANSITION_GROUP_PROPERTIES.height - OFFSET,
+  fill: "#110808"
+};
+
+const TRANSITION_TEXT_PROPERTIES = {
+  x: OFFSET * 0.5,
+  y: OFFSET * 0.5,
+  width: TRANSITION_BUTTON_PROPERTIES.width,
+  height: TRANSITION_BUTTON_PROPERTIES.height,
+  text: "Go to minigame",
+  fontSize: 24,
+  fontFamily: "Arial",
+  fill: "white",
+  align: "center",
+  verticalAlign: "middle"
+};
+
+const RESULTS_GROUP_PROPERTIES = {
+  x: DIALOGUE_BOX_PROPERTIES.x,
+  y: DIALOGUE_BOX_PROPERTIES.height * (9/10) - OFFSET * 2,
+  width: DIALOGUE_BOX_PROPERTIES.width,
+  height: DIALOGUE_BOX_PROPERTIES.height * (1/10) + OFFSET * 2
+};
+
+const RESULTS_BUTTON_PROPERTIES = {
+  x: OFFSET * 0.5,
+  y: OFFSET * 0.5,
+  width: RESULTS_GROUP_PROPERTIES.width - OFFSET,
+  height: RESULTS_GROUP_PROPERTIES.height - OFFSET,
+  fill: "#110808"
+};
+
+const RESULTS_TEXT_PROPERTIES = {
+  x: OFFSET * 0.5,
+  y: OFFSET * 0.5,
+  width: RESULTS_BUTTON_PROPERTIES.width,
+  height: RESULTS_BUTTON_PROPERTIES.height,
+  text: "Go to results",
+  fontSize: 24,
+  fontFamily: "Arial",
+  fill: "white",
+  align: "center",
+  verticalAlign: "middle"
 };
 
 // Equation/Input group and elements
@@ -122,7 +210,6 @@ const EQUATION_TEXT_PROPERTIES = {
   y: EQUATION_BOX_PROPERTIES.y,
   width: EQUATION_BOX_PROPERTIES.width,
   height: EQUATION_BOX_PROPERTIES.height,
-  text: "y=_x+_",
   fontSize: 16,
   fontFamily: "Arial",
   fill: "white",
@@ -131,6 +218,8 @@ const EQUATION_TEXT_PROPERTIES = {
 };
 
 export {
+  DIALOGUE,
+  TUTORIAL,
   OFFSET,
   SIDEBAR_WIDTH,
   BOX_WIDTH,
@@ -146,9 +235,15 @@ export {
   DIALOGUE_GROUP_PROPERTIES,
   DIALOGUE_BOX_PROPERTIES,
   DIALOGUE_TEXT_PROPERTIES,
+  TRANSITION_GROUP_PROPERTIES,
+  TRANSITION_BUTTON_PROPERTIES,
+  TRANSITION_TEXT_PROPERTIES,
+  RESULTS_GROUP_PROPERTIES,
+  RESULTS_BUTTON_PROPERTIES,
+  RESULTS_TEXT_PROPERTIES,
   INPUT_AND_EQUATION_GROUP_PROPERTIES,
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,
   EQUATION_TEXT_PROPERTIES,
-  PIX_PER_UNIT
+  PIX_PER_UNIT,
 };

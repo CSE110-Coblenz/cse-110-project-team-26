@@ -45,7 +45,7 @@ export class TutorialScreenView implements View {
 			width: STAGE_WIDTH,
 			align: "center",
 			text: "Tutorial",
-			fontSize: 48,
+			fontSize: 52,
 			fontFamily: "Arial",
 			fill: "#ffffff",
 			fontStyle: "bold",
@@ -194,6 +194,16 @@ export class TutorialScreenView implements View {
 
 		this.group.getLayer()?.draw();
 	}
+
+  updateContentText(text: string): void {
+    this.contentText.text(text);
+    this.group.getLayer()?.draw();
+  }
+
+  updateTitleText(text: string): void {
+    this.titleText.text(text)
+    this.group.getLayer()?.draw();
+  }
 
 	getGroup(): Konva.Group {
 		return this.group;
