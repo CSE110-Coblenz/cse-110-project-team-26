@@ -8,22 +8,28 @@ export class MazeTutorialView {
     
     constructor(handler: () => void, tutorialText: string = "") {
         this.group = new Konva.Group({visible: false});
-        const bg = new Konva.Rect({
-                    x: 0,
-                    y: 0,
-                    width: STAGE_WIDTH,
-                    height: STAGE_HEIGHT,
-                    fill: "#616567ff", // Sky blue
+        const bg = new Konva.Image({
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            image: (() => {
+                const image = new Image();
+                image.src = "/backgroundMessage.png";
+                return image; 
+                })(),
+            //fill: "#616567ff", // Sky blue
         });
         this.group.add(bg);
         this.tutorialText = new Konva.Text({
             x: STAGE_WIDTH / 2 - 200,
-            y: STAGE_HEIGHT / 2 - 100,
+            y: STAGE_HEIGHT / 2 - 250,
             text: "",
-            fontSize: 18,
-            fontFamily: "Arial",
-            fill: "black",
+            fontSize: 30,
+            fontFamily: "medodica",
+            fill: "white",
             width: 400,
+            verticalAlign: "middle",
             align: "center",
         });
         this.updateTutorialText(tutorialText);
@@ -41,7 +47,7 @@ export class MazeTutorialView {
             y: STAGE_HEIGHT - 85,
             text: "Next",
             fontSize: 20,
-            fontFamily: "Arial",
+            fontFamily: "medodica",
             fill: "white",
         });
         this.nextButton.on('click', () => handler());
@@ -52,6 +58,7 @@ export class MazeTutorialView {
         const tutorialContent = instructions;
         this.tutorialText.text(tutorialContent);
     }
+    
     // Show the tutorial view
     show() {
         console.log("Showing tutorial");
