@@ -3,6 +3,7 @@ import { GraphScreenView } from "./GraphScreenView";
 import { GraphScreenModel } from "./GraphScreenModel";
 import { AbsoluteValue, Quadratic, type EquationAnswerFormat, type ScreenSwitcher } from "../../types";
 import { LINEAR, QUADRATIC, ABSVAL } from "../../constants";
+import { DIALOGUE } from "./GraphScreenConstants";
 import { Linear } from "../../types";
 
 // REFACTOR CODE TO HAVE VARIABLE ORIGIN POINT
@@ -276,23 +277,29 @@ export class GraphScreenController extends ScreenController {
         this.view.resetGraph();
     }
 
-    private handleEquationSubmission(submission: EquationAnswerFormat): boolean {
+    private handleEquationSubmission(submission: EquationAnswerFormat): void {
         console.log('Submit button clicked');
         console.log(submission);
         if (submission.checkCompleteSubmission()) {
             console.log(submission);
             this.model.enterSubmission(submission);
+            this.submitEquationInput();
+        } else {
+            this.view.updateDialogue(DIALOGUE.incomplete);
+            this.handleEquationReset();
         }
-        this.submitEquationInput();
-        return false;
     }
 
     private submitEquationInput(): void {
         this.plotGraphGame(false); // isPreview = false
         if (this.model.getAnswer().verifyAnswer(this.submission)) {
-            this.view.updateEquation("CORRECT")
+            this.view.showTransitionButton((game: string) => this.switchGame(game), "maze-game");
+            this.view.updateDialogue(DIALOGUE.success);
+            console.log(DIALOGUE.success);
         } else {
-            this.view.updateEquation("WRONG");
+            this.view.showTransitionButton((game: string) => this.switchGame(game), "matching-game");
+            this.view.updateDialogue(DIALOGUE.failure);
+            console.log(DIALOGUE.failure);
         }
     }
 
@@ -304,11 +311,29 @@ export class GraphScreenController extends ScreenController {
         this.view.plotGraph(isPreview, this.type, this.submission);
     }
 
-    private switchToMazeGame(): void {
-        this.screenSwitcher.switchToScreen({ type: "maze-game" });
-    }
-
-    private switchToMatchGame(): void {
-        this.screenSwitcher.switchToScreen({ type: "matching-game" });
+    private switchGame(game: string): void {
+        let type = generateRandomNumber(0, 2);
+        this.model = new GraphScreenModel(type);
+        this.type = this.model.getQuestionType();
+        switch(this.type) {
+            case LINEAR:
+                this.submission = new Linear(false);
+            break;
+            case QUADRATIC:
+                this.submission = new Quadratic(false);
+            break;
+            case ABSVAL:
+                this.submission = new AbsoluteValue(false);
+            break;
+        }
+        this.view.reset(
+                type,
+                (input: number) => this.handleNumberInput(input),
+                () => this.handleEquationReset(),
+                () => this.handleEquationSubmission(this.submission)
+        );
+        this.view.plotPOI(this.model.getAnswer());
+        this.view.updateDialogue(DIALOGUE.level);
+        this.screenSwitcher.switchToScreen({ type: game })
     }
 }
