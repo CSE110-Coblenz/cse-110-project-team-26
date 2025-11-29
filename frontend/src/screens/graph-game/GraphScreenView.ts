@@ -40,6 +40,7 @@ export class GraphScreenView implements View {
     private yOffset = 0;
     private xOffset = 0;
     private xMin = Math.floor(-this.xRange / 2 + 1) + this.xOffset;
+    private xMax = this.xMin + this.xRange;
     private yMax = Math.floor(this.yRange / 2 - 1) + this.yOffset;
     /**
      * Initializes default values for the View
@@ -140,7 +141,7 @@ export class GraphScreenView implements View {
                 this.equationText.text("y=(x+_)(x+_)");
             break;
             case 2:
-                this.equationText.text("y=|(_/_)x+_|+_");
+                this.equationText.text("y=(_/_)|x+_|+_");
             break;
         }
         console.log(this.equationText.text());
@@ -187,7 +188,7 @@ export class GraphScreenView implements View {
 
     resetGraph() {
         let found = this.graphGroup.find( (item: Konva.Rect | Konva.Line) => {
-            return item.name() === "TEMP";
+            return item.name() === "TEMP" || item.name() === "PLOT";
         });
         console.log("Found size: " + found.length);
         for (let i = 0; i < found.length; i++) {
@@ -426,55 +427,108 @@ export class GraphScreenView implements View {
             case QUADRATIC:
                 let quadraticAnswer = answer as Quadratic;
                 console.log(answer);
-                this.addPOIRectangle(quadraticAnswer.getRoot1(), 0, 'blue');
-                this.addPOIRectangle(quadraticAnswer.getRoot2(), 0, 'blue');
+                this.addPOIRectangle(-quadraticAnswer.getRoot1(), 0, 'blue');
+                this.addPOIRectangle(-quadraticAnswer.getRoot2(), 0, 'blue');
             break;
             case ABSVAL:
                 let absvalAnswer = answer as AbsoluteValue;
                 console.log(answer);
-                this.addPOIRectangle(absvalAnswer.getXShift(), absvalAnswer.getYShift(), 'green');
-                this.addPOIRectangle(absvalAnswer.getXShift() - absvalAnswer.getCoefficient().denominator,
+                this.addPOIRectangle(-absvalAnswer.getXShift(), absvalAnswer.getYShift(), 'green');
+                this.addPOIRectangle(-absvalAnswer.getXShift() - absvalAnswer.getCoefficient().denominator,
                                         absvalAnswer.getYShift() + absvalAnswer.getCoefficient().numerator, 'green');
-                this.addPOIRectangle(absvalAnswer.getXShift() + absvalAnswer.getCoefficient().denominator,
+                this.addPOIRectangle(-absvalAnswer.getXShift() + absvalAnswer.getCoefficient().denominator,
                                         absvalAnswer.getYShift() + absvalAnswer.getCoefficient().numerator, 'green');
             break;
         }
     }
 
-    plotLinearGraph(isPreview: boolean, type: string, submission: EquationAnswerFormat) {
+    plotLinearGraph(isPreview: boolean, submission: EquationAnswerFormat) {
         let linearSubmission = submission as Linear;
 
         let numerator = linearSubmission.getCoefficient().numerator;
         let denominator = linearSubmission.getCoefficient().denominator;
         let intercept = linearSubmission.getIntercept();
 
-        let leftIntercept = (denominator * (X_MIN - intercept)) / numerator;
-        let rightIntercept = (denominator * (X_MAX - intercept)) / numerator;
+        let leftIntercept = numerator * (this.xMin) / denominator + intercept;
+        let rightIntercept = numerator * (this.xMax) / denominator + intercept;
 
         let plotLine = new Konva.Line({
-            points: [this.convertCoordToKonva(X_MIN, true), this.convertCoordToKonva(leftIntercept, false),
-                    this.convertCoordToKonva(X_MAX, true), this.convertCoordToKonva(rightIntercept, false)],
+            points: [this.convertCoordToKonva(this.xMin, true), this.convertCoordToKonva(leftIntercept, false),
+                    this.convertCoordToKonva(this.xMax, true), this.convertCoordToKonva(rightIntercept, false)],
             strokeWidth: 3,
-            lineCap: 'round'
+            lineCap: 'round',
+            name: "PLOT"
         })
         if (isPreview) plotLine.stroke('green');
         else plotLine.stroke('red');
         this.graphGroup.add(plotLine);
     }
 
+    plotQuadraticGraph(isPreview: boolean, submission: EquationAnswerFormat) {
+        let numLines = 200;
+        let dx = (this.xMax - this.xMin) / numLines;
+        let quadraticSubmission = submission as Quadratic;
+
+        for (let i = 0; i < numLines; i++) {
+            let xStart = this.xMin + dx * i;
+            let xEnd = this.xMin + dx * (i + 1);
+            let yStart = (xStart + quadraticSubmission.getRoot1()) * (xStart + quadraticSubmission.getRoot2());
+            let yEnd = (xEnd + quadraticSubmission.getRoot1()) * (xEnd + quadraticSubmission.getRoot2());
+            let plotLine = new Konva.Line({
+                points: [this.convertCoordToKonva(xStart, true), this.convertCoordToKonva(yStart, false),
+                        this.convertCoordToKonva(xEnd, true), this.convertCoordToKonva(yEnd, false)],
+                strokeWidth: 3,
+                lineCap: 'round',
+                name: "PLOT"
+            });
+            if (isPreview) plotLine.stroke('green');
+            else plotLine.stroke('red');
+            this.graphGroup.add(plotLine);
+        }
+    }
+
+    plotAbsValGraph(isPreview: boolean, submission: EquationAnswerFormat) {
+        let absvalSubmission = submission as AbsoluteValue;
+
+        let numerator = absvalSubmission.getCoefficient().numerator;
+        let denominator = absvalSubmission.getCoefficient().denominator;
+        let xShift = absvalSubmission.getXShift();
+        let yShift = absvalSubmission.getYShift();
+        let leftIntercept = (numerator * Math.abs(this.xMin + xShift) / denominator) + yShift;
+        let rightIntercept = (numerator * Math.abs(this.xMax + xShift) / denominator) + yShift;
+
+        let plotLine1 = new Konva.Line({
+            points: [this.convertCoordToKonva(this.xMin, true), this.convertCoordToKonva(leftIntercept, false),
+                    this.convertCoordToKonva(-xShift, true), this.convertCoordToKonva(yShift, false)],
+            strokeWidth: 3,
+            lineCap: 'round',
+            name: "PLOT"
+        })
+        if (isPreview) plotLine1.stroke('green');
+        else plotLine1.stroke('red');
+        let plotLine2 = new Konva.Line({
+            points: [this.convertCoordToKonva(-xShift, true), this.convertCoordToKonva(yShift, false),
+                    this.convertCoordToKonva(this.xMax, true), this.convertCoordToKonva(rightIntercept, false)],
+            strokeWidth: 3,
+            lineCap: 'round',
+            name: "PLOT"
+        })
+        if (isPreview) plotLine2.stroke('green');
+        else plotLine2.stroke('red');
+        this.graphGroup.add(plotLine1);
+        this.graphGroup.add(plotLine2);
+    }
+
     plotGraph(isPreview: boolean, type: string, submission: EquationAnswerFormat) {
         switch(type) {
             case LINEAR:
-                this.plotLinearGraph(isPreview, type, submission);
+                this.plotLinearGraph(isPreview, submission);
             break;
             case QUADRATIC:
-                this.addGuessRectangle((submission as Quadratic).getRoot1(), 0, 'red');
-                this.addGuessRectangle((submission as Quadratic).getRoot2(), 0, 'red');
-                console.log(this.graphGroup.getChildren());
+                this.plotQuadraticGraph(isPreview, submission);
             break;
-
             case ABSVAL:
-
+                this.plotAbsValGraph(isPreview, submission);
             break;
         }
     }
@@ -483,6 +537,7 @@ export class GraphScreenView implements View {
     
         let group: Konva.Group = new Konva.Group(GRAPH_GROUP_PROPERTIES);
         let graphChart: Konva.Rect = new Konva.Rect(GRAPH_BACKGROUND_PROPERTIES);
+        graphChart.name("CHART");
         let graphChartLeft = OFFSET;
         let graphChartright = graphChart.width() + OFFSET;
         let graphChartTop = OFFSET;

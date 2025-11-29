@@ -186,31 +186,31 @@ export class GraphScreenController extends ScreenController {
             if (input == -1) {
                 submission.setCoefficientIsPos();
                 determineSign(!coefficientIsPos, false);
-                text += `|(_/_)x+_|+_`;
+                text += `(_/_)|x+_|+_`;
                 this.view.updateEquation(text);
                 return;
             }
             submission.setNumerator(input);
             console.log(submission.getCoefficient().numerator);
             determineSign(coefficientIsPos, false);
-            text += `|(${input}/_)x+_|+_`;
+            text += `(${input}/_)|x+_|+_`;
             this.view.updateEquation(text);
         } else if (denominator == null) {
             if (input == -1) {
                 submission.setCoefficientIsPos();
                 determineSign(!coefficientIsPos, false);
-                text += `|(${numerator}/_)x+_|+_`;
+                text += `(${numerator}/_)|x+_|+_`;
                 this.view.updateEquation(text);
                 return;
             }
             submission.setDenominator(input);
             console.log(submission.getCoefficient().numerator);
             determineSign(coefficientIsPos, false);
-            text += `|(${numerator}/${input})x+_|+_`;
+            text += `(${numerator}/${input})|x+_|+_`;
             this.view.updateEquation(text);
         } else if (xShift == null) {
             determineSign(coefficientIsPos, false);
-            text += `|(${numerator}/${denominator})x`;
+            text += `(${numerator}/${denominator})|x`;
             if (input == -1) {
                 submission.setXShiftIsPos();
                 determineSign(!xShiftIsPos, true);
@@ -224,7 +224,7 @@ export class GraphScreenController extends ScreenController {
             this.view.updateEquation(text);
         } else {
             determineSign(coefficientIsPos, false);
-            text += `|(${numerator}/${denominator})x`;
+            text += `(${numerator}/${denominator})|x`;
             determineSign(xShiftIsPos, true);
             text += `${xShift}|`;
             if (input == -1) {
@@ -270,7 +270,7 @@ export class GraphScreenController extends ScreenController {
             break;
             case ABSVAL:
                 this.submission = new AbsoluteValue(false);
-                this.view.updateEquation(`y=|(_/_)x+_|+_`);
+                this.view.updateEquation(`y=(_/_)|x+_|+_`);
             break;
         }
         this.view.resetGraph();
