@@ -91,39 +91,45 @@ Good luck and have fun!`;
 					// Ensure a problem exists and advance or create as needed
 					const prob = this.problem as ProblemModel;
 					if(prob.nextMove()){
-						this.view.displayMessage("Correct");
+						this.stopTimer();
+						this.view.displayMessage("Correct", () => {
 						this.view.updateProblem(prob.getProblemStatement());
 						this.view.updateChoices(prob.getChoices());
+						this.startTimer();
+						});
 					} else {
 						// If no more moves, generate a new problem
-						console.log("Solved the equation! Generating new problem.");
-						this.view.destroy();
-						this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
+						this.stopTimer();
+						this.view.displayMessage("Congrats", () => {
+							console.log("Solved the equation! Generating new problem.");
+							this.view.destroy();
+							this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
+						});
 					}
 				}
 				else {
 					// For incorrect choice, just generate new problem
-					this.view.displayMessage("Incorrect");
-					this.problem = new ProblemModel(3);
-					this.view.updateProblem(this.problem.getProblemStatement());
-					this.view.updateChoices(this.problem.getChoices());
+					this.stopTimer();
+					this.view.displayMessage("Incorrect", () => {
+						this.problem = new ProblemModel(3);
+						this.view.updateProblem(this.problem.getProblemStatement());
+						this.view.updateChoices(this.problem.getChoices());
+						this.startTimer();
+					});
 				}})});
-		
-		this.stopTimer();
-		this.startTimer();
 	};
 
 	// End the game
 	private endGame(): void {
-		this.view.fadeToBlack().then(() => {
-			this.view.displayMessage("Timeout");
-			this.problem = new ProblemModel(3);
-			this.view.updateProblem(this.problem.getProblemStatement());
-			this.view.updateChoices(this.problem.getChoices());	
-		})
 		this.stopTimer();
-		this.startTimer();
-
+		this.view.fadeToBlack().then(() => {
+			this.view.displayMessage("Timeout", () => {
+				this.problem = new ProblemModel(3);
+				this.view.updateProblem(this.problem.getProblemStatement());
+				this.view.updateChoices(this.problem.getChoices());
+				this.startTimer();	
+			});
+		});
 	}
 
 	// Get the final score
