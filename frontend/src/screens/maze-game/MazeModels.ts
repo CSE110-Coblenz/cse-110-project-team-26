@@ -39,13 +39,40 @@ export class ProblemModel {
         this.linearEquation = new LinearEquation(difficultyLevel, compute);
         this.problemStatement = this.linearEquation.getEquationLaTeX();
         this.solver = new EquationSolver(this.linearEquation.getEquation(), compute);
-        this.generateChoices();
-    }
+        console.log("Steps to solve the equation:");
+        console.log(JSON.parse(JSON.stringify(this.solver.steps)));
+        const firstStep = this.solver.getStep();
+        console.log(firstStep);
+        this.generateChoices(firstStep);
+        console.log("Generated Problem: ", this.problemStatement);
+        }
     // Need logic to see when it is the last step
-    private generateChoices(){
-        this.choices.push(new ChoiceModel(this.solver.getStep().description, true));
-        this.choices.push(new ChoiceModel("Incorrect Choice 1", false));
-        this.choices.push(new ChoiceModel("Incorrect Choice 2", false));
+    private generateChoices(correctChoice: Step, isLastStep: boolean = false) {
+        this.choices.push(new ChoiceModel(correctChoice.description, true));
+        const operations = ["Add", "Divide", "Subtract", "Multiply"] as const;
+        let randomNumber1: number;
+        let randomNumber2: number;
+        if (!isLastStep) {
+            // Second choice
+            let randomOperation = operations[Math.floor(Math.random() * operations.length)];
+            randomNumber1 = Math.floor(Math.random() * 10) + 1;
+            randomNumber2 = Math.floor(Math.random() * 10) + 1;
+            this.choices.push(new ChoiceModel(`${randomOperation} ${randomNumber1}, ${randomNumber2}`, false));
+            // Third choice
+            randomOperation = operations[Math.floor(Math.random() * operations.length)];
+            randomNumber1 = Math.floor(Math.random() * 10) + 1;
+            /* randomNumber2 = numberMatches.length
+                ? numberMatches[Math.floor(Math.random() * numberMatches.length)]
+                : String(Math.floor(Math.random() * 10) + 1); */
+            randomNumber2 = Math.floor(Math.random() * 10) + 1;
+            this.choices.push(new ChoiceModel(`${randomOperation} ${randomNumber1}, ${randomNumber2}`, false));
+        } else { 
+            // NEED TO MAKE SURE INCORRECT CHOICES ARE NOT THE SOLUTION
+            randomNumber1 = Math.floor(Math.random() * 10) + 1;
+            this.choices.push(new ChoiceModel(`x = ${randomNumber1}`, false));
+            randomNumber2 = Math.floor(Math.random() * 10) + 1;
+            this.choices.push(new ChoiceModel(`x = ${randomNumber2}`, false));
+        }
         this.shuffleChoices();
     }
     // Shuffle choices to randomize their order
@@ -54,6 +81,10 @@ export class ProblemModel {
             const j = Math.floor(Math.random() * (i + 1));
             [this.choices[i], this.choices[j]] = [this.choices[j], this.choices[i]];
         }
+    }
+    // Set the problem statement based on the current step
+    private setProblemStatement(statement: string) {
+        this.problemStatement = statement;
     }
     // Need to return problem with the next step applied rather than the original problem
     // Also Konva does not support LaTeX rendering directly, so we need to convert LaTeX to an image
@@ -65,9 +96,16 @@ export class ProblemModel {
         return this.choices;
     }
     // Clear current choices and generate new ones based on the next step
-    public nextMove() {
+    public nextMove(): boolean {
         this.choices = [];
-        this.generateChoices();
+        if (this.solver.getStepsCount() === 0) {
+            return false;
+        }
+        const newStep = this.solver.getStep(); // advance to next step
+        console.log("Next Step: ", newStep);
+        this.generateChoices(newStep, this.solver.getStepsCount() === 0? true : false);
+        this.setProblemStatement(newStep.current);
+        return true;
     }
 }
 /**
