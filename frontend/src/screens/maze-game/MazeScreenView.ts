@@ -233,7 +233,7 @@ export class MazeScreenView implements View {
         this.group.getLayer()?.draw();
     }
     // Fade to black transition
-    fadeToBlack(duration: number = 0.2): Promise<void> {
+    fadeToBlack(duration: number = 0.4): Promise<void> {
     this.transitionScreen.moveToTop();
         return new Promise((resolve) => {
             new Konva.Tween({
@@ -241,7 +241,6 @@ export class MazeScreenView implements View {
             opacity: 1,
             duration,
             onFinish: () => {
-            this.fadeFromBlack();
             this.resetPlayerPosition();
             this.player?.scaleX(0.8);
             this.player?.scaleY(0.8);
@@ -263,6 +262,10 @@ export class MazeScreenView implements View {
         },
             }).play();
         });
+    }
+    transitMovetoBottom(){
+        this.transitionScreen.moveToBottom();
+        this.transitionScreen.opacity(0);
     }
     // Helper function to set player animation
     setAnimation(name: string) {
@@ -356,12 +359,14 @@ export class MazeScreenView implements View {
         bg.on('click', () => {
             bg.destroy();
             message.destroy();
+            this.transitMovetoBottom();
             clearTimeout(timeOut);
             console.log("destroyed on click")
         });
                 
         const timeOut = setTimeout(()=>{
             bg.destroy();
+            this.transitMovetoBottom();
             message.destroy();
             console.log("destroyed on time")
         },5000);

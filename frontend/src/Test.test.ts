@@ -1,5 +1,21 @@
-import { it, expect } from "vitest";
+import {  } from "./screens/maze-game/tests/MazeTest.ts";
+import { describe, it, expect } from "vitest";
 
-it("Test", () => {
-    expect(3).equals(3);
-})
+
+describe("Equation Generation", () => {
+  it("adds", () => {
+    expect(1 + 2).toBe(3);
+  });
+});
+
+describe("Equation Generation", () => {
+    it("adds", () => {
+      expect(1 + 2).toBe(3);
+    });
+  });
+
+  describe("Equation Generation", () => {
+    it("adds", () => {
+      expect(1 + 2).toBe(3);
+    });
+  });

@@ -38,7 +38,7 @@ class MockExpr {
           }
         }
         // fallback: if mathjson is just 'x'
-        if (mj === "x") return { toString: () => String(xVal) };
+        if (mj as unknown as string === "x") return { toString: () => String(xVal) };
         return { toString: () => "0" };
       }
     };
@@ -61,13 +61,13 @@ class MockExpr {
 }
 
 class MockBox {
-  mathjson: MathJson;
-  constructor(mathjson: MathJson) {
+  mathjson: MathJson | string | number | any;
+  constructor(mathjson: MathJson | string | number | any) {
     this.mathjson = mathjson;
   }
 
-  // return the MathJson back
-  toMathJson(): MathJson {
+  // return the MathJson (or primitive) back
+  toMathJson(): any {
     return this.mathjson;
   }
   // a simple toString representation
@@ -127,11 +127,11 @@ class MockComputeEngine {
     }
 
     // If it's just 'x'
-    if (s === "x") return new MockExpr("x");
+    if (s === "x") return new MockExpr("x" as unknown as MathJson);
 
     // fallback: try to parse number only
     const numMatch = s.match(/^(-?\d+)$/);
-    if (numMatch) return new MockExpr(Number(numMatch[1]) as MathJson);
+    if (numMatch) return new MockExpr(Number(numMatch[1]) as unknown as MathJson);
 
     // If unable to parse, return an "error-like" object (but keep shape)
     return new MockExpr(["Multiply", 0, "x"]);
