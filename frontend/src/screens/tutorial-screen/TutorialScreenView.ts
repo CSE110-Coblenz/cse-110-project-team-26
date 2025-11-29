@@ -15,6 +15,8 @@ export interface TutorialScreenCallbacks {
  */
 export class TutorialScreenView implements View {
 	private group: Konva.Group;
+  private contentText: Konva.Text;
+  private titleText: Konva.Text;
 
 	constructor(callbacks: TutorialScreenCallbacks) {
 		this.group = new Konva.Group({ visible: false });
@@ -30,33 +32,33 @@ export class TutorialScreenView implements View {
 		this.group.add(background);
 
 		// Title text
-		const titleText = new Konva.Text({
+		this.titleText = new Konva.Text({
 			x: 0,
 			y: 60,
 			width: STAGE_WIDTH,
 			align: "center",
 			text: "Tutorial",
-			fontSize: 48,
+			fontSize: 52,
 			fontFamily: "Arial",
 			fill: "#ffffff",
 			fontStyle: "bold",
 		});
-		this.group.add(titleText);
+		this.group.add(this.titleText);
 
 		// Tutorial content placeholder
-		const contentText = new Konva.Text({
+		this.contentText = new Konva.Text({
 			x: STAGE_WIDTH / 2,
 			y: 180,
 			width: STAGE_WIDTH - 100,
 			align: "center",
 			text: "Welcome to (Game Name)!\n\nThis tutorial will teach you how to play.\n\nTODO: Add tutorial content here.",
-			fontSize: 20,
+			fontSize: 36,
 			fontFamily: "Arial",
 			fill: "#e0e0e0",
 			lineHeight: 1.6,
 		});
-		contentText.offsetX(contentText.width() / 2);
-		this.group.add(contentText);
+		this.contentText.offsetX(this.contentText.width() / 2);
+		this.group.add(this.contentText);
 
 		// Button dimensions
 		const buttonWidth = 180;
@@ -131,6 +133,16 @@ export class TutorialScreenView implements View {
 		this.group.add(skipButton);
 		this.group.add(skipText);
 	}
+
+  updateContentText(text: string): void {
+    this.contentText.text(text);
+    this.group.getLayer()?.draw();
+  }
+
+  updateTitleText(text: string): void {
+    this.titleText.text(text)
+    this.group.getLayer()?.draw();
+  }
 
 	getGroup(): Konva.Group {
 		return this.group;

@@ -1,5 +1,23 @@
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 
+// Tutorial text
+
+const TUTORIAL = {
+  title: "Graphing Game Tutorial",
+  step0: ""
+    + "Hello space traveler! You've been on a mission for years "
+    + "which has taken you all around the universe! You've gained "
+    + "much treasure and fame, but now it's time to return to Earth.",
+  step1: ""
+    + "You will be plotting graphs to help your spaceship navigate space safely! "
+    + "The goal is to submit a graph that goes through both points on the graph. "
+    + "Use the keypad in the bottom to fill in the empty spaces in the equations. "
+    + "Once you're satisfied, hit the submit button and see if you flew safely!",
+  step2: ""
+    + "If you ever need to see this tutorial again, hit the help button "
+    + "in the top left of the screen. Have a safe mission!"
+};
+
 // Dialogue components
 
 const DIALOGUE = {
@@ -201,6 +219,7 @@ const EQUATION_TEXT_PROPERTIES = {
 
 export {
   DIALOGUE,
+  TUTORIAL,
   OFFSET,
   SIDEBAR_WIDTH,
   BOX_WIDTH,
