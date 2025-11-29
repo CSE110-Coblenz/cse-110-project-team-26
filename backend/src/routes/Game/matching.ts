@@ -1,2 +1,9 @@
+import { Router } from "express";
+import { handleMatchingProblem } from "../../controllers/gameController";
+
 // Matching Game Endpoints
-router.post('/matchingHandleProblem', gameController.matchingHandleProblem(problem, answer));
+const router = Router();
+
+router.post("/matchingHandleProblem", handleMatchingProblem);
+
+export default router;

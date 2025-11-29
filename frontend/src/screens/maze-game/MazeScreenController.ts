@@ -16,9 +16,9 @@ export class MazeScreenController extends ScreenController {
     private problem : ProblemModel | null = null;
 	private gameTimer: number | null = null;
 
-	constructor(screenSwitcher: ScreenSwitcher) {
+	constructor(_screenSwitcher: ScreenSwitcher) {
 		super();
-		this.screenSwitcher = screenSwitcher;
+		// this.screenSwitcher = screenSwitcher;
 		this.model = new MazeScreenModel();
         this.view = new MazeScreenView((choice: ChoiceModel, x:number, y:number) => this.handleChoiceClick(choice, x, y));
 		const tutorialText = `Welcome to the Maze Game Tutorial!
