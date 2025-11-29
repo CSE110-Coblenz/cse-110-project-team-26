@@ -1,7 +1,6 @@
 import { ScreenController, type ScreenSwitcher } from "../../types";
 import { TutorialScreenView } from "./TutorialScreenView";
-// TODO(team): Uncomment when implementing tutorial logic
-// import { TutorialScreenModel } from "./TutorialScreenModel";
+import { TutorialScreenModel } from "./TutorialScreenModel";
 
 /**
  * Controller for the Tutorial screen.
@@ -10,29 +9,37 @@ import { TutorialScreenView } from "./TutorialScreenView";
  */
 export class TutorialScreenController extends ScreenController {
 	private view: TutorialScreenView;
-	// TODO(team): Use model and screenSwitcher when implementing tutorial logic
-	// private model: TutorialScreenModel;
 	private screenSwitcher: ScreenSwitcher;
+  private game: string;
+  private steps: number;
+  private content: object;
 
-	constructor(_screenSwitcher: ScreenSwitcher) {
+	constructor(screenSwitcher: ScreenSwitcher) {
 		super();
-		 this.screenSwitcher = _screenSwitcher;
-		// this.model = new TutorialScreenModel();
+    this.screenSwitcher = screenSwitcher;
+	}
 
+  configure(screen: string, steps: number, content: object) {
+    this.model = new TutorialScreenModel(steps);
 		this.view = new TutorialScreenView({
 			onContinue: () => {
-				// TODO(team): Decide which screen to route to after tutorial
-				// For now, this just logs - you can route to menu, graph game, etc.
-				console.log("[TutorialScreen] Continue button clicked");
-				// Example: this.screenSwitcher.switchToScreen({ type: "menu" });
+        const isLastScreen = this.model.nextStep();
+        if(isLastScreen) {
+          this.screenSwitcher.switchToScreen({ type: screen });
+          this.model.reset();
+          this.view.updateContentText(content["step0"]);
+          this.screenSwitcher.switchToScreen({ type: screen });
+        } else {
+          this.view.updateContentText(content[`step${this.model.getCurrentStep()}`]);
+        }
 			},
 			onSkip: () => {
-				// TODO(team): Decide which screen to route to when skipping tutorial
-				console.log("[TutorialScreen] Skip button clicked");
-				this.screenSwitcher.switchToScreen({ type: "menu" });
+				this.screenSwitcher.switchToScreen({ type: screen });
 			},
 		});
-	}
+    this.view.updateContentText(content["step0"]);
+    this.view.updateTitleText(content["title"]);
+  }
 
 	getView(): TutorialScreenView {
 		return this.view;

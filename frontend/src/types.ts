@@ -75,7 +75,6 @@ export interface ScreenSwitcher {
 export interface EquationAnswerFormat {
 	readonly format: string;
 
-	generateAnswerValues(): void;
 	checkCompleteSubmission(): boolean;
 	verifyAnswer(submission: EquationAnswerFormat): boolean;
 }
@@ -87,44 +86,45 @@ export type Fraction = {
 
 export class Linear implements EquationAnswerFormat {
 	public coefficient: Fraction;
+	public coefficientIsPos: boolean;
 	public intercept: number | null;
+	public interceptIsPos: boolean;
 	readonly format = LINEAR;
 
 	constructor(isAnswer: boolean) {
 		if (!isAnswer) {
 			this.coefficient = {
-				numerator: null,
-				denominator: null
-			};
+			numerator: null,
+			denominator: null
+		};
+			this.coefficientIsPos = true;
 			this.intercept = null;
+			this.interceptIsPos = true;
 			return;
 		}
-		let isPositive = generateRandomNumber(0, 2);
-		if (isPositive === 1) {
-			this.coefficient = {
-				numerator: generateRandomNumber(1, 6),
-				denominator: generateRandomNumber(1, 6)
-			};
-		} else {
-			this.coefficient = {
-				numerator: -1 * generateRandomNumber(1, 6),
-				denominator: generateRandomNumber(1, 6)
-			};
-		}
+		if (generateRandomNumber(0, 1) == 1) this.coefficientIsPos = true;
+		else this.coefficientIsPos = false;
+		this.coefficient = {
+			numerator: generateRandomNumber(1, 5),
+			denominator: generateRandomNumber(1, 5)
+		};
+		if (!this.coefficientIsPos) this.coefficient.numerator *= -1;
 		this.intercept = generateRandomNumber(-5, 5);
 	}
 
-	generateAnswerValues(): void {
-		this.coefficient = {
-			numerator: generateRandomNumber(1, 8),
-			denominator: generateRandomNumber(1, 8)
-		};
-		this.intercept = generateRandomNumber(-10, 10);
-	}
-
 	verifyAnswer(submission: Linear): boolean {
-		if ((this.coefficient.numerator !== submission.coefficient.numerator) || (this.coefficient.denominator !== submission.coefficient.denominator)) return false;
-		else if (this.intercept !== submission.intercept) return false;
+		if (this.coefficient.numerator != submission.coefficient.numerator) {
+			console.log("numerators unequal");
+			return false;
+		}
+		else if (this.coefficient.denominator != submission.coefficient.denominator) {
+			console.log("denominators unequal");
+			return false;
+		}
+		else if (this.intercept != submission.intercept) {
+			console.log("intercepts unequal");
+			return false
+		}
 		return true;
 	}
 
@@ -132,21 +132,39 @@ export class Linear implements EquationAnswerFormat {
 		return this.coefficient;
 	}
 
+	getCoefficientIsPos(): boolean {
+		return this.coefficientIsPos;
+	}
+
 	getIntercept(): number | null {
 		return this.intercept;
 	}
 
+	getInterceptIsPos(): boolean {
+		return this.interceptIsPos;
+	}
+
 	setNumerator(numerator: number) {
 		console.log("Numerator set: " + numerator);
-		this.coefficient.numerator = numerator;
+		if (this.coefficientIsPos) this.coefficient.numerator = numerator;
+		else this.coefficient.numerator = -numerator;
 	}
 
 	setDenominator(denominator: number) {
 		this.coefficient.denominator = denominator;
 	}
 
+	setCoefficientIsPos() {
+		this.coefficientIsPos = !this.coefficientIsPos;
+	}
+
 	setIntercept(intercept: number) {
-		this.intercept = intercept;
+		if (this.interceptIsPos) this.intercept = intercept;
+		else this.intercept = -intercept;
+	}
+
+	setInterceptIsPos() {
+		this.interceptIsPos = !this.interceptIsPos;
 	}
 
 	checkCompleteSubmission(): boolean {
@@ -159,32 +177,30 @@ export class Linear implements EquationAnswerFormat {
 
 export class Quadratic implements EquationAnswerFormat {
 	public root1: number | null;
+	public root1IsPos: boolean;
 	public root2: number | null;
+	public root2IsPos: boolean;
 	readonly format = QUADRATIC;
 
 	constructor(isAnswer: boolean) {
 		if (!isAnswer) {
 			this.root1 = null;
+			this.root1IsPos = true;
 			this.root2 = null;
+			this.root2IsPos = true;
 			return;
 		}
-		this.root1 = 0;
-		this.root2 = 0;
-		this.generateAnswerValues();
-	}
-
-	generateAnswerValues(): void {
-		while (this.root1 === 0) {
-			this.root1 = generateRandomNumber(-5, 5);
-		}
-		while (this.root2 === 0) {
-			this.root2 = generateRandomNumber(-5, 5);
-		}
+		this.root1 = generateRandomNumber(-4, 4);
+		this.root2 = generateRandomNumber(-4, 4	);
 	}
 
 	verifyAnswer(submission: Quadratic): boolean {
-		if ((this.root1 === submission.root1 && this.root2 === submission.root2) ||
-			(this.root2 === submission.root1 && this.root1 === submission.root2)) {
+		if ((this.root1 == submission.root1 && this.root2 == submission.root2) ||
+			(this.root2 == submission.root1 && this.root1 == submission.root2)) {
+				return true;
+			}
+		if ((this.root1IsPos == submission.root1IsPos) && (this.root2IsPos == submission.root2IsPos) ||
+			(this.root2IsPos == submission.root1IsPos) && (this.root2IsPos == submission.root1IsPos)) {
 				return true;
 			}
 		return false;
@@ -194,16 +210,34 @@ export class Quadratic implements EquationAnswerFormat {
 		return this.root1;
 	}
 
+	getRoot1IsPos(): boolean {
+		return this.root1IsPos;
+	}
+
 	getRoot2(): number | null {
 		return this.root2;
 	}
 
+	getRoot2IsPos(): boolean {
+		return this.root2IsPos;
+	}
+
 	setRoot1(root1: number) {
-		this.root1 = root1;
+		if (!this.root1IsPos) this.root1 = -root1;
+		else this.root1 = root1;
+	}
+
+	setRoot1IsPos() {
+		this.root1IsPos = !this.root1IsPos;
 	}
 
 	setRoot2(root2: number) {
-		this.root2 = root2;
+		if (!this.root2IsPos) this.root2 = -root2;
+		else this.root2 = root2;
+	}
+
+	setRoot2IsPos() {
+		this.root2IsPos = !this.root2IsPos;
 	}
 
 	checkCompleteSubmission(): boolean {
@@ -216,8 +250,11 @@ export class Quadratic implements EquationAnswerFormat {
 
 export class AbsoluteValue implements EquationAnswerFormat {
 	public coefficient: Fraction;
+	public coefficientIsPos: boolean;
 	public xShift: number | null;
+	public xShiftIsPos: boolean;
 	public yShift: number | null;
+	public yShiftIsPos: boolean;
 	readonly format = ABSVAL;
 
 	constructor(isAnswer: boolean) {
@@ -225,49 +262,30 @@ export class AbsoluteValue implements EquationAnswerFormat {
 			this.coefficient = {
 				numerator: null,
 				denominator: null
-			};
+			}
+			this.coefficientIsPos = true;
 			this.xShift = null;
+			this.xShiftIsPos = true;
 			this.yShift = null;
+			this.yShiftIsPos = true;
 			return
 		}
-		let isPositive = generateRandomNumber(0, 1);
-		if (isPositive === 1) {
-			this.coefficient = {
-				numerator: generateRandomNumber(1, 6),
-				denominator: generateRandomNumber(1, 6)
-			}
-		} else {
-			this.coefficient = {
-				numerator: -1 * generateRandomNumber(1, 6),
-				denominator: generateRandomNumber(1, 6)
-			}
+		if (generateRandomNumber(0, 1) == 1) this.coefficientIsPos = true;
+		else this.coefficientIsPos = false;
+		this.coefficient = {
+			numerator: generateRandomNumber(1, 6),
+			denominator: generateRandomNumber(1, 6)
 		}
+		if (!this.coefficientIsPos) this.coefficient.numerator *= -1;
 		this.xShift = generateRandomNumber(-4, 4);
 		this.yShift = generateRandomNumber(-4, 4);
 	}
 
-	// TO-DO: MODIFY TO ALLOW NEGATIVE VALUES
-	generateAnswerValues(): void {
-		let isPositive = generateRandomNumber(0, 1);
-		if (isPositive === 1) {
-			this.coefficient = {
-				numerator: generateRandomNumber(1, 6),
-				denominator: generateRandomNumber(1, 6)
-			}
-		} else {
-			this.coefficient = {
-				numerator: -1 * generateRandomNumber(1, 6),
-				denominator: generateRandomNumber(1, 6)
-			}
-		}
-		this.xShift = generateRandomNumber(-8, 8);
-		this.yShift = generateRandomNumber(-8, 8);
-	}
-
 	verifyAnswer(submission: AbsoluteValue): boolean {
-		if ((this.coefficient.numerator !== submission.coefficient.denominator) || (this.coefficient.denominator !== submission.coefficient.denominator)) return false;
-		else if (this.xShift !== submission.xShift) return false;
-		else if (this.yShift !== this.yShift) return false
+		if (this.coefficient.numerator != submission.coefficient.numerator) return false;
+		else if (this.coefficient.denominator != submission.coefficient.denominator) return false;
+		else if (this.xShift != submission.xShift) return false;
+		else if (this.yShift != submission.yShift) return false;
 		return true;
 	}
 
@@ -275,28 +293,55 @@ export class AbsoluteValue implements EquationAnswerFormat {
 		return this.coefficient;
 	}
 
+	getCoefficientIsPos(): boolean {
+		return this.coefficientIsPos;
+	}
+
 	getXShift(): number | null {
 		return this.xShift;
+	}
+
+	getXShiftIsPos(): boolean {
+		return this.xShiftIsPos;
 	}
 
 	getYShift(): number | null {
 		return this.yShift;
 	}
 
+	getYShiftIsPos(): boolean {
+		return this.yShiftIsPos;
+	}
+
 	setNumerator(numerator: number) {
-		this.coefficient.numerator = numerator;
+		if (this.coefficientIsPos) this.coefficient.numerator = numerator;
+		else this.coefficient.numerator = -numerator;
 	}
 
 	setDenominator(denominator: number) {
 		this.coefficient.denominator = denominator;
 	}
 
+	setCoefficientIsPos() {
+		this.coefficientIsPos = !this.coefficientIsPos;
+	}
+
 	setXShift(xShift: number) {
-		this.xShift = xShift;
+		if (this.xShiftIsPos) this.xShift = xShift;
+		else this.xShift = -xShift;
+	}
+
+	setXShiftIsPos() {
+		this.xShiftIsPos = !this.xShiftIsPos;
 	}
 
 	setYShift(yShift: number) {
-		this.yShift = yShift;
+		if (this.yShiftIsPos) this.yShift = yShift;
+		else this.yShift = -yShift;
+	}
+
+	setYShiftIsPos() {
+		this.yShiftIsPos = !this.yShiftIsPos;
 	}
 
 	checkCompleteSubmission(): boolean {
@@ -317,10 +362,6 @@ export abstract class Question {
 		this.answer = null;
 	}
 
-	generateAnswerValues(): void {
-		this.submission.generateAnswerValues();
-	}
-
 	enterSubmission(submission: EquationAnswerFormat): void {
 		this.submission = submission;
 	}
@@ -330,7 +371,6 @@ export abstract class Question {
 	}
 
 }
-
 
 export {
 	generateRandomNumber

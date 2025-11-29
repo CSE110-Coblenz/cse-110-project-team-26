@@ -1,13 +1,13 @@
 import Konva from "konva";
-import type { ScreenSwitcher, Screen } from "./types.ts";
+import type { ScreenSwitcher, Screen } from "../../../types.ts";
 
-import { MenuTestScreenController } from "./screens/MenuTestScreen/MenuTestScreenController.ts";
-import { MatchingScreenController } from "./screens/MatchingScreen/MatchingScreenController.ts";
-import { MazeScreenController } from "./screens/maze-game/MazeScreenController.ts";
-import { GraphScreenController } from "./screens/graph-game/GraphScreenController.ts";
-import { TitleScreenController } from "./screens/title-screen/TitleScreenController.ts";
-import { TutorialScreenController } from "./screens/tutorial-screen/TutorialScreenController.ts";
-import { STAGE_WIDTH, STAGE_HEIGHT } from "./constants.ts";
+import { MenuTestScreenController } from "../../MenuTestScreen/MenuTestScreenController.ts";
+import { MatchingScreenController } from "../../MatchingScreen/MatchingScreenController.ts";
+import { MazeScreenController } from "../../maze-game/MazeScreenController.ts";
+import { GraphScreenController } from "../../graph-game/GraphScreenController.ts";
+import { TitleScreenController } from "../../title-screen/TitleScreenController.ts";
+import { TutorialScreenController } from "../../tutorial-screen/TutorialScreenController.ts";
+import { STAGE_WIDTH, STAGE_HEIGHT } from "../../../constants.ts";
 import type { TupleType } from "@cortex-js/compute-engine";
 
 /**
@@ -45,12 +45,12 @@ class App implements ScreenSwitcher {
 
 		// Initialize all screen controllers
 		// Each controller manages a Model, View, and handles user interactions
+		this.tutorialController = new TutorialScreenController(this);
 		this.menuTestController = new MenuTestScreenController(this);
 		this.matchingScreenController = new MatchingScreenController(this, this.stage);
 		this.mazeScreenController = new MazeScreenController(this);
-		this.graphScreenController = new GraphScreenController(this, level, difficulty);
     this.titleController = new TitleScreenController(this);
-		this.tutorialController = new TutorialScreenController(this);
+		this.graphScreenController = new GraphScreenController(this, this.tutorialController, level, difficulty);
 
 		// Add all screen groups to the layer
 		// All screens exist simultaneously but only one is visible at a time
@@ -65,7 +65,7 @@ class App implements ScreenSwitcher {
 		this.layer.draw();
 
 		// Start with menu screen visible
-		this.switchToScreen({ type: "title" });
+		this.switchToScreen({ type: "main-game" });
 	}
 
 	/**
@@ -116,6 +116,7 @@ class App implements ScreenSwitcher {
 	}
 }
 
+// Initialize the application
 // Levels range from 1-6. 1-5 are levels and 6 indicates a completed game
 // Difficulty ranges from 0-2, with the difficulties as easy, medium, and hard respectively
-new App("container", 1, 2);
+new App("container", 5, 2);

@@ -2,11 +2,7 @@ import Konva from "konva";
 import type { AbsoluteValue, EquationAnswerFormat, Linear, Quadratic, View } from "../../types";
 import {
   OFFSET,
-  SIDEBAR_WIDTH,
   BOX_WIDTH,
-  SMALL_BOX_HEIGHT,
-  LARGE_BOX_HEIGHT,
-  GRAPH_WIDTH,
   BACKGROUND_PROPERTIES,
   STATIC_GROUP_PROPERTIES,
   GRAPH_GROUP_PROPERTIES,
@@ -16,13 +12,19 @@ import {
   DIALOGUE_GROUP_PROPERTIES,
   DIALOGUE_BOX_PROPERTIES,
   DIALOGUE_TEXT_PROPERTIES,
+  TRANSITION_GROUP_PROPERTIES,
+  TRANSITION_BUTTON_PROPERTIES,
+  TRANSITION_TEXT_PROPERTIES,
+  RESULTS_GROUP_PROPERTIES,
+  RESULTS_BUTTON_PROPERTIES,
+  RESULTS_TEXT_PROPERTIES,
   INPUT_AND_EQUATION_GROUP_PROPERTIES,
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,
   EQUATION_TEXT_PROPERTIES,
   PIX_PER_UNIT
 } from "./GraphScreenConstants";
-import { ABSVAL, LINEAR, QUADRATIC } from "../../constants";
+import { ABSVAL, LINEAR, QUADRATIC, X_MAX, X_MIN } from "../../constants";
 
 /**
  * View for the Graphing game module
@@ -32,9 +34,12 @@ export class GraphScreenView implements View {
     private dynamicLayer: Konva.Layer;
     private staticGroup: Konva.Group;
     private graphGroup: Konva.Group;
+    private transitionGroup: Konva.Group;
+    private resultsGroup: Konva.Group;
     private dialogueText: Konva.Text;
     private playerSprite: HTMLImageElement;
     private equationText: Konva.Text;
+    private inputAndEquationGroup: Konva.Group;
 
     private width: number = GRAPH_BACKGROUND_PROPERTIES.width;
     private height: number = GRAPH_BACKGROUND_PROPERTIES.height;
@@ -43,11 +48,12 @@ export class GraphScreenView implements View {
     private yOffset = 0;
     private xOffset = 0;
     private xMin = Math.floor(-this.xRange / 2 + 1) + this.xOffset;
+    private xMax = this.xMin + this.xRange;
     private yMax = Math.floor(this.yRange / 2 - 1) + this.yOffset;
     /**
      * Initializes default values for the View
      */
-    constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => boolean) {
+    constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void) {
 
         // Add layers for static and dynamic elements
 
@@ -62,7 +68,6 @@ export class GraphScreenView implements View {
         this.staticGroup = new Konva.Group({
             ...STATIC_GROUP_PROPERTIES
         });
-        this.graphGroup = this.createGraphGroup();
 
         // TEST!!!!!
 
@@ -116,11 +121,41 @@ export class GraphScreenView implements View {
             ...DIALOGUE_TEXT_PROPERTIES
         });
 
-        dialogueGroup.add(dialogueBox, this.dialogueText);
+        this.transitionGroup = new Konva.Group({
+            ...TRANSITION_GROUP_PROPERTIES
+        });
+
+        const transitionButton = new Konva.Rect({
+            ...TRANSITION_BUTTON_PROPERTIES
+        });
+
+        const transitionText = new Konva.Text({
+            ...TRANSITION_TEXT_PROPERTIES
+        });
+
+        this.transitionGroup.add(transitionButton, transitionText);
+        
+        this.resultsGroup = new Konva.Group({
+            ...RESULTS_GROUP_PROPERTIES
+        });
+
+        const resultsButton = new Konva.Rect({
+            ...RESULTS_BUTTON_PROPERTIES
+        });
+
+        const resultsText = new Konva.Text({
+            ...RESULTS_TEXT_PROPERTIES
+        });
+
+        this.resultsGroup.add(resultsButton, resultsText);
+
+        dialogueGroup.add(dialogueBox, this.dialogueText, this.transitionGroup, this.resultsGroup);
+        this.transitionGroup.hide();
+        this.resultsGroup.hide();
 
         // Input/Equation group elements
 
-        const inputAndEquationGroup = new Konva.Group({
+        this.inputAndEquationGroup = new Konva.Group({
             ...INPUT_AND_EQUATION_GROUP_PROPERTIES
         });
 
@@ -135,9 +170,10 @@ export class GraphScreenView implements View {
         this.equationText = new Konva.Text({
             ...EQUATION_TEXT_PROPERTIES
         });
+
         switch (type) {
             case 0:
-                this.equationText.text("y=(_/_)+_");
+                this.equationText.text("y=(_/_)x+_");
             break;
             case 1:
                 this.equationText.text("y=(x+_)(x+_)");
@@ -146,15 +182,64 @@ export class GraphScreenView implements View {
                 this.equationText.text("y=(_/_)|x+_|+_");
             break;
         }
+
         console.log(this.equationText.text());
         
         const keypadGroup = this.createInputButtons(onNumberInput, onEquationReset, onEquationSubmission);
 
-        inputAndEquationGroup.add(inputAndEquationBox, equationBox, this.equationText, keypadGroup);
+        this.inputAndEquationGroup.add(inputAndEquationBox, equationBox, this.equationText, keypadGroup);
         
         // Graph group elements
 
-        this.staticGroup.add(background, spriteGroup, dialogueGroup, inputAndEquationGroup);
+        this.graphGroup = this.createGraphGroup();
+        this.staticGroup.add(background, spriteGroup, dialogueGroup, this.inputAndEquationGroup);
+        this.staticLayer.add(this.staticGroup);
+        this.dynamicLayer.add(this.graphGroup);
+
+    }
+
+    reset(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void): void {
+        this.inputAndEquationGroup.destroy();
+        this.graphGroup.destroy();
+        this.hideTransitionButton();
+
+        this.inputAndEquationGroup = new Konva.Group({
+            ...INPUT_AND_EQUATION_GROUP_PROPERTIES
+        });
+
+        const inputAndEquationBox = new Konva.Rect({
+            ...INPUT_AND_EQUATION_BOX_PROPERTIES
+        });
+
+        const equationBox = new Konva.Rect({
+            ...EQUATION_BOX_PROPERTIES
+        });
+
+        this.equationText = new Konva.Text({
+            ...EQUATION_TEXT_PROPERTIES
+        });
+
+        switch (type) {
+            case 0:
+                this.equationText.text("y=(_/_)x+_");
+            break;
+            case 1:
+                this.equationText.text("y=(x+_)(x+_)");
+            break;
+            case 2:
+                this.equationText.text("y=|(_/_)x+_|+_");
+            break;
+        }
+
+        console.log(this.equationText.text());
+        
+        const keypadGroup = this.createInputButtons(onNumberInput, onEquationReset, onEquationSubmission);
+
+        this.inputAndEquationGroup.add(inputAndEquationBox, equationBox, this.equationText, keypadGroup);
+
+        this.graphGroup = this.createGraphGroup();
+        this.staticGroup.add(this.inputAndEquationGroup);
+
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
     }
@@ -189,7 +274,7 @@ export class GraphScreenView implements View {
 
     resetGraph() {
         let found = this.graphGroup.find( (item: Konva.Rect | Konva.Line) => {
-            return item.name() === "TEMP";
+            return item.name() === "TEMP" || item.name() === "PLOT";
         });
         console.log("Found size: " + found.length);
         for (let i = 0; i < found.length; i++) {
@@ -197,10 +282,30 @@ export class GraphScreenView implements View {
         }
     }
 
+    showTransitionButton(switchGame: (game: string) => void, game: string) {
+        this.transitionGroup.show();
+        this.transitionGroup.off("click");
+        this.transitionGroup.on("click", () => switchGame(game));
+    }
+
+    showResultsButton(goToResults: () => void) {
+        this.resultsGroup.show();
+        this.resultsGroup.on("click", () => goToResults());
+    }
+
+    hideTransitionButton() {
+        this.transitionGroup.hide();
+    }
+
+    hideResultsButton() {
+        this.resultsGroup.off("click");
+        this.resultsGroup.hide();
+    }
+
     /**
-     * Creates equation input buttons
+     * Creates equation/input group buttons
      */
-    createInputButtons(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => boolean): Konva.Group {
+    createInputButtons(onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void): Konva.Group {
         const fill = "#5F5050";
         const smallOffset = OFFSET * (1/4);
         const rows = 3;
@@ -232,7 +337,7 @@ export class GraphScreenView implements View {
                 y: 0,
                 width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
                 height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
-                fill: "#5F5050"
+                fill: fill
             });
 
             const buttonText = new Konva.Text({
@@ -266,7 +371,7 @@ export class GraphScreenView implements View {
             y: 0,
             width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
-            fill: "#5F5050"
+            fill: fill
         });
       
         const zeroButtonText = new Konva.Text({
@@ -294,7 +399,7 @@ export class GraphScreenView implements View {
             y: 0,
             width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
-            fill: "#5F5050"
+            fill: fill
         });
       
         const minusButtonText = new Konva.Text({
@@ -314,6 +419,7 @@ export class GraphScreenView implements View {
         zeroButtonGroup.add(zeroButton);
         zeroButtonGroup.add(zeroButtonText);
         keypadGroup.add(zeroButtonGroup);
+
         minusButtonGroup.on("click", () => onNumberInput(-1));
         minusButtonGroup.add(minusButton);
         minusButtonGroup.add(minusButtonText);
@@ -331,7 +437,7 @@ export class GraphScreenView implements View {
             y: 0,
             width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
-            fill: "#5F5050"
+            fill: fill
         });
 
         const resetButtonText = new Konva.Text({
@@ -364,7 +470,7 @@ export class GraphScreenView implements View {
             y: 0,
             width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
-            fill: "#5F5050"
+            fill: fill
         });
 
         const submitButtonText = new Konva.Text({
@@ -427,40 +533,108 @@ export class GraphScreenView implements View {
             case QUADRATIC:
                 let quadraticAnswer = answer as Quadratic;
                 console.log(answer);
-                this.addPOIRectangle(quadraticAnswer.getRoot1(), 0, 'blue');
-                this.addPOIRectangle(quadraticAnswer.getRoot2(), 0, 'blue');
+                this.addPOIRectangle(-quadraticAnswer.getRoot1(), 0, 'blue');
+                this.addPOIRectangle(-quadraticAnswer.getRoot2(), 0, 'blue');
             break;
             case ABSVAL:
                 let absvalAnswer = answer as AbsoluteValue;
                 console.log(answer);
-                this.addPOIRectangle(absvalAnswer.getXShift(), absvalAnswer.getYShift(), 'green');
-                this.addPOIRectangle(absvalAnswer.getXShift() - absvalAnswer.getCoefficient().denominator,
+                this.addPOIRectangle(-absvalAnswer.getXShift(), absvalAnswer.getYShift(), 'green');
+                this.addPOIRectangle(-absvalAnswer.getXShift() - absvalAnswer.getCoefficient().denominator,
                                         absvalAnswer.getYShift() + absvalAnswer.getCoefficient().numerator, 'green');
-                this.addPOIRectangle(absvalAnswer.getXShift() + absvalAnswer.getCoefficient().denominator,
+                this.addPOIRectangle(-absvalAnswer.getXShift() + absvalAnswer.getCoefficient().denominator,
                                         absvalAnswer.getYShift() + absvalAnswer.getCoefficient().numerator, 'green');
             break;
         }
     }
 
+    plotLinearGraph(isPreview: boolean, submission: EquationAnswerFormat) {
+        let linearSubmission = submission as Linear;
+
+        let numerator = linearSubmission.getCoefficient().numerator;
+        let denominator = linearSubmission.getCoefficient().denominator;
+        let intercept = linearSubmission.getIntercept();
+
+        let leftIntercept = numerator * (this.xMin) / denominator + intercept;
+        let rightIntercept = numerator * (this.xMax) / denominator + intercept;
+
+        let plotLine = new Konva.Line({
+            points: [this.convertCoordToKonva(this.xMin, true), this.convertCoordToKonva(leftIntercept, false),
+                    this.convertCoordToKonva(this.xMax, true), this.convertCoordToKonva(rightIntercept, false)],
+            strokeWidth: 3,
+            lineCap: 'round',
+            name: "PLOT"
+        })
+        if (isPreview) plotLine.stroke('green');
+        else plotLine.stroke('red');
+        this.graphGroup.add(plotLine);
+    }
+
+    plotQuadraticGraph(isPreview: boolean, submission: EquationAnswerFormat) {
+        let numLines = 200;
+        let dx = (this.xMax - this.xMin) / numLines;
+        let quadraticSubmission = submission as Quadratic;
+
+        for (let i = 0; i < numLines; i++) {
+            let xStart = this.xMin + dx * i;
+            let xEnd = this.xMin + dx * (i + 1);
+            let yStart = (xStart + quadraticSubmission.getRoot1()) * (xStart + quadraticSubmission.getRoot2());
+            let yEnd = (xEnd + quadraticSubmission.getRoot1()) * (xEnd + quadraticSubmission.getRoot2());
+            let plotLine = new Konva.Line({
+                points: [this.convertCoordToKonva(xStart, true), this.convertCoordToKonva(yStart, false),
+                        this.convertCoordToKonva(xEnd, true), this.convertCoordToKonva(yEnd, false)],
+                strokeWidth: 3,
+                lineCap: 'round',
+                name: "PLOT"
+            });
+            if (isPreview) plotLine.stroke('green');
+            else plotLine.stroke('red');
+            this.graphGroup.add(plotLine);
+        }
+    }
+
+    plotAbsValGraph(isPreview: boolean, submission: EquationAnswerFormat) {
+        let absvalSubmission = submission as AbsoluteValue;
+
+        let numerator = absvalSubmission.getCoefficient().numerator;
+        let denominator = absvalSubmission.getCoefficient().denominator;
+        let xShift = absvalSubmission.getXShift();
+        let yShift = absvalSubmission.getYShift();
+        let leftIntercept = (numerator * Math.abs(this.xMin + xShift) / denominator) + yShift;
+        let rightIntercept = (numerator * Math.abs(this.xMax + xShift) / denominator) + yShift;
+
+        let plotLine1 = new Konva.Line({
+            points: [this.convertCoordToKonva(this.xMin, true), this.convertCoordToKonva(leftIntercept, false),
+                    this.convertCoordToKonva(-xShift, true), this.convertCoordToKonva(yShift, false)],
+            strokeWidth: 3,
+            lineCap: 'round',
+            name: "PLOT"
+        })
+        if (isPreview) plotLine1.stroke('green');
+        else plotLine1.stroke('red');
+        let plotLine2 = new Konva.Line({
+            points: [this.convertCoordToKonva(-xShift, true), this.convertCoordToKonva(yShift, false),
+                    this.convertCoordToKonva(this.xMax, true), this.convertCoordToKonva(rightIntercept, false)],
+            strokeWidth: 3,
+            lineCap: 'round',
+            name: "PLOT"
+        })
+        if (isPreview) plotLine2.stroke('green');
+        else plotLine2.stroke('red');
+        this.graphGroup.add(plotLine1);
+        this.graphGroup.add(plotLine2);
+    }
+
     plotGraph(isPreview: boolean, type: string, submission: EquationAnswerFormat) {
         switch(type) {
             case LINEAR:
-                let linearSubmission = submission as Linear;
-                this.addGuessRectangle(0, linearSubmission.getIntercept(), 'white');
-                let yPOI = -linearSubmission.getIntercept();
-                yPOI *= linearSubmission.getCoefficient().denominator;
-                yPOI /= linearSubmission.getCoefficient().numerator;
-                this.addGuessRectangle(yPOI, 0, 'green');
-                console.log(yPOI);
+                this.plotLinearGraph(isPreview, submission);
             break;
             case QUADRATIC:
-                this.addGuessRectangle((submission as Quadratic).getRoot1(), 0, 'red');
-                this.addGuessRectangle((submission as Quadratic).getRoot2(), 0, 'red');
-                console.log(this.graphGroup.getChildren());
+                this.plotQuadraticGraph(isPreview, submission);
             break;
-
             case ABSVAL:
-
+                this.plotAbsValGraph(isPreview, submission);
             break;
         }
     }
@@ -469,6 +643,7 @@ export class GraphScreenView implements View {
     
         let group: Konva.Group = new Konva.Group(GRAPH_GROUP_PROPERTIES);
         let graphChart: Konva.Rect = new Konva.Rect(GRAPH_BACKGROUND_PROPERTIES);
+        graphChart.name("CHART");
         let graphChartLeft = OFFSET;
         let graphChartright = graphChart.width() + OFFSET;
         let graphChartTop = OFFSET;
@@ -548,9 +723,17 @@ export class GraphScreenView implements View {
 
     /**
      * 
-     * @returns The Group this View belongs to
+     * @returns The View's static Group
      */
-    getGroup(): Konva.Group[] {
+    getGroup(): Konva.Group {
+        return this.staticGroup;
+    }
+
+    /**
+     * 
+     * @returns The Groups this View belongs to
+     */
+    getGroups(): Konva.Group[] {
         return [this.staticGroup, this.graphGroup];
     }
 
