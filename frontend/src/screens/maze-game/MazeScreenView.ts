@@ -347,7 +347,12 @@ export class MazeScreenView implements View {
                 message.x(10);
                 break;
             case "Congrats": 
-                message.text("Congratulations!!! \n You escaped the Maze")
+                message.text("Congratulations!!! \n You escaped the Maze");
+                break;
+            case "Timeout":
+                message.text("You have run out of time! \n Try another route from the beginning");
+                message.x(10)
+                break;
         }
 
         setTimeout(()=>{ // Delays the message display to let fadeIn Animation finish
