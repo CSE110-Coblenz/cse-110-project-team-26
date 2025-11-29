@@ -1,9 +1,10 @@
 import { generateRandomNumber, ScreenController } from "../../types";
 import { GraphScreenView } from "./GraphScreenView";
 import { GraphScreenModel } from "./GraphScreenModel";
+import { TutorialScreenController } from "../tutorial-screen/TutorialScreenController";
 import { AbsoluteValue, Quadratic, type EquationAnswerFormat, type ScreenSwitcher } from "../../types";
 import { LINEAR, QUADRATIC, ABSVAL } from "../../constants";
-import { DIALOGUE } from "./GraphScreenConstants";
+import { DIALOGUE, TUTORIAL } from "./GraphScreenConstants";
 import { Linear } from "../../types";
 
 // REFACTOR CODE TO HAVE VARIABLE ORIGIN POINT
@@ -14,38 +15,46 @@ import { Linear } from "../../types";
 export class GraphScreenController extends ScreenController {
     private model: GraphScreenModel;
     private view: GraphScreenView;
+    private level: number;
+    private difficulty: number;
     private type: string;
     private screenSwitcher: ScreenSwitcher;
+    private tutorialScreenController: TutorialScreenController;
     private submission: EquationAnswerFormat;
 
     /**
      * Initializes default values for the Controller
      */
-    constructor(screenSwitcher: ScreenSwitcher) {
+    constructor(screenSwitcher: ScreenSwitcher, tutorialScreenController: TutorialScreenController, level: number, difficulty: number) {
         super();
-            let type = generateRandomNumber(0, 2);
-            // let type = 1;
-            this.model = new GraphScreenModel(type);
-            this.type = this.model.getQuestionType();
-            switch(this.type) {
-                case LINEAR:
-                    this.submission = new Linear(false);
-                break;
-                case QUADRATIC:
-                    this.submission = new Quadratic(false);
-                break;
-                case ABSVAL:
-                    this.submission = new AbsoluteValue(false);
-                break;
-            }
-            this.view = new GraphScreenView(
-                type,
-                (input: number) => this.handleNumberInput(input),
-                () => this.handleEquationReset(),
-                () => this.handleEquationSubmission(this.submission)
-            );
-            this.view.plotPOI(this.model.getAnswer());
-            this.screenSwitcher = screenSwitcher;
+        this.level = level;
+        this.difficulty = difficulty;
+        let type = generateRandomNumber(0, this.difficulty);
+        // let type = 1;
+        this.model = new GraphScreenModel(type);
+        this.type = this.model.getQuestionType();
+        switch(this.type) {
+            case LINEAR:
+                this.submission = new Linear(false);
+            break;
+            case QUADRATIC:
+                this.submission = new Quadratic(false);
+            break;
+            case ABSVAL:
+                this.submission = new AbsoluteValue(false);
+            break;
+        }
+        this.view = new GraphScreenView(
+            type,
+            (input: number) => this.handleNumberInput(input),
+            () => this.handleEquationReset(),
+            () => this.handleEquationSubmission(this.submission)
+        );
+        this.view.plotPOI(this.model.getAnswer());
+        this.view.updateDialogue(DIALOGUE[`level${this.level}`]);
+        this.screenSwitcher = screenSwitcher;
+        this.tutorialScreenController = tutorialScreenController;
+        this.tutorialScreenController.configure("main-game", 3, TUTORIAL);
     }
 
     /**
@@ -293,9 +302,15 @@ export class GraphScreenController extends ScreenController {
     private submitEquationInput(): void {
         this.plotGraphGame(false); // isPreview = false
         if (this.model.getAnswer().verifyAnswer(this.submission)) {
-            this.view.showTransitionButton((game: string) => this.switchGame(game), "maze-game");
-            this.view.updateDialogue(DIALOGUE.success);
-            console.log(DIALOGUE.success);
+            if(this.level === 5) {
+                this.view.showResultsButton(() => this.switchGame("results"));
+                this.view.updateDialogue(DIALOGUE.gameOver);
+                this.level++;
+            } else {
+                this.view.showTransitionButton((game: string) => this.switchGame(game), "maze-game");
+                this.view.updateDialogue(DIALOGUE.success);
+                this.level++;
+            }
         } else {
             this.view.showTransitionButton((game: string) => this.switchGame(game), "matching-game");
             this.view.updateDialogue(DIALOGUE.failure);
@@ -312,7 +327,7 @@ export class GraphScreenController extends ScreenController {
     }
 
     private switchGame(game: string): void {
-        let type = generateRandomNumber(0, 2);
+        let type = generateRandomNumber(0, this.difficulty);
         this.model = new GraphScreenModel(type);
         this.type = this.model.getQuestionType();
         switch(this.type) {
@@ -333,7 +348,8 @@ export class GraphScreenController extends ScreenController {
                 () => this.handleEquationSubmission(this.submission)
         );
         this.view.plotPOI(this.model.getAnswer());
-        this.view.updateDialogue(DIALOGUE.level);
+        if(this.level === 6) this.view.updateDialogue(DIALOGUE.gameOver);
+        else this.view.updateDialogue(DIALOGUE[`level${this.level}`]);
         this.screenSwitcher.switchToScreen({ type: game })
     }
 }

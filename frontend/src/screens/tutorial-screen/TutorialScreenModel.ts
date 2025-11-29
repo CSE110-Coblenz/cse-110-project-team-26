@@ -2,15 +2,14 @@
  * Model for the Tutorial screen.
  *
  * Manages tutorial state, progress, and content.
- * TODO(team): Add tutorial step tracking, content management, etc.
  */
 export class TutorialScreenModel {
 	private currentStep: number;
 	private totalSteps: number;
 
-	constructor() {
+	constructor(screenCount: number) {
 		this.currentStep = 0;
-		this.totalSteps = 1; // Placeholder - update when tutorial content is added
+		this.totalSteps = screenCount;
 	}
 
 	getCurrentStep(): number {
@@ -21,10 +20,10 @@ export class TutorialScreenModel {
 		return this.totalSteps;
 	}
 
-	nextStep(): void {
-		if (this.currentStep < this.totalSteps - 1) {
-			this.currentStep++;
-		}
+	nextStep(): boolean {
+    const isLastScreen = this.currentStep >= this.totalSteps - 1;
+		if (!isLastScreen) this.currentStep++;
+    return isLastScreen;
 	}
 
 	previousStep(): void {

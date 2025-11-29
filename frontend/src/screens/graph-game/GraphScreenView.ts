@@ -15,6 +15,9 @@ import {
   TRANSITION_GROUP_PROPERTIES,
   TRANSITION_BUTTON_PROPERTIES,
   TRANSITION_TEXT_PROPERTIES,
+  RESULTS_GROUP_PROPERTIES,
+  RESULTS_BUTTON_PROPERTIES,
+  RESULTS_TEXT_PROPERTIES,
   INPUT_AND_EQUATION_GROUP_PROPERTIES,
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,
@@ -32,6 +35,7 @@ export class GraphScreenView implements View {
     private staticGroup: Konva.Group;
     private graphGroup: Konva.Group;
     private transitionGroup: Konva.Group;
+    private resultsGroup: Konva.Group;
     private dialogueText: Konva.Text;
     private playerSprite: HTMLImageElement;
     private equationText: Konva.Text;
@@ -120,7 +124,7 @@ export class GraphScreenView implements View {
 
         this.transitionGroup = new Konva.Group({
             ...TRANSITION_GROUP_PROPERTIES
-        })
+        });
 
         const transitionButton = new Konva.Rect({
             ...TRANSITION_BUTTON_PROPERTIES
@@ -131,8 +135,24 @@ export class GraphScreenView implements View {
         });
 
         this.transitionGroup.add(transitionButton, transitionText);
-        dialogueGroup.add(dialogueBox, this.dialogueText, this.transitionGroup);
+        
+        this.resultsGroup = new Konva.Group({
+            ...RESULTS_GROUP_PROPERTIES
+        });
+
+        const resultsButton = new Konva.Rect({
+            ...RESULTS_BUTTON_PROPERTIES
+        });
+
+        const resultsText = new Konva.Text({
+            ...RESULTS_TEXT_PROPERTIES
+        });
+
+        this.resultsGroup.add(resultsButton, resultsText);
+
+        dialogueGroup.add(dialogueBox, this.dialogueText, this.transitionGroup, this.resultsGroup);
         this.transitionGroup.hide();
+        this.resultsGroup.hide();
 
         // Input/Equation group elements
 
@@ -269,8 +289,18 @@ export class GraphScreenView implements View {
         this.transitionGroup.on("click", () => switchGame(game));
     }
 
+    showResultsButton(goToResults: () => void) {
+        this.resultsGroup.show();
+        this.resultsGroup.on("click", () => goToResults());
+    }
+
     hideTransitionButton() {
         this.transitionGroup.hide();
+    }
+
+    hideResultsButton() {
+        this.resultsGroup.off("click");
+        this.resultsGroup.hide();
     }
 
     /**
