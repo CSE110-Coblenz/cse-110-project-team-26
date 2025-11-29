@@ -50,7 +50,7 @@ class App implements ScreenSwitcher {
 		this.matchingScreenController = new MatchingScreenController(this, this.stage);
 		this.mazeScreenController = new MazeScreenController(this);
 		this.graphScreenController = new GraphScreenController(this, level, difficulty);
-    this.titleController = new TitleScreenController(this);
+    	this.titleController = new TitleScreenController(this);
 		this.tutorialController = new TutorialScreenController(this);
 		this.statisticsController = new StatisticsScreenController(this);
 
@@ -111,9 +111,9 @@ class App implements ScreenSwitcher {
 				this.graphScreenController.show();
 				break;
         
-      case "title":
-				this.titleController.show();
-				break;
+			case "title":
+						this.titleController.show();
+						break;
 
 			case "tutorial":
 				this.tutorialController.show();
