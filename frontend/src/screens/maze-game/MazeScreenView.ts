@@ -315,7 +315,7 @@ export class MazeScreenView implements View {
         this.player.position({ x: STAGE_WIDTH / 2 - 64, y: STAGE_HEIGHT - 150 });
         this.group.getLayer()?.draw();
     }
-    displayMessage(correctness : string){
+    displayMessage(correctness : string, callBack?: () => void){
         const bg = new Konva.Image({
         x: 0,
         y: 0,
@@ -365,14 +365,17 @@ export class MazeScreenView implements View {
             bg.destroy();
             message.destroy();
             this.transitMovetoBottom();
+            if(callBack) callBack();
             clearTimeout(timeOut);
-            console.log("destroyed on click")
+
+            //console.log("destroyed on click")
         });
                 
         const timeOut = setTimeout(()=>{
             bg.destroy();
             this.transitMovetoBottom();
             message.destroy();
+            if(callBack) callBack();
             console.log("destroyed on time")
         },5000);
 
