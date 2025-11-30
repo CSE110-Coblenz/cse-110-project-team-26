@@ -1,9 +1,10 @@
 import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH,STAGE_HEIGHT } from "../../constants.ts";
-import { generate_quadratic_equation_1, generate_linear_equation } from "./EquationGenerator.ts";
+import { generate_quadratic_equation_1, generate_linear_equation_1, generate_linear_equation_2, generate_quadratic_equation_2 } from "./EquationGenerator.ts";
 import galaxyBg from './assets/galaxy.jpg';
 import { createNeonMetalBox, createPlanetBox, flameBlowUp} from "./ArtEffect.ts";
+import { helpButtonGroup, instructionWindowGroup } from "./instructions.ts";
 
 /**
  * MenuScreenView - Renders the menu screen
@@ -34,14 +35,14 @@ export class MatchingScreenView implements View {
     private paired_questions: string[] = [];
     private paired_answers: string[] = [];
 
-    private q_a_1: ReturnType<typeof generate_linear_equation> = ["",""];
-    private q_a_2: ReturnType<typeof generate_linear_equation> = ["",""];
-    private q_a_3: ReturnType<typeof generate_linear_equation> = ["",""];
+    private q_a_1: ReturnType<typeof generate_linear_equation_1> = ["",""];
+    private q_a_2: ReturnType<typeof generate_linear_equation_1> = ["",""];
+    private q_a_3: ReturnType<typeof generate_linear_equation_1> = ["",""];
 
     private answer_sequence: string[] = [];
     private q_a_list: string[][] = [];
 
-    private difficulty: string = "linear"
+    private difficulty: string = "linear 1"
 
     constructor(onStartClick: () => void, stage:Konva.Stage) {
         this.group = new Konva.Group({ visible: true });
@@ -301,7 +302,7 @@ export class MatchingScreenView implements View {
         level1ButtonGroup.add(level1Button);
         level1ButtonGroup.add(level1Text);
         level1ButtonGroup.on("click", () => {
-            this.difficulty = "linear";
+            this.difficulty = "linear 1";
             this.new_questions()                    
         });
         this.group.add(level1ButtonGroup);
@@ -330,10 +331,78 @@ export class MatchingScreenView implements View {
         level2ButtonGroup.add(level2Button);
         level2ButtonGroup.add(level2Text);
         level2ButtonGroup.on("click", () => {
-            this.difficulty = "quadratic_1";  // or maybe "quadratic" for level 2?
+            this.difficulty = "linear 2";  // or maybe "quadratic" for level 2?
             this.new_questions();
         });
         this.group.add(level2ButtonGroup);
+
+        //level3
+        const level3ButtonGroup = new Konva.Group();
+        const level3Button = new Konva.Rect({
+            x: STAGE_WIDTH - 410,
+            y: 50,
+            width: 200,
+            height: 60,
+            fill: "green",
+            cornerRadius: 10,
+            stroke: "darkgreen",
+            strokeWidth: 3,
+        });
+        const level3Text = new Konva.Text({
+            x: level3Button.x() + 100,
+            y: level3Button.y() + 15,
+            text: "LEVEL 3",
+            fontSize: 16,
+            fontFamily: "Arial",
+            fill: "white",
+            align: "center",
+        });
+        level3Text.offsetX(level3Text.width() / 2);
+        level3ButtonGroup.add(level3Button);
+        level3ButtonGroup.add(level3Text);
+        level3ButtonGroup.on("click", () => {
+            this.difficulty = "quadratic_1";  // or maybe "quadratic" for level 2?
+            this.new_questions();
+        });
+        this.group.add(level3ButtonGroup);
+
+        //level4
+        const level4ButtonGroup = new Konva.Group();
+        const level4Button = new Konva.Rect({
+            x: STAGE_WIDTH - 200,
+            y: 50,
+            width: 200,
+            height: 60,
+            fill: "green",
+            cornerRadius: 10,
+            stroke: "darkgreen",
+            strokeWidth: 3,
+        });
+        const level4Text = new Konva.Text({
+            x: level4Button.x() + 100,
+            y: level4Button.y() + 15,
+            text: "LEVEL 4",
+            fontSize: 16,
+            fontFamily: "Arial",
+            fill: "white",
+            align: "center",
+        });
+        level4Text.offsetX(level4Text.width() / 2);
+        level4ButtonGroup.add(level4Button);
+        level4ButtonGroup.add(level4Text);
+        level4ButtonGroup.on("click", () => {
+            this.difficulty = "quadratic_2";  // or maybe "quadratic" for level 2?
+            this.new_questions();
+        });
+        this.group.add(level4ButtonGroup);
+
+        //instruction window
+        const instructionWindow: Konva.Group = instructionWindowGroup();
+        instructionWindow.on('click tap', () => {
+            instructionWindow.hide();
+            this.group.getLayer()?.draw();
+        });
+        this.group.add(instructionWindow);
 
         const submitButtonGroup = new Konva.Group();
         const submitButton = new Konva.Rect({
@@ -362,6 +431,15 @@ export class MatchingScreenView implements View {
             this.submitCheck();
         });
         this.group.add(submitButtonGroup);
+
+        //help button group
+        const helpButton = helpButtonGroup(210, STAGE_HEIGHT - 100);
+        helpButton.on('click tap', () => {
+            instructionWindow.show();
+            instructionWindow.moveToTop();   // bring to front if other objects overlap
+            this.group.getLayer()?.draw();
+        });
+        this.group.add(helpButton);
 
         //new question group
         const newQuestionButtonGroup = new Konva.Group();
@@ -548,15 +626,25 @@ export class MatchingScreenView implements View {
     }
 
     private generate_equation(): void {
-        if (this.difficulty == "linear") {
-            this.q_a_1 = generate_linear_equation();
-            this.q_a_2 = generate_linear_equation();
-            this.q_a_3 = generate_linear_equation();
+        if (this.difficulty == "linear 1") {
+            this.q_a_1 = generate_linear_equation_1();
+            this.q_a_2 = generate_linear_equation_1();
+            this.q_a_3 = generate_linear_equation_1();
         }
-        else {
+        else if (this.difficulty == "linear 2") {
+            this.q_a_1 = generate_linear_equation_2();
+            this.q_a_2 = generate_linear_equation_2();
+            this.q_a_3 = generate_linear_equation_2();
+        }
+        else if (this.difficulty == "quadratic 1") {
             this.q_a_1 = generate_quadratic_equation_1();
             this.q_a_2 = generate_quadratic_equation_1();
             this.q_a_3 = generate_quadratic_equation_1();
+        }
+        else {
+            this.q_a_1 = generate_quadratic_equation_2();
+            this.q_a_2 = generate_quadratic_equation_2();
+            this.q_a_3 = generate_quadratic_equation_2();
         }
     }
 

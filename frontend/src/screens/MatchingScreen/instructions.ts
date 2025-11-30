@@ -1,0 +1,115 @@
+import Konva from "konva";
+import { STAGE_HEIGHT, STAGE_WIDTH } from "../../constants";
+
+export function helpButtonGroup(x: number, y: number): Konva.Group {
+        //help button
+        const helpButtonGroup = new Konva.Group({
+            x: x,
+            y: y,
+            listening: true
+        });
+
+        const helpButton = new Konva.Rect({
+            width: 200,
+            height: 60,
+            fill: '#333333',
+            cornerRadius: 10,
+            stroke: '#ffffff',
+            strokeWidth: 2,
+            shadowColor: 'black',
+            shadowBlur: 10,
+            shadowOpacity: 0.5
+        });
+
+        const helpIcon = new Konva.Text({
+            text: '?',               // or use "?" for a question mark button
+            fontSize: 36,
+            fontFamily: 'Arial',
+            fontStyle: 'bold',
+            fill: 'white',
+            x: x / 10,
+            y: 12,
+            width: 150,
+            align: 'center'
+        });
+
+        helpButtonGroup.add(helpButton);
+        helpButtonGroup.add(helpIcon);
+
+        // Hover effect (optional but nice)
+        helpButtonGroup.on('mouseenter', () => helpButton.fill('#555555'));
+        helpButtonGroup.on('mouseleave', () => helpButton.fill('#333333'));
+
+        return helpButtonGroup;
+}
+
+export function instructionWindowGroup(): Konva.Group {
+    const instructionWindowGroup = new Konva.Group({
+        x: STAGE_WIDTH / 2 - 300,   // center horizontally (600px width)
+        y: STAGE_HEIGHT / 2 - 225,  // center vertically (450px height)
+        visible: true,
+        listening: true
+    });
+    const bg = new Konva.Rect({
+        width: 600,
+        height: 450,
+        fill: '#000000',
+        opacity: 0.65,               // 50%-80% transparency range → 0.5 to 0.8
+        cornerRadius: 16,
+        shadowColor: 'black',
+        shadowBlur: 30,
+        shadowOpacity: 0.7
+    });
+    instructionWindowGroup.add(bg);
+    // Title
+    const InstructionTitle = new Konva.Text({
+        x: 0,
+        y: 50,
+        width: 600,
+        text: 'Hello there, Captain!',
+        fontSize: 34,
+        fontFamily: 'Arial',
+        fontStyle: 'bold',
+        fill: 'white',
+        align: 'center'
+    });
+    instructionWindowGroup.add(InstructionTitle);
+    // Instruction lines
+    const lines = [
+        '• The spacecrafts are out of fuel. Each craft can only takes the specific type of resource from one planet.',
+        '• Left-click and drag to pair crafts with correct planets.',
+        '• Click Submit if you are confident with your choice. (And hopefully the crafts do not explode)',
+        '• Click New Questions if you want to challenge and proceed for more resources.',
+        '• Click Reset if you think you made a mistake.',
+        '• GLHF. (╭☞ ͡° ͜ʖ ͡° )╭☞'
+    ];
+
+    lines.forEach((line, i) => {
+        const text = new Konva.Text({
+            x: 60,
+            y: 130 + i * 50,
+            width: 480,
+            text: line,
+            fontSize: 18,
+            fontFamily: 'Arial',
+            fill: 'white',
+            align: 'left'
+        });
+        instructionWindowGroup.add(text);
+    });
+
+    // Footer hint
+    const footer = new Konva.Text({
+        x: 0,
+        y: 420,
+        width: 600,
+        text: 'Click here to close',
+        fontSize: 18,
+        fontFamily: 'Arial',
+        fill: '#cccccc',
+        align: 'center'
+    });
+    instructionWindowGroup.add(footer);
+
+    return instructionWindowGroup;
+}
