@@ -99,7 +99,7 @@ Good luck and have fun!`;
 						this.startTimer();
 						});
 					} else {
-						// If no more moves, generate a new problem
+						//add udpate stats method caller here
 						this.stopTimer();
 						this.view.updateTimer(GAME_DURATION);
 						this.view.displayMessage("Congrats", () => {
@@ -111,6 +111,7 @@ Good luck and have fun!`;
 				}
 				else {
 					// For incorrect choice, just generate new problem
+					//method to call backend endpoint
 					this.stopTimer();
 					this.view.updateTimer(GAME_DURATION);
 					this.view.displayMessage("Incorrect", () => {
