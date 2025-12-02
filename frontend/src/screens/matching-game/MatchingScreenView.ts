@@ -361,7 +361,7 @@ export class MatchingScreenView implements View {
         level3ButtonGroup.add(level3Button);
         level3ButtonGroup.add(level3Text);
         level3ButtonGroup.on("click", () => {
-            this.difficulty = "quadratic_1";  // or maybe "quadratic" for level 2?
+            this.difficulty = "quadratic_1"; 
             this.new_questions();
         });
         this.group.add(level3ButtonGroup);
@@ -636,7 +636,7 @@ export class MatchingScreenView implements View {
             this.q_a_2 = generate_linear_equation_2();
             this.q_a_3 = generate_linear_equation_2();
         }
-        else if (this.difficulty == "quadratic 1") {
+        else if (this.difficulty == "quadratic_1") {
             this.q_a_1 = generate_quadratic_equation_1();
             this.q_a_2 = generate_quadratic_equation_1();
             this.q_a_3 = generate_quadratic_equation_1();
