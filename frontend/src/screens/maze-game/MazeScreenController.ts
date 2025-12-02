@@ -82,7 +82,7 @@ Good luck and have fun!`;
 		console.log("Moving player to:", x, y);
 		this.stopTimer();
 		this.view.movePlayerTo(x, y).then(() => {
-			this.view.fadeToBlack().then(() => {
+			this.view.fadeToBlack().then(async () => {
 				if (choice.getIsCorrect()) {
 					// Update model
 					this.model.incrementScore();
@@ -111,41 +111,36 @@ Good luck and have fun!`;
 				else {
 					// For incorrect choice, just generate new problem
 					this.view.updateTimer(GAME_DURATION);
-					this.view.displayMessage("Congrats", () => {
-						console.log("Solved the equation! Generating new problem.");
-						this.view.destroy();
-					this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
-				});
-			}
-		}
-		else {
-			// For incorrect choice, show loading, then explanation requiring continue
-			this.stopTimer();
-			this.view.updateTimer(GAME_DURATION);
 
-			const dismissLoading = this.view.displayMessage(
-				"Incorrect",
-				undefined,
-				"Generating explanation...",
-				{ isLoading: true }
-			);
+					const dismissLoading = this.view.displayMessage(
+						"Incorrect",
+						undefined,
+						"Generating explanation...",
+						{ isLoading: true }
+					);
 
-				const explanation = await this.model.fetchExplanation(this.problem, choice);
-				await this.model.recordAttempt(false);
-				dismissLoading();
+						const explanation = await this.model.fetchExplanation(this.problem, choice);
+						await this.model.recordAttempt(false);
+						dismissLoading();
 
-				this.view.displayMessage(
-					"Incorrect",
-					() => {
-					this.problem = new ProblemModel(3);
-					this.view.updateProblem(this.problem.getProblemStatement());
-					this.view.updateChoices(this.problem.getChoices());
-					this.startTimer();
-				},
-				explanation ?? undefined,
-				{ requireContinue: true }
-			);
-		}
+						this.view.displayMessage(
+							"Incorrect",
+							() => {
+							this.problem = new ProblemModel(3);
+							this.view.updateProblem(this.problem.getProblemStatement());
+							this.view.updateChoices(this.problem.getChoices());
+							this.startTimer();
+						},
+						explanation ?? undefined,
+						{ requireContinue: true }
+					);
+
+					// this.view.updateTimer(GAME_DURATION);
+					// this.view.displayMessage("Congrats", () => {
+					// 	console.log("Solved the equation! Generating new problem.");
+					// 	this.view.destroy();
+					// this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
+				}})});
 	};
 
 	// End the game
