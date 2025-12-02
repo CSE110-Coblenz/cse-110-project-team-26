@@ -1,5 +1,6 @@
 import { compute } from "../../constants.ts";
 import type { Step } from "../../types";
+import type { StatsCategory } from "../statistics/StatisticsScreenModel.ts";
 import { LinearEquation, EquationSolver } from "./maze-logic/LinearEquationLogic";
 
 type MazeExplanationPayload = {
@@ -14,6 +15,7 @@ type MazeExplanationPayload = {
 export class MazeScreenModel {
 	private score = 0;
     private timeRemaining = 60;
+	private readonly statsCategory: StatsCategory = "Multi-Step Algebraic Equations";
 	/**
 	 * Reset game state for a new game
 	 */
@@ -66,6 +68,42 @@ export class MazeScreenModel {
             return "Network error while fetching explanation.";
         }
     }
+
+	async recordAttempt(isCorrect: boolean): Promise<boolean> {
+		const token = localStorage.getItem("authToken");
+		if (!token) {
+			console.warn("No auth token found; skipping stats update.");
+			return false;
+		}
+
+		try {
+			const res = await fetch("http://localhost:4000/auth/stats/attempt", {
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
+				},
+				credentials: "include",
+				body: JSON.stringify({
+					category: this.statsCategory,
+					isCorrect,
+				}),
+			});
+
+			if (!res.ok) {
+				const data = (await res.json().catch(() => null)) as
+					| { error?: string }
+					| null;
+				console.error("Failed to update stats:", data?.error ?? res.statusText);
+				return false;
+			}
+
+			return true;
+		} catch (error) {
+			console.error("Stats update error:", error);
+			return false;
+		}
+	}
 }
 /**
  * ProblemModel - Represents a math problem in the maze game

@@ -91,21 +91,21 @@ Good luck and have fun!`;
 
 			// Ensure a problem exists and advance or create as needed
 			const prob = this.problem as ProblemModel;
-			if(prob.nextMove()){
-				this.stopTimer();
-				this.view.updateTimer(GAME_DURATION);
-				this.view.displayMessage("Correct", () => {
-					this.view.updateProblem(prob.getProblemStatement());
-					this.view.updateChoices(prob.getChoices());
-					this.startTimer();
-				});
-			} else {
-				//add udpate stats method caller here
-				this.stopTimer();
-				this.view.updateTimer(GAME_DURATION);
-				this.view.displayMessage("Congrats", () => {
-					console.log("Solved the equation! Generating new problem.");
-					this.view.destroy();
+				if(prob.nextMove()){
+					this.stopTimer();
+					this.view.updateTimer(GAME_DURATION);
+					this.view.displayMessage("Correct", () => {
+						this.view.updateProblem(prob.getProblemStatement());
+						this.view.updateChoices(prob.getChoices());
+						this.startTimer();
+					});
+				} else {
+					await this.model.recordAttempt(true);
+					this.stopTimer();
+					this.view.updateTimer(GAME_DURATION);
+					this.view.displayMessage("Congrats", () => {
+						console.log("Solved the equation! Generating new problem.");
+						this.view.destroy();
 					this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
 				});
 			}
@@ -122,12 +122,13 @@ Good luck and have fun!`;
 				{ isLoading: true }
 			);
 
-			const explanation = await this.model.fetchExplanation(this.problem, choice);
-			dismissLoading();
+				const explanation = await this.model.fetchExplanation(this.problem, choice);
+				await this.model.recordAttempt(false);
+				dismissLoading();
 
-			this.view.displayMessage(
-				"Incorrect",
-				() => {
+				this.view.displayMessage(
+					"Incorrect",
+					() => {
 					this.problem = new ProblemModel(3);
 					this.view.updateProblem(this.problem.getProblemStatement());
 					this.view.updateChoices(this.problem.getChoices());
