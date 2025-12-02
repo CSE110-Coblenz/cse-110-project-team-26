@@ -5,6 +5,7 @@ import {
   BOX_WIDTH,
   BACKGROUND_PROPERTIES,
   STATIC_GROUP_PROPERTIES,
+  GRAPH_GROUP_PROPERTIES,
   GRAPH_BACKGROUND_PROPERTIES,
   SPRITE_GROUP_PROPERTIES,
   SPRITE_BOX_PROPERTIES,
@@ -21,8 +22,7 @@ import {
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,
   EQUATION_TEXT_PROPERTIES,
-  PIX_PER_UNIT,
-  GRAPH_GROUP_PROPERTIES
+  PIX_PER_UNIT
 } from "./GraphScreenConstants";
 import { ABSVAL, LINEAR, QUADRATIC, X_MAX, X_MIN } from "../../constants";
 
@@ -38,7 +38,7 @@ export class GraphScreenView implements View {
     private resultsGroup: Konva.Group;
     private submitButtonGroup: Konva.Group;
     private dialogueText: Konva.Text;
-    private playerSprite: HTMLImageElement = new Image();
+    private playerSprite: HTMLImageElement;
     private equationText: Konva.Text;
     private inputAndEquationGroup: Konva.Group;
 
