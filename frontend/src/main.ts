@@ -48,15 +48,9 @@ class App implements ScreenSwitcher {
 		// Each controller manages a Model, View, and handles user interactions
 		this.menuTestController = new MenuTestScreenController(this);
 		this.matchingScreenController = new MatchingScreenController(this, this.stage);
-<<<<<<< HEAD
-		this.mazeScreenController = new MazeScreenController(this, this.stage);
-		this.mainScreenController = new MainScreenController(this);
-    this.titleController = new TitleScreenController(this);
-=======
 		this.mazeScreenController = new MazeScreenController(this);
 		this.graphScreenController = new GraphScreenController(this, level, difficulty);
     	this.titleController = new TitleScreenController(this);
->>>>>>> main
 		this.tutorialController = new TutorialScreenController(this);
 		this.statisticsController = new StatisticsScreenController(this);
 
