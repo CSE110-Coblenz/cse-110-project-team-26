@@ -315,70 +315,124 @@ export class MazeScreenView implements View {
         this.player.position({ x: STAGE_WIDTH / 2 - 64, y: STAGE_HEIGHT - 150 });
         this.group.getLayer()?.draw();
     }
-    displayMessage(correctness : string, callBack?: () => void){
+    displayMessage(
+        correctness : string,
+        callBack?: () => void,
+        explanation?: string,
+        options?: { isLoading?: boolean; requireContinue?: boolean }
+    ): () => void {
         const bg = new Konva.Image({
-        x: 0,
-        y: 0,
-        width: STAGE_WIDTH,
-        height: STAGE_HEIGHT,
-        image: (() => {
-            const image = new Image();
-            image.src = "/backgroundMessage.png";
-            return image;
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            image: (() => {
+                const image = new Image();
+                image.src = "/backgroundMessage.png";
+                return image;
             })()
         });
         
+        const hasExplanation = Boolean(explanation);
         const message = new Konva.Text({
-            x: 200,
-            y: STAGE_HEIGHT/3,
-            align: 'center',
-            verticalAlign: 'middle',
-            fontSize: 60,
+            x: 40,
+            y: 40,
+            align: "center",
+            verticalAlign: "top",
+            fontSize: hasExplanation ? 28 : 48,
             fontFamily: "medodica",
             fill: "white",
+            width: STAGE_WIDTH - 80,
+            height: STAGE_HEIGHT * 0.7,
+            wrap: "word",
         }); 
         
+        let baseMessage = "";
         switch (correctness){
             case "Correct":
-                message.text("Tunnel Choice Correct! \n Keep Moving Forward");
+                baseMessage = "Tunnel Choice Correct! \n Keep Moving Forward";
                 break;
             case "Incorrect":
-                message.text("Tunnel Choice Incorrect \n Try another route from the beginning");
-                message.x(10);
+                baseMessage = "Tunnel Choice Incorrect \n Try another route from the beginning";
                 break;
             case "Congrats": 
-                message.text("Congratulations!!! \n You escaped the Maze");
+                baseMessage = "Congratulations!!! \n You escaped the Maze";
                 break;
             case "Timeout":
-                message.text("You have run out of time! \n Try another route from the beginning");
-                message.x(10)
+                baseMessage = "You have run out of time! \n Try another route from the beginning";
                 break;
         }
 
+        if (options?.isLoading) {
+            baseMessage = "Tunnel Choice Incorrect \n Generating explanation...";
+        }
+
+        if (hasExplanation) {
+            baseMessage += `\n\nExplanation:\n${explanation}`;
+        }
+        message.text(baseMessage);
+
+        let timeoutHandle: number | null = null;
+        let dismissed = false;
+        const cleanup = () => {
+            if (dismissed) return;
+            dismissed = true;
+            if (timeoutHandle) clearTimeout(timeoutHandle);
+            bg.destroy();
+            message.destroy();
+            continueButton?.destroy();
+            continueText?.destroy();
+            this.transitMovetoBottom();
+            if(callBack) callBack();
+        };
+
         setTimeout(()=>{ // Delays the message display to let fadeIn Animation finish
-            this.group.add(bg)
+            this.group.add(bg);
             this.group.add(message);
 
         },100);
 
-        bg.on('click', () => {
-            bg.destroy();
-            message.destroy();
-            this.transitMovetoBottom();
-            if(callBack) callBack();
-            clearTimeout(timeOut);
+        let continueButton: Konva.Rect | null = null;
+        let continueText: Konva.Text | null = null;
+        if (options?.requireContinue) {
+            continueButton = new Konva.Rect({
+                x: STAGE_WIDTH / 2 - 100,
+                y: STAGE_HEIGHT * 0.8,
+                width: 200,
+                height: 60,
+                fill: "#333",
+                cornerRadius: 10,
+            });
+            continueText = new Konva.Text({
+                x: STAGE_WIDTH / 2 - 100,
+                y: STAGE_HEIGHT * 0.8,
+                width: 200,
+                height: 60,
+                text: "Continue",
+                align: "center",
+                verticalAlign: "middle",
+                fill: "white",
+                fontSize: 24,
+                fontFamily: "Arial",
+            });
+            continueButton.on("click", cleanup);
+            continueText.on("click", cleanup);
+            this.group.add(continueButton, continueText);
+        }
 
-            //console.log("destroyed on click")
-        });
-                
-        const timeOut = setTimeout(()=>{
-            bg.destroy();
-            this.transitMovetoBottom();
-            message.destroy();
-            if(callBack) callBack();
-            console.log("destroyed on time")
-        },5000);
+        if (!options?.requireContinue && !options?.isLoading) {
+            bg.on('click', cleanup);
+            timeoutHandle = window.setTimeout(()=>{
+                cleanup();
+                console.log("destroyed on time")
+            },5000);
+        } else if (options?.isLoading) {
+            // loading overlay stays until cleanup is called programmatically
+        } else {
+            bg.on("click", cleanup);
+        }
 
+        return cleanup;
     }
 
     // Helper function to render LaTeX to Konva canvas

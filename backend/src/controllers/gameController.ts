@@ -160,7 +160,7 @@ function buildMatchingExplanationPrompt(
 	givenAnswer: string,
 	correctAnswer: string,
 ): string {
-	return `Explain to the user why their matching answer is incorrect and what the correct match is.
+	return `Explain to the user what the correct aswer is and how to arrive at it.
 
 		Question:
 		${question}
@@ -172,6 +172,5 @@ function buildMatchingExplanationPrompt(
 		${correctAnswer}
 
 		Be concise, use second person, and outline:
-		- Why the provided match does not align with the question.
 		- The correct match and a short reasoning.`;
 		}

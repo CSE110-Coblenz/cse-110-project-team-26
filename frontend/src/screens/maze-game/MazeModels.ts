@@ -1,5 +1,12 @@
 import { compute } from "../../constants.ts";
+import type { Step } from "../../types";
 import { LinearEquation, EquationSolver } from "./maze-logic/LinearEquationLogic";
+
+type MazeExplanationPayload = {
+    latex: string[];
+    givenAnswer: string[];
+    correctAnswer: string[];
+};
 
 /**
  * GameScreenModel - Manages game state
@@ -25,6 +32,40 @@ export class MazeScreenModel {
     gettimeRemaining(): number {
         return this.timeRemaining;
     }
+
+    async fetchExplanation(
+        problem: ProblemModel | null,
+        selectedChoice: ChoiceModel,
+    ): Promise<string | null> {
+        if (!problem) {
+            return "No problem context available for explanation.";
+        }
+
+        const payload: MazeExplanationPayload = problem.getExplanationPayload(
+            selectedChoice.getText(),
+        );
+
+        try {
+            const res = await fetch("http://localhost:4000/game/maze/mazeHandleProblem", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            if (!res.ok) {
+                const data = (await res.json().catch(() => null)) as
+                    | { error?: string }
+                    | null;
+                return data?.error ?? `Failed to fetch explanation (${res.status}).`;
+            }
+
+            const data = (await res.json()) as { explanation?: string };
+            return data.explanation ?? "No explanation returned.";
+        } catch (error) {
+            console.error("Maze explanation fetch error:", error);
+            return "Network error while fetching explanation.";
+        }
+    }
 }
 /**
  * ProblemModel - Represents a math problem in the maze game
@@ -34,6 +75,7 @@ export class ProblemModel {
     private linearEquation: LinearEquation
     private choices: ChoiceModel[] = [];
     private solver: EquationSolver
+    private currentStep: Step | null = null;
 
     constructor(difficultyLevel: number) {
         this.linearEquation = new LinearEquation(difficultyLevel, compute);
@@ -43,6 +85,7 @@ export class ProblemModel {
         console.log(JSON.parse(JSON.stringify(this.solver.steps)));
         const firstStep = this.solver.getStep();
         console.log(firstStep);
+        this.currentStep = firstStep;
         this.generateChoices(firstStep);
         console.log("Generated Problem: ", this.problemStatement);
         }
@@ -103,9 +146,20 @@ export class ProblemModel {
         }
         const newStep = this.solver.getStep(); // advance to next step
         console.log("Next Step: ", newStep);
+        this.currentStep = newStep;
         this.generateChoices(newStep, this.solver.getStepsCount() === 0? true : false);
         this.setProblemStatement(newStep.current);
         return true;
+    }
+
+    public getExplanationPayload(selectedChoice: string): MazeExplanationPayload {
+        return {
+            latex: [this.problemStatement],
+            givenAnswer: [selectedChoice],
+            correctAnswer: [
+                this.currentStep?.description ?? "No correct step available.",
+            ],
+        };
     }
 }
 /**
