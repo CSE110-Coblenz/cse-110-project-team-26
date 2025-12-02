@@ -77,7 +77,7 @@ Good luck and have fun!`;
 	}
 
 	// Handle choice click
-	private handleChoiceClick(choice : ChoiceModel, x:number, y:number): void {
+	private async handleChoiceClick(choice : ChoiceModel, x:number, y:number): Promise<void> {
 		console.log("Choice clicked:", choice.getText());
 		console.log("Moving player to:", x, y);
 		this.stopTimer();
@@ -111,13 +111,41 @@ Good luck and have fun!`;
 				else {
 					// For incorrect choice, just generate new problem
 					this.view.updateTimer(GAME_DURATION);
-					this.view.displayMessage("Incorrect", () => {
-						this.problem = new ProblemModel(3);
-						this.view.updateProblem(this.problem.getProblemStatement());
-						this.view.updateChoices(this.problem.getChoices());
-						this.startTimer();
-					});
-				}})});
+					this.view.displayMessage("Congrats", () => {
+						console.log("Solved the equation! Generating new problem.");
+						this.view.destroy();
+					this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
+				});
+			}
+		}
+		else {
+			// For incorrect choice, show loading, then explanation requiring continue
+			this.stopTimer();
+			this.view.updateTimer(GAME_DURATION);
+
+			const dismissLoading = this.view.displayMessage(
+				"Incorrect",
+				undefined,
+				"Generating explanation...",
+				{ isLoading: true }
+			);
+
+				const explanation = await this.model.fetchExplanation(this.problem, choice);
+				await this.model.recordAttempt(false);
+				dismissLoading();
+
+				this.view.displayMessage(
+					"Incorrect",
+					() => {
+					this.problem = new ProblemModel(3);
+					this.view.updateProblem(this.problem.getProblemStatement());
+					this.view.updateChoices(this.problem.getChoices());
+					this.startTimer();
+				},
+				explanation ?? undefined,
+				{ requireContinue: true }
+			);
+		}
 	};
 
 	// End the game
