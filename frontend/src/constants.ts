@@ -1,19 +1,20 @@
 import { ComputeEngine } from "@cortex-js/compute-engine";
+export const compute = new ComputeEngine();
 
 // Stage dimensions
-export const STAGE_WIDTH = 900;
-export const STAGE_HEIGHT = 600;
+export const STAGE_WIDTH = 1280;
+export const STAGE_HEIGHT = 960;
 
 // Game settings
 export const GAME_DURATION = 10; // seconds
 
-export const compute = new ComputeEngine;
-/*
-export const GRAPH = "graph";
-export const MAZE = "maze";
-export const MATCH = "match";
-export const TITLE = "title";
-*/
+// Equation types
 export const LINEAR = "LINEAR";
 export const QUADRATIC = "QUADRATIC";
 export const ABSVAL = "ABSVAL";
+
+// Graph boundaries
+export const Y_MIN = -20;
+export const Y_MAX = 20;
+export const X_MIN = -20;
+export const X_MAX = 20;
