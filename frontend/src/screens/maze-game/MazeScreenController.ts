@@ -80,28 +80,36 @@ Good luck and have fun!`;
 	private async handleChoiceClick(choice : ChoiceModel, x:number, y:number): Promise<void> {
 		console.log("Choice clicked:", choice.getText());
 		console.log("Moving player to:", x, y);
-		await this.view.movePlayerTo(x, y);
-		await this.view.fadeToBlack();
+		this.stopTimer();
+		this.view.movePlayerTo(x, y).then(() => {
+			this.view.fadeToBlack().then(() => {
+				if (choice.getIsCorrect()) {
+					// Update model
+					this.model.incrementScore();
+					// Update view
+					this.view.updateScore(this.model.getScore());
 
-		if (choice.getIsCorrect()) {
-			// Update model
-			this.model.incrementScore();
-			// Update view
-			this.view.updateScore(this.model.getScore());
-
-			// Ensure a problem exists and advance or create as needed
-			const prob = this.problem as ProblemModel;
-				if(prob.nextMove()){
-					this.stopTimer();
-					this.view.updateTimer(GAME_DURATION);
-					this.view.displayMessage("Correct", () => {
+					// Ensure a problem exists and advance or create as needed
+					const prob = this.problem as ProblemModel;
+					if(prob.nextMove()){
+						this.view.updateTimer(GAME_DURATION);
+						this.view.displayMessage("Correct", () => {
 						this.view.updateProblem(prob.getProblemStatement());
 						this.view.updateChoices(prob.getChoices());
 						this.startTimer();
-					});
-				} else {
-					await this.model.recordAttempt(true);
-					this.stopTimer();
+						});
+					} else {
+						// If no more moves, generate a new problem
+						this.view.updateTimer(GAME_DURATION);
+						this.view.displayMessage("Congrats", () => {
+							console.log("Solved the equation! Generating new problem.");
+							this.view.destroy();
+							this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
+						});
+					}
+				}
+				else {
+					// For incorrect choice, just generate new problem
 					this.view.updateTimer(GAME_DURATION);
 					this.view.displayMessage("Congrats", () => {
 						console.log("Solved the equation! Generating new problem.");
