@@ -28,8 +28,8 @@ export class GraphScreenController extends ScreenController {
         super();
         this.level = level;
         this.difficulty = difficulty;
+        console.log("difficulty: " + difficulty);
         let type = generateRandomNumber(0, this.difficulty);
-        // let type = 1;
         this.model = new GraphScreenModel(type);
         this.type = this.model.getQuestionType();
         switch(this.type) {
