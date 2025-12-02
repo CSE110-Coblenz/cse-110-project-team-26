@@ -2,7 +2,7 @@ import Konva from "konva";
 import type { ScreenSwitcher, Screen } from "../../../types.ts";
 
 import { MenuTestScreenController } from "../../MenuTestScreen/MenuTestScreenController.ts";
-import { MatchingScreenController } from "../../MatchingScreen/MatchingScreenController.ts";
+import { MatchingScreenController } from "../../matching-game/MatchingScreenController.ts";
 import { MazeScreenController } from "../../maze-game/MazeScreenController.ts";
 import { GraphScreenController } from "../../graph-game/GraphScreenController.ts";
 import { TitleScreenController } from "../../title-screen/TitleScreenController.ts";
