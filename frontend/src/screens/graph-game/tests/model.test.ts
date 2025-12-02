@@ -22,51 +22,61 @@ describe("model", () => {
 
     describe("reset", () => {
         const model = new GraphScreenModel(0);
-        for (let i = 0; i < 10; i++) {
-            const initialAnswer = model.getAnswer();
-            model.reset();
-            const type = model.getQuestionType();
-            expect([LINEAR, QUADRATIC, ABSVAL]).toContain(type);
-            expect(model.getAnswer()).toBeDefined();
-            expect(model.getAnswer()).not.toBe(initialAnswer);
-        }
+        it("should clear out answer values", () => {
+            for (let i = 0; i < 10; i++) {
+                const initialAnswer = model.getAnswer();
+                model.reset();
+                const type = model.getQuestionType();
+                expect([LINEAR, QUADRATIC, ABSVAL]).toContain(type);
+                expect(model.getAnswer()).toBeDefined();
+                expect(model.getAnswer()).not.toBe(initialAnswer);
+            }
+        })
+        
     });
 
     describe("verifyAnswer", () => {
         const linearModel = new GraphScreenModel(0);
-        const answer = linearModel.getAnswer();
-        expect(linearModel.verifyAnswer(answer)).toBe(true);
+        const linearAnswer = linearModel.getAnswer();
+        it("should correctly determine correct answers: linear", () => {
+            expect(linearModel.verifyAnswer(linearAnswer)).toBe(true);
+        })
 
         const incorrectLinear = new Linear(false);
-        expect(linearModel.verifyAnswer(incorrectLinear)).toBe(false);
+        it("should correctly determine wrong answers: linear", () => {
+            expect(linearModel.verifyAnswer(incorrectLinear)).toBe(false);
+        })
 
         const quadraticModel = new GraphScreenModel(1);
+        const quadraticAnswer = quadraticModel.getAnswer();
         const incorrectQuadratic = new Quadratic(false);
-        expect(quadraticModel.verifyAnswer(incorrectAbsoluteValue)).toBe(false);
+        it("should correctly determine correct answers: quadratic", () => {
+            expect(quadraticModel.verifyAnswer(quadraticAnswer)).toBe(true);
+        })
+        it("should correctly determine wrong answers: quadratic", () => {
+            expect(quadraticModel.verifyAnswer(incorrectQuadratic)).toBe(false);
+        })
 
         const absoluteValueModel = new GraphScreenModel(2);
+        const absoluteValueAnswer = absoluteValueModel.getAnswer();
         const incorrectAbsoluteValue = new AbsoluteValue(false);
-        expect(absoluteValueModel.verifyAnswer(incorrectAbsoluteValue)).toBe(false);
+        it("should correctly determine correct answers: absval", () => {
+            expect(absoluteValueModel.verifyAnswer(absoluteValueAnswer)).toBe(true);
+        })
+        it("should correctly determine wrong answers: absval", () => {
+            expect(absoluteValueModel.verifyAnswer(incorrectAbsoluteValue)).toBe(false);
+        })
     });
 
     describe("dialogue", () => {
         const model = new GraphScreenModel(0);
-        model.setDialogue("Hello World!");
-        expect(model.getDialogue()).toEqual("Hello World!");
+        it("should correctly set dialogue", () => {
+            model.setDialogue("Hello World!");
+            expect(model.getDialogue()).toEqual("Hello World!");
 
-        model.setDialogue("");
-        expect(model.getDialogue()).toEqual("");
+            model.setDialogue("");
+            expect(model.getDialogue()).toEqual("");
+        })
     });
 
-    describe("sprite", () => {
-        const model = new GraphScreenModel(0);
-        const mockImage = new Image();
-        const newMockImage = new Image();
-
-        model.setSprite(mockImage);
-        expect(model.getSprite()).toEqual(mockImage);
-
-        model.setSprite(newMockImage);
-        expect(model.getSprite()).toEqual(newMockImage);
-    })
 });

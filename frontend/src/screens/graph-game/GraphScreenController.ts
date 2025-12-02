@@ -288,6 +288,7 @@ export class GraphScreenController extends ScreenController {
             console.log(submission);
             this.model.enterSubmission(submission);
             this.submitEquationInput();
+            this.view.disableSubmissions();
         } else {
             this.view.updateDialogue(DIALOGUE.incomplete);
             this.handleEquationReset();

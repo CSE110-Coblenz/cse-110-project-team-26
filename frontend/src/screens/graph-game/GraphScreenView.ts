@@ -36,6 +36,7 @@ export class GraphScreenView implements View {
     private graphGroup: Konva.Group;
     private transitionGroup: Konva.Group;
     private resultsGroup: Konva.Group;
+    private submitButtonGroup: Konva.Group;
     private dialogueText: Konva.Text;
     private playerSprite: HTMLImageElement = new Image();
     private equationText: Konva.Text;
@@ -56,7 +57,8 @@ export class GraphScreenView implements View {
     constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void) {
 
         // Add layers for static and dynamic elements
-
+        console.log(this.xMax);
+        console.log(this.xRange);
         console.log(GRAPH_BACKGROUND_PROPERTIES.width);
         console.log(GRAPH_BACKGROUND_PROPERTIES.height);
         
@@ -196,6 +198,10 @@ export class GraphScreenView implements View {
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
 
+    }
+
+    disableSubmissions(): void {
+        this.submitButtonGroup.off("click");
     }
 
     reset(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void): void {
@@ -458,7 +464,7 @@ export class GraphScreenView implements View {
         resetButtonGroup.add(resetButtonText);
         keypadGroup.add(resetButtonGroup);
 
-        const submitButtonGroup = new Konva.Group({
+        this.submitButtonGroup = new Konva.Group({
             x: (KEYPAD_GROUP_PROPERTIES.width * (1 / columns)) * (numberColumns),
             y: (KEYPAD_GROUP_PROPERTIES.height * (1 / rows)) * 2,
             width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
@@ -486,10 +492,10 @@ export class GraphScreenView implements View {
             verticalAlign: "middle"
         });
       
-        submitButtonGroup.on("click", onEquationSubmission);
-        submitButtonGroup.add(submitButton);
-        submitButtonGroup.add(submitButtonText);
-        keypadGroup.add(submitButtonGroup);
+        this.submitButtonGroup.on("click", onEquationSubmission);
+        this.submitButtonGroup.add(submitButton);
+        this.submitButtonGroup.add(submitButtonText);
+        keypadGroup.add(this.submitButtonGroup);
 
         return keypadGroup;
     }
@@ -555,12 +561,12 @@ export class GraphScreenView implements View {
         let denominator = linearSubmission.getCoefficient().denominator;
         let intercept = linearSubmission.getIntercept();
 
-        let leftIntercept = numerator * (this.xMin) / denominator + intercept;
-        let rightIntercept = numerator * (this.xMax) / denominator + intercept;
+        let leftIntercept = numerator * (this.xMin - 1) / denominator + intercept;
+        let rightIntercept = numerator * (this.xMax + 1) / denominator + intercept;
 
         let plotLine = new Konva.Line({
-            points: [this.convertCoordToKonva(this.xMin, true), this.convertCoordToKonva(leftIntercept, false),
-                    this.convertCoordToKonva(this.xMax, true), this.convertCoordToKonva(rightIntercept, false)],
+            points: [this.convertCoordToKonva(this.xMin - 1, true), this.convertCoordToKonva(leftIntercept, false),
+                    this.convertCoordToKonva(this.xMax + 1, true), this.convertCoordToKonva(rightIntercept, false)],
             strokeWidth: 3,
             lineCap: 'round',
             name: "PLOT"
@@ -572,11 +578,11 @@ export class GraphScreenView implements View {
 
     plotQuadraticGraph(isPreview: boolean, submission: EquationAnswerFormat) {
         let numLines = 200;
-        let dx = (this.xMax - this.xMin) / numLines;
+        let dx = (this.xMax - this.xMin + 2) / numLines;
         let quadraticSubmission = submission as Quadratic;
 
         for (let i = 0; i < numLines; i++) {
-            let xStart = this.xMin + dx * i;
+            let xStart = this.xMin - 1 + dx * i;
             let xEnd = this.xMin + dx * (i + 1);
             let yStart = (xStart + quadraticSubmission.getRoot1()) * (xStart + quadraticSubmission.getRoot2());
             let yEnd = (xEnd + quadraticSubmission.getRoot1()) * (xEnd + quadraticSubmission.getRoot2());
