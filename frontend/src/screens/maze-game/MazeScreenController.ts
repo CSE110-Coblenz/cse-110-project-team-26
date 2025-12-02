@@ -80,6 +80,7 @@ Good luck and have fun!`;
 	private handleChoiceClick(choice : ChoiceModel, x:number, y:number): void {
 		console.log("Choice clicked:", choice.getText());
 		console.log("Moving player to:", x, y);
+		this.stopTimer();
 		this.view.movePlayerTo(x, y).then(() => {
 			this.view.fadeToBlack().then(() => {
 				if (choice.getIsCorrect()) {
@@ -91,7 +92,6 @@ Good luck and have fun!`;
 					// Ensure a problem exists and advance or create as needed
 					const prob = this.problem as ProblemModel;
 					if(prob.nextMove()){
-						this.stopTimer();
 						this.view.updateTimer(GAME_DURATION);
 						this.view.displayMessage("Correct", () => {
 						this.view.updateProblem(prob.getProblemStatement());
@@ -100,7 +100,6 @@ Good luck and have fun!`;
 						});
 					} else {
 						// If no more moves, generate a new problem
-						this.stopTimer();
 						this.view.updateTimer(GAME_DURATION);
 						this.view.displayMessage("Congrats", () => {
 							console.log("Solved the equation! Generating new problem.");
@@ -111,7 +110,6 @@ Good luck and have fun!`;
 				}
 				else {
 					// For incorrect choice, just generate new problem
-					this.stopTimer();
 					this.view.updateTimer(GAME_DURATION);
 					this.view.displayMessage("Incorrect", () => {
 						this.problem = new ProblemModel(3);
