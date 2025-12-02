@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { User } from "../models/user.model";
+import { UserStats } from "../models/userStats.model";
 
 export const loginUser = async (req: Request, res: Response) => {
     try {
@@ -58,40 +59,33 @@ export const registerUser = async (req: Request, res: Response) => {
 };
 
 export const getUserProfile = async (req: Request, res: Response) => {
-    // call statistics file function to get user statistics
-    try {
-        const userId = (req as any).userId as string | undefined;
-        if (!userId) {
-          return res.status(401).json({ error: "unauthorized" });
-        }
-    
-        // Check if user still exists in the database
-        const user = await User.findById(userId).select("-password -__v");
-    
-        // If user was deleted or not found, return error
-        if (!user) {
-          return res.status(404).json({ error: "user not found or account deleted" });
-        }
-    
-        // Otherwise, return user info
-        return res.json({
-          user: {
-            id: user.id,
-            email: user.email,
-          },
-        });
-      } catch (e) {
-        console.error("getUserProfile error:", e);
-        return res.status(500).json({ error: "server error" });
-      }
-};
+  try {
+    const userId = (req as any).userId as string | undefined;
+    if (!userId) {
+      return res.status(401).json({ error: "unauthorized" });
+    }
 
-export const updateUserProfile = async (req: Request, res: Response) => {
-    /*if (request update account details)
-    update account details logic
-    if (request stats)
-    call statistics file function to update user statistics
-     */
+    const user = await User.findById(userId).select("email createdAt updatedAt");
+    if (!user) {
+      return res.status(404).json({ error: "user not found or deleted" });
+    }
+
+    const stats = await UserStats.findOne({ userId }).lean();
+
+    return res.json({
+      user: {
+        id: user.id,
+        email: user.email,
+      },
+      stats: stats || {
+        total: { answered: 0, correct: 0 },
+        categories: {},
+      },
+    });
+  } catch (e) {
+    console.error("getUserProfile error:", e);
+    return res.status(500).json({ error: "server error" });
+  }
 };
 
 export const deleteUserAccount = async (req: Request, res: Response) => {
@@ -107,9 +101,6 @@ export const deleteUserAccount = async (req: Request, res: Response) => {
         }
     
         await User.findByIdAndDelete(userId);
-    
-        // related collections (e.g. stats), you can cascade delete here
-        // await Game.deleteMany({ userId });
     
         return res.json({ message: "account deleted successfully" });
       } catch (e) {
