@@ -15,7 +15,7 @@ export class MatchingScreenController extends ScreenController {
         super();
         this.screenSwitcher = screenSwitcher;
         this.stage = stage;
-        this.view = new MatchingScreenView(this.stage, 3);
+        this.startGame(3);
     }
 
     /**
@@ -23,6 +23,17 @@ export class MatchingScreenController extends ScreenController {
      */
     private handleStartClick(): void {
         this.screenSwitcher.switchToScreen({ type: "menu" });
+    }
+
+    private startGame(difficulty: number): void {
+        this.view = new MatchingScreenView(this.stage, difficulty, () => {
+            this.endGame();
+        });
+    }
+
+    private endGame(): void {
+        // Logic to end the game, show results, etc.
+        this.screenSwitcher.switchToScreen({ type: "main-game"});
     }
 
     /**

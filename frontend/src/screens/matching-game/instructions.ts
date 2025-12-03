@@ -1,5 +1,6 @@
 import Konva from "konva";
 import { STAGE_HEIGHT, STAGE_WIDTH } from "../../constants";
+import "../../styles.css";
 
 export function helpButtonGroup(x: number, y: number): Konva.Group {
         //help button
@@ -10,10 +11,9 @@ export function helpButtonGroup(x: number, y: number): Konva.Group {
         });
 
         const helpButton = new Konva.Rect({
-            width: 200,
-            height: 60,
+            width: 100,
+            height: 40,
             fill: '#333333',
-            cornerRadius: 10,
             stroke: '#ffffff',
             strokeWidth: 2,
             shadowColor: 'black',
@@ -27,8 +27,8 @@ export function helpButtonGroup(x: number, y: number): Konva.Group {
             fontFamily: 'Arial',
             fontStyle: 'bold',
             fill: 'white',
-            x: x / 10,
-            y: 12,
+            x: -25,
+            y: 2,
             width: 150,
             align: 'center'
         });
@@ -63,12 +63,12 @@ export function instructionWindowGroup(): Konva.Group {
     instructionWindowGroup.add(bg);
     // Title
     const InstructionTitle = new Konva.Text({
-        x: 0,
+        x: 20,
         y: 50,
         width: 600,
         text: 'Hello there, Captain!',
         fontSize: 34,
-        fontFamily: 'Arial',
+        fontFamily: 'medodica',
         fontStyle: 'bold',
         fill: 'white',
         align: 'center'
@@ -91,7 +91,7 @@ export function instructionWindowGroup(): Konva.Group {
             width: 480,
             text: line,
             fontSize: 18,
-            fontFamily: 'Arial',
+            fontFamily: 'medodica',
             fill: 'white',
             align: 'left'
         });
@@ -105,7 +105,7 @@ export function instructionWindowGroup(): Konva.Group {
         width: 600,
         text: 'Click here to close',
         fontSize: 18,
-        fontFamily: 'Arial',
+        fontFamily: 'medodica',
         fill: '#cccccc',
         align: 'center'
     });

@@ -5,6 +5,7 @@ import { generate_quadratic_equation_1, generate_linear_equation_1, generate_lin
 import galaxyBg from './assets/galaxy.jpg';
 import { createNeonMetalBox, createPlanetBox, flameBlowUp} from "./ArtEffect.ts";
 import { helpButtonGroup, instructionWindowGroup } from "./instructions.ts";
+import "../../styles.css";
 
 /**
  * MenuScreenView - Renders the menu screen
@@ -29,8 +30,9 @@ export class MatchingScreenView implements View {
 
     private difficulty: number = 3;
     private arrowCount: number = 0;
+    private onSubmit?: () => void;
 
-    constructor(stage:Konva.Stage, difficulty: number) {
+    constructor(stage:Konva.Stage, difficulty: number, onSubmit?: () => void) {
         this.group = new Konva.Group({ visible: true });
         this.stage = stage;
 
@@ -85,24 +87,7 @@ export class MatchingScreenView implements View {
         background.moveToTop();
         
         this.difficulty = difficulty;
-
-        // Generate 3 unique question-answer pairs
-        for (let i = 0; i < difficulty; i++) {
-            this.q_a_list[i] = generate_linear_equation_1() as [string, string];
-        }
-
-        // Collect all answer strings (q_a_x[1]) into a temp array
-        const answers = this.q_a_list.map(qa => qa[1]);
-
-
-        // Shuffle the array randomly
-        for (let i = answers.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [answers[i], answers[j]] = [answers[j], answers[i]];
-        }
-
-        // Assign shuffled answers to private answer_sequence
-        this.answer_sequence = answers;
+        this.onSubmit = onSubmit;
 
         /* // Title text
         const title = new Konva.Text({
@@ -129,16 +114,16 @@ export class MatchingScreenView implements View {
                 width: 120,
                 height: 90,
                 fill: "#969696ff",
-                stroke: "navy",
+                stroke: "white",
                 strokeWidth: 4,
             }));
 
             this.leftTexts.push(new Konva.Text({
-                x: 120,
+                x: 128,
                 y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
-                text: this.q_a_list[i][0],
-                fontSize: 18,
-                fontFamily: "Arial",
+                text: i.toString(),
+                fontSize: 24,
+                fontFamily: "medodica",
                 fill: "white",
                 align: "center",
                 verticalAlign: "middle",
@@ -154,15 +139,15 @@ export class MatchingScreenView implements View {
                 width: 120,
                 height: 90,
                 fill: "#969696ff",
-                stroke: "black",
+                stroke: "white",
                 strokeWidth: 4,
             }));
             this.rightTexts.push(new Konva.Text({
-                x: STAGE_WIDTH - 120,
+                x: STAGE_WIDTH - 116,
                 y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
                 text: this.answer_sequence[i],
-                fontSize: 18,
-                fontFamily: "Arial",
+                fontSize: 24,
+                fontFamily: "medodica",
                 fill: "white",
                 align: "center",
                 verticalAlign: "middle",
@@ -174,6 +159,8 @@ export class MatchingScreenView implements View {
             this.group.add(this.rightRects[i]);
             this.group.add(this.rightTexts[i]);
         }
+
+        this.new_questions();
         /*
         const startButtonGroup = new Konva.Group();
         const startButton = new Konva.Rect({
@@ -322,7 +309,7 @@ export class MatchingScreenView implements View {
             this.new_questions();
         });
         this.group.add(level4ButtonGroup);
-        
+        */
 
         //instruction window
         const instructionWindow: Konva.Group = instructionWindowGroup();
@@ -331,7 +318,7 @@ export class MatchingScreenView implements View {
             this.group.getLayer()?.draw();
         });
         this.group.add(instructionWindow);
-
+        /*
         const submitButtonGroup = new Konva.Group();
         const submitButton = new Konva.Rect({
             x: STAGE_WIDTH / 2 - 100,
@@ -359,16 +346,16 @@ export class MatchingScreenView implements View {
             this.submitCheck();
         });
         this.group.add(submitButtonGroup);
-
+        */
         //help button group
-        const helpButton = helpButtonGroup(210, STAGE_HEIGHT - 100);
+        const helpButton = helpButtonGroup(STAGE_WIDTH/2-120, STAGE_HEIGHT - 50);
         helpButton.on('click tap', () => {
             instructionWindow.show();
             instructionWindow.moveToTop();   // bring to front if other objects overlap
             this.group.getLayer()?.draw();
         });
         this.group.add(helpButton);
-
+        /*
         //new question group
         const newQuestionButtonGroup = new Konva.Group();
         const newQuestionButton = new Konva.Rect({
@@ -401,7 +388,7 @@ export class MatchingScreenView implements View {
         //reset button group
         const resetButtonGroup = new Konva.Group();
         const resetButton = new Konva.Rect({
-            x: STAGE_WIDTH/2 - 50,
+            x: STAGE_WIDTH/2+20,
             y: STAGE_HEIGHT - 50,
             width: 100,
             height: 40,
@@ -410,23 +397,27 @@ export class MatchingScreenView implements View {
             strokeWidth: 3,
         });
         const resetText = new Konva.Text({
-            x: resetButton.x() + 50,
+            x: resetButton.x() + 60,
             y: resetButton.y()+10,
             text: "RESET",
             fontSize: 16,
-            fontFamily: "Arial",
+            fontFamily: "medodica",
             fill: "black",
             align: "center",
         });
         resetText.offsetX(resetText.width() / 2);
         resetButtonGroup.add(resetButton);
         resetButtonGroup.add(resetText);
-        resetButton.on("click", () => {
+        resetButtonGroup.on("click", () => {
+            console.log("reset clicked");
+            for (let i = 0; i < this.leftRects.length; i++) {
+                this.leftRects[i].stroke("white");
+                this.rightRects[i].stroke("white");
+            }
             this.cleanupArrows();
             this.cleanupQA();    
         });
         this.group.add(resetButtonGroup);
-        
     }
 
     private arrowAnimation(leftRect: Konva.Rect, question: string): void {
@@ -487,9 +478,13 @@ export class MatchingScreenView implements View {
                 }
                 // If dropped on any answer rectangle, snap arrow head to center of that rectangle
                 for (let i = 0; i < isOnAi.length; i++) {
+                    console.log(this.paired_answers);
+                    console.log(this.rightTexts[i].text());
                     if (isOnAi[i] && !this.paired_answers.includes(this.rightTexts[i].text())) {
                         // Finalize arrow: Snap head to center of a_i
                         arrow.points([arrowtail_x, arrowtail_y, a_Pos[i].x, a_Pos[i].y + this.rightRects[i].height() / 2]);
+                        leftRect.stroke("gray")
+                        this.rightRects[i].stroke("gray");
                         arrow.fill("black");
                         arrow.stroke("black");
                         this.arrows.push(arrow);
@@ -528,7 +523,17 @@ export class MatchingScreenView implements View {
                         arrow.stroke("red");
                         incorrect_count += 1;
                         console.log(this.return_incorrect(q,a,this.q_a_list[j][1]));
-                        flameBlowUp(arrow.points()[0] - this.box_size / 2,arrow.points()[1],this.stage);
+                        for (let m = 0; m < 2; m++) {
+                            setTimeout(() => {
+                            flameBlowUp(STAGE_WIDTH/2, 2*STAGE_HEIGHT/3, this.stage);
+                            setTimeout(() => {
+                                flameBlowUp(STAGE_WIDTH/3, STAGE_HEIGHT/3, this.stage);
+                            }, 300);
+                            setTimeout(() => {
+                                flameBlowUp(2*STAGE_WIDTH/3, 2*STAGE_HEIGHT/3, this.stage);
+                            }, 600);
+                            }, m * 1000);
+                        }
                     }
                     break;
                 }
@@ -536,8 +541,15 @@ export class MatchingScreenView implements View {
         }
         if (incorrect_count > 0) {
             setTimeout(() => {
+                // add if wrong here
                 this.new_questions();
             }, 2000);
+        } else {
+            setTimeout(() => {
+                this.cleanupArrows();
+                this.cleanupQA();
+                this.onSubmit?.();
+            }, 1000);
         }
     }
 
@@ -574,37 +586,48 @@ export class MatchingScreenView implements View {
 
     private new_questions(): void {
         this.cleanupArrows();
-            this.cleanupQA(); 
-            for (let i = 0; i < this.difficulty; i++) {
+        this.cleanupQA();
+        
+        const generatedAnswers: string[] = [];
+        for (let i = 0; i < this.difficulty; i++) {
+            // make sure no duplicate answers
+            while (true) {
                 this.q_a_list[i] = generate_linear_equation_1() as [string, string];
+                if (!generatedAnswers.includes(this.q_a_list[i][1])) {
+                    generatedAnswers.push(this.q_a_list[i][1]);
+                    break;
+                }
             }
-            
-            // Collect all answer strings (q_a_x[1]) into a temp array
-            const answers = this.q_a_list.map(qa => qa[1]);
+        }
+        
+        // Collect all answer strings (q_a_x[1]) into a temp array
+        const answers = this.q_a_list.map(qa => qa[1]);
 
 
-            // Shuffle the array randomly
-            for (let i = answers.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [answers[i], answers[j]] = [answers[j], answers[i]];
-            }
+        // Shuffle the array randomly
+        for (let i = answers.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [answers[i], answers[j]] = [answers[j], answers[i]];
+        }
 
-            // Assign shuffled answers to private answer_sequence
-            this.answer_sequence = answers;
+        // Assign shuffled answers to private answer_sequence
+        this.answer_sequence = answers;
 
-            // Update texts
-            for (let i = 0; i < this.difficulty; i++) {
-                this.leftTexts[i].text(this.q_a_list[i][0]);
-                this.rightTexts[i].text(this.answer_sequence[i]);
+        // Update texts
+        for (let i = 0; i < this.difficulty; i++) {
+            this.leftTexts[i].text(this.q_a_list[i][0]);
+            this.leftRects[i].stroke("white");
+            this.rightTexts[i].text(this.answer_sequence[i]);
+            this.rightRects[i].stroke("white");
 
-                // Re-center
-                this.leftTexts[i].offsetX(this.leftTexts[i].width() / 2);
-                this.leftTexts[i].offsetY(this.leftTexts[i].height() / 2);
-                this.rightTexts[i].offsetX(this.rightTexts[i].width() / 2);
-                this.rightTexts[i].offsetY(this.rightTexts[i].height() / 2);
-            }
+            // Re-center
+            this.leftTexts[i].offsetX(this.leftTexts[i].width() / 2);
+            this.leftTexts[i].offsetY(this.leftTexts[i].height() / 2);
+            this.rightTexts[i].offsetX(this.rightTexts[i].width() / 2);
+            this.rightTexts[i].offsetY(this.rightTexts[i].height() / 2);
+        }
 
-            this.group.getLayer()?.batchDraw();
+        this.group.getLayer()?.batchDraw();
     }
 
     // Destroy all arrows
