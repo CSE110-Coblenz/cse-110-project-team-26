@@ -316,7 +316,7 @@ export class GraphScreenController extends ScreenController {
     private submitEquationInput(): void {
         this.plotGraphGame(false); // isPreview = false
         if (this.model.getAnswer().verifyAnswer(this.submission)) {
-            if(this.level === 5) {
+            if(this.level === LEVEL_COUNT) {
                 this.view.hideTutorialButton();
                 this.view.showResultsButton(() => this.switchGame("results"));
                 this.view.updateDialogue(DIALOGUE.gameOver);
@@ -366,7 +366,7 @@ export class GraphScreenController extends ScreenController {
                 () => this.handleEquationSubmission(this.submission),
         );
         this.view.plotPOI(this.model.getAnswer());
-        if(this.level === 6) {
+        if(this.level > LEVEL_COUNT) {
             this.view.updateDialogue(DIALOGUE.gameOver);
             this.view.updateLevel("Game Clear!");
         } else {

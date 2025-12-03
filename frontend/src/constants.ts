@@ -7,6 +7,7 @@ export const STAGE_HEIGHT = 600;
 
 // Game settings
 export const GAME_DURATION = 10; // seconds
+export const LEVEL_COUNT = 5;
 
 // Equation types
 export const LINEAR = "LINEAR";
