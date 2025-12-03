@@ -15,20 +15,22 @@ export class MazeScreenController extends ScreenController {
 	private screenSwitcher: ScreenSwitcher;
     private problem : ProblemModel | null = null;
 	private gameTimer: number | null = null;
+	private tutorialShown: boolean = false;
 
-	constructor(_screenSwitcher: ScreenSwitcher) {
+	constructor(screenSwitcher: ScreenSwitcher) {
 		super();
 		// this.screenSwitcher = screenSwitcher;
 		this.model = new MazeScreenModel();
         this.view = new MazeScreenView((choice: ChoiceModel, x:number, y:number) => this.handleChoiceClick(choice, x, y));
-		const tutorialText = `Welcome to the Maze Game Tutorial!
+		const tutorialText = `Your rocket is running out of fuel!
 
-Your rocket is stranded in deep space, and you're running out of fuel.
+But don't worry - you have landed on a planet filled with resources to collect.
 
 Navigate through the cosmic maze, solve each challenge, and collect enough fuel to continue your journey.
 
 Good luck and have fun!`;
 		this.tutorial = new MazeTutorialView(() => this.handleNextClick(), tutorialText);
+		this.screenSwitcher = screenSwitcher;
 	}
 
 	/**
@@ -38,8 +40,15 @@ Good luck and have fun!`;
 		// Reset model state
 		this.model.reset();
 		console.log("Game started. Model reset.");
-		this.tutorial.show();
-		//this.startTimer();
+		
+
+		if (!this.tutorialShown) {
+			this.tutorial.show();
+		} else {
+			this.handleNextClick();
+			this.view.reset();
+			console.log("Tutorial already shown, starting game directly.");
+		}
 	}
     // Start the timer
 	private startTimer(): void {
@@ -62,6 +71,7 @@ Good luck and have fun!`;
 		}
 	}
 	private handleNextClick(): void {
+		console.log("Next button clicked in tutorial.");
 		// Generate a new problem
         this.problem = new ProblemModel(3);
 
@@ -74,6 +84,7 @@ Good luck and have fun!`;
 		this.startTimer();
 		this.tutorial.hide();
 		this.view.show();
+		this.tutorialShown = true;
 	}
 
 	// Handle choice click
@@ -97,6 +108,7 @@ Good luck and have fun!`;
 						this.view.updateProblem(prob.getProblemStatement());
 						this.view.updateChoices(prob.getChoices());
 						this.startTimer();
+						this.view.fadeFromBlack();
 						});
 					} else {
 						// If no more moves, generate a new problem
@@ -104,8 +116,8 @@ Good luck and have fun!`;
 						await this.model.recordAttempt(true);
 						this.view.displayMessage("Congrats", () => {
 							console.log("Solved the equation! Generating new problem.");
-							this.view.destroy();
-							this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "main-game" })));
+							this.view.hideComponents();
+							this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
 						});
 					}
 				}

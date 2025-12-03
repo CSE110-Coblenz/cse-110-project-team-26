@@ -312,7 +312,7 @@ export class MatchingScreenView implements View {
         */
 
         //instruction window
-        const instructionWindow: Konva.Group = instructionWindowGroup();
+        const instructionWindow: Konva.Group = instructionWindowGroup("matching-game-instructions");
         instructionWindow.on('click tap', () => {
             instructionWindow.hide();
             this.group.getLayer()?.draw();
@@ -487,6 +487,7 @@ export class MatchingScreenView implements View {
                         this.rightRects[i].stroke("gray");
                         arrow.fill("black");
                         arrow.stroke("black");
+                        this.group.add(arrow);
                         this.arrows.push(arrow);
                         this.paired_answers.push(this.rightTexts[i].text());
                         this.paired_questions.push(question);  
@@ -545,11 +546,22 @@ export class MatchingScreenView implements View {
                 this.new_questions();
             }, 2000);
         } else {
-            setTimeout(() => {
+            const instructionWindow: Konva.Group = instructionWindowGroup("matching-game-win");
+            instructionWindow.on('click tap', () => {
+                instructionWindow.hide();
+                this.group.getLayer()?.draw();
                 this.cleanupArrows();
                 this.cleanupQA();
-                this.onSubmit?.();
-            }, 1000);
+                this.fadeToBlackScreen().then(() => {
+                    // Call onSubmit callback after transition
+                    instructionWindow.destroy();
+                    this.onSubmit?.();
+                });
+            });
+            this.group.add(instructionWindow);
+            instructionWindow.show();
+            instructionWindow.moveToTop();   // bring to front if other objects overlap
+            this.group.getLayer()?.draw();
         }
     }
 
@@ -559,6 +571,56 @@ export class MatchingScreenView implements View {
             given_answer: user_answer,
             correct_answer: correct_answer
         }
+    }
+
+    //transition black screen
+    private fadeToBlackScreen(): Promise<void> {
+        return new Promise((resolve) => {
+            const blackScreen = new Konva.Rect({
+                x: 0,
+                y: 0,
+                width: STAGE_WIDTH,
+                height: STAGE_HEIGHT,
+                fill: 'black',
+                opacity: 0,
+                listening: false,
+            });
+            this.group.add(blackScreen);
+            const fadeIn = new Konva.Tween({
+                node: blackScreen,
+                duration: 0.5,
+                opacity: 1,
+                onFinish: () => {
+                    blackScreen.destroy();
+                    resolve();
+                }
+            });
+            fadeIn.play();
+        });
+    }
+    private fadeFromBlackScreen(): Promise<void> {
+        return new Promise((resolve) => {
+            const blackScreen = new Konva.Rect({
+                x: 0,
+                y: 0,
+                width: STAGE_WIDTH,
+                height: STAGE_HEIGHT,
+                fill: 'black',
+                opacity: 1,
+                listening: false,
+            });
+            this.group.add(blackScreen);
+            const fadeOut = new Konva.Tween({
+                node: blackScreen,
+                duration: 0.5,
+                opacity: 0,
+                onFinish: () => {
+                    blackScreen.destroy();
+                    resolve();
+                }
+            });
+            fadeOut.play();
+        });
     }
 
     /* private generate_equation(): void {
@@ -641,6 +703,15 @@ export class MatchingScreenView implements View {
     private cleanupQA(): void {
         this.paired_questions = [];
         this.paired_answers = [];
+    }
+
+    // reset all states
+    reset(): void {
+        this.fadeFromBlackScreen().then(() => {
+            this.cleanupArrows();
+            this.cleanupQA();
+            this.new_questions();
+        });
     }
 
     /**

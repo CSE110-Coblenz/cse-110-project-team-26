@@ -251,6 +251,8 @@ export class MazeScreenView implements View {
     }
     // Fade from black transition
     fadeFromBlack(duration: number = 0.5): Promise<void> {
+        this.transitionScreen.moveToTop();
+        this.transitionScreen.opacity(1);
         return new Promise((resolve) => {
             new Konva.Tween({
             node: this.transitionScreen,
@@ -452,12 +454,12 @@ export class MazeScreenView implements View {
         return img;
     }
     // Clean up resources
-    destroy(): void {
+    hideComponents(): void {
         // remove choice groups from the scene
-        this.choiceOne.getGroup().destroy();
-        this.choiceTwo.getGroup().destroy();
-        this.choiceThree.getGroup().destroy();
-        this.problemText.destroy();
+        this.choiceOne.getGroup().hide();
+        this.choiceTwo.getGroup().hide();
+        this.choiceThree.getGroup().hide();
+        this.problemText.hide();
     }
     // Animation when winning
     playWinAnimation(): Promise<void> {
@@ -469,12 +471,24 @@ export class MazeScreenView implements View {
                 });
             });
     }
+    // reset view to initial state
+    reset(): void {
+        this.resetPlayerPosition();
+        this.setAnimation("idle");
+        this.choiceOne.getGroup().show();
+        this.choiceTwo.getGroup().show();
+        this.choiceThree.getGroup().show();
+        this.problemText.show();
+    }
 	/**
 	 * Show the screen
 	 */
 	show(): void {
-		this.group.visible(true);
-		this.group.getLayer()?.draw();
+        this.transitionScreen.moveToTop();
+        this.transitionScreen.opacity(1);
+        this.group.visible(true);
+        this.group.getLayer()?.draw();
+        this.fadeFromBlack();  
 	}
 
 	/**

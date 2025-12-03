@@ -43,7 +43,7 @@ export function helpButtonGroup(x: number, y: number): Konva.Group {
         return helpButtonGroup;
 }
 
-export function instructionWindowGroup(): Konva.Group {
+export function instructionWindowGroup(type: string): Konva.Group {
     const instructionWindowGroup = new Konva.Group({
         x: STAGE_WIDTH / 2 - 300,   // center horizontally (600px width)
         y: STAGE_HEIGHT / 2 - 225,  // center vertically (450px height)
@@ -75,19 +75,34 @@ export function instructionWindowGroup(): Konva.Group {
     });
     instructionWindowGroup.add(InstructionTitle);
     // Instruction lines
-    const lines = [
-        '• The spacecrafts are out of fuel. Each craft can only takes the specific type of resource from one planet.',
-        '• Left-click and drag to pair crafts with correct planets.',
-        '• Click Submit if you are confident with your choice. (And hopefully the crafts do not explode)',
-        '• Click New Questions if you want to challenge and proceed for more resources.',
-        '• Click Reset if you think you made a mistake.',
-        '• GLHF. (╭☞ ͡° ͜ʖ ͡° )╭☞'
-    ];
+    let lines: string[] = [];
+    switch (type) {
+        case 'matching-game-instructions':
+            lines = [
+                '• The spacecraft took a big hit! The wiring is all messed up in the control panel. We need your help to fix it!',
+                '• Match the components on the left with their correct positions on the right.',
+                '• Left-click and drag to connect components with a wire.',
+                '• Click Reset if you think you made a mistake.',
+                '• Be careful - wrong matches will cause more damage to the ship!',
+                '• GLHF. (╭☞ ͡° ͜ʖ ͡° )╭☞'
+            ];
+            break;
+        case 'matching-game-win':
+            lines = [
+                '• Amazing work, Captain! The control panel is fully repaired thanks to you.',
+                '• The spacecraft systems are back online and functioning perfectly.',
+                '• Prepare for takeoff and get ready for the next adventure!',
+            ];
+            break;
+        default:
+            break;
+    }
+    
 
     lines.forEach((line, i) => {
         const text = new Konva.Text({
             x: 60,
-            y: 130 + i * 50,
+            y: 100 + i * 50,
             width: 480,
             text: line,
             fontSize: 18,
