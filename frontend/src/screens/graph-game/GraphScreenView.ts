@@ -7,9 +7,8 @@ import {
   STATIC_GROUP_PROPERTIES,
   GRAPH_GROUP_PROPERTIES,
   GRAPH_BACKGROUND_PROPERTIES,
-  LEVEL_GROUP_PROPERTIES,
-  LEVEL_BOX_PROPERTIES,
-  LEVEL_TEXT_PROPERTIES,
+  SPRITE_GROUP_PROPERTIES,
+  SPRITE_BOX_PROPERTIES,
   DIALOGUE_GROUP_PROPERTIES,
   DIALOGUE_BOX_PROPERTIES,
   DIALOGUE_TEXT_PROPERTIES,
@@ -19,9 +18,6 @@ import {
   RESULTS_GROUP_PROPERTIES,
   RESULTS_BUTTON_PROPERTIES,
   RESULTS_TEXT_PROPERTIES,
-  TUTORIAL_GROUP_PROPERTIES,
-  TUTORIAL_BUTTON_PROPERTIES,
-  TUTORIAL_TEXT_PROPERTIES,
   INPUT_AND_EQUATION_GROUP_PROPERTIES,
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,
@@ -40,10 +36,9 @@ export class GraphScreenView implements View {
     private graphGroup: Konva.Group;
     private transitionGroup: Konva.Group;
     private resultsGroup: Konva.Group;
-    private tutorialGroup: Konva.Group;
     private submitButtonGroup: Konva.Group;
     private dialogueText: Konva.Text;
-    private levelText: Konva.Text;
+    private playerSprite: HTMLImageElement;
     private equationText: Konva.Text;
     private inputAndEquationGroup: Konva.Group;
 
@@ -59,7 +54,7 @@ export class GraphScreenView implements View {
     /**
      * Initializes default values for the View
      */
-    constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void, showTutorial: () => void) {
+    constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void) {
 
         // Add layers for static and dynamic elements
         console.log(this.xMax);
@@ -76,27 +71,43 @@ export class GraphScreenView implements View {
             ...STATIC_GROUP_PROPERTIES
         });
 
+        // TEST!!!!!
+
+        //this.addPOIRectangle(4, 4, 'red');
+
+        // TEST!!!!!
+
         // Background element
     
         const background = new Konva.Rect({
             ...BACKGROUND_PROPERTIES
         });
 
-        // Level group elements
+        // Sprite group elements
 
-        const levelGroup = new Konva.Group({
-            ...LEVEL_GROUP_PROPERTIES
+        const spriteGroup = new Konva.Group({
+            ...SPRITE_GROUP_PROPERTIES
         });
 
-        const levelBox = new Konva.Rect({
-            ...LEVEL_BOX_PROPERTIES
+        const spriteBox = new Konva.Rect({
+            ...SPRITE_BOX_PROPERTIES
         });
         
-        this.levelText = new Konva.Text({
-            ...LEVEL_TEXT_PROPERTIES
+        // This is a placeholder for the sprite
+        const spriteText = new Konva.Text({
+            x: OFFSET,
+            y: OFFSET,
+            width: SPRITE_BOX_PROPERTIES.width,
+            height: SPRITE_BOX_PROPERTIES.height,
+            text: "Sprite Placeholder",
+            fontSize: 24,
+            fontFamily: "Arial",
+            fill: "black",
+            align: "center",
+            verticalAlign: "middle"
         });
 
-        levelGroup.add(levelBox, this.levelText);
+        spriteGroup.add(spriteBox, spriteText);
 
         // Dialogue group elements
 
@@ -139,23 +150,8 @@ export class GraphScreenView implements View {
         });
 
         this.resultsGroup.add(resultsButton, resultsText);
-        
-        this.tutorialGroup = new Konva.Group({
-            ...TUTORIAL_GROUP_PROPERTIES
-        });
 
-        const tutorialButton = new Konva.Rect({
-            ...TUTORIAL_BUTTON_PROPERTIES
-        });
-
-        const tutorialText = new Konva.Text({
-            ...TUTORIAL_TEXT_PROPERTIES
-        });
-
-        this.tutorialGroup.add(tutorialButton, tutorialText);
-        this.tutorialGroup.on("click", () => showTutorial());
-
-        dialogueGroup.add(dialogueBox, this.dialogueText, this.transitionGroup, this.resultsGroup, this.tutorialGroup);
+        dialogueGroup.add(dialogueBox, this.dialogueText, this.transitionGroup, this.resultsGroup);
         this.transitionGroup.hide();
         this.resultsGroup.hide();
 
@@ -198,7 +194,7 @@ export class GraphScreenView implements View {
         // Graph group elements
 
         this.graphGroup = this.createGraphGroup();
-        this.staticGroup.add(background, levelGroup, dialogueGroup, this.inputAndEquationGroup);
+        this.staticGroup.add(background, spriteGroup, dialogueGroup, this.inputAndEquationGroup);
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
 
@@ -212,8 +208,6 @@ export class GraphScreenView implements View {
         this.inputAndEquationGroup.destroy();
         this.graphGroup.destroy();
         this.hideTransitionButton();
-        this.hideResultsButton();
-        this.showTutorialButton();
 
         this.inputAndEquationGroup = new Konva.Group({
             ...INPUT_AND_EQUATION_GROUP_PROPERTIES
@@ -305,10 +299,6 @@ export class GraphScreenView implements View {
         this.resultsGroup.on("click", () => goToResults());
     }
 
-    showTutorialButton() {
-        this.tutorialGroup.show();
-    }
-
     hideTransitionButton() {
         this.transitionGroup.hide();
     }
@@ -316,10 +306,6 @@ export class GraphScreenView implements View {
     hideResultsButton() {
         this.resultsGroup.off("click");
         this.resultsGroup.hide();
-    }
-
-    hideTutorialButton() {
-        this.tutorialGroup.hide();
     }
 
     /**
@@ -514,8 +500,8 @@ export class GraphScreenView implements View {
         return keypadGroup;
     }
 
-    updateLevel(level: string): void {
-        this.levelText.text(level);
+    updateSprite(sprite: HTMLImageElement): void {
+        this.playerSprite = sprite;
         this.staticLayer.draw();
     }
 
@@ -529,8 +515,8 @@ export class GraphScreenView implements View {
         this.staticLayer.draw();
     }
 
-    getLevel(): HTMLImageElement {
-        return this.levelText;
+    getSprite(): HTMLImageElement {
+        return this.playerSprite;
     }
 
     getDialogue(): Konva.Text {

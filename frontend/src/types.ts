@@ -1,5 +1,7 @@
 import type { Group } from "konva/lib/Group";
-import { LINEAR, QUADRATIC, ABSVAL } from "../src/constants";
+import { LINEAR, QUADRATIC, ABSVAL,
+		Y_MAX, Y_MIN, X_MAX, X_MIN
+ 	} from "../src/constants";
 
 /**
  * Generates an integer in [min, max]
@@ -19,13 +21,13 @@ export interface View {
 	hide(): void;
 }
 // MathJson type representing mathematical expressions
-export type MathJson = (string | number | MathJson)[];
+export type MathJson = number | string | (string | number | MathJson)[];
 // Step interface representing each step in the solution process
 export interface Step {
     description: string;
-    current: string;
+    current: MathJson;
     stepNumber: number;
-    result?: MathJson|string|number;
+    result?: MathJson;
 }
 /**
  * Screen types for navigation
@@ -42,9 +44,8 @@ export type Screen =
 	| { type: "maze-game" }
 	| { type: "main-game" }
 	| { type: "result"; score: number }
-  	| { type: "title" }
-	| { type: "tutorial" }
-	| { type: "statistics" };
+  | { type: "title" }
+	| { type: "tutorial" };
 
 
 export abstract class ScreenController {
@@ -381,26 +382,19 @@ export abstract class Question {
 	protected answer: EquationAnswerFormat;
 	protected submission: EquationAnswerFormat;
 
-constructor() {
-	this.submission = null;
-	this.answer = null;
-}
-
-generateAnswerValues(): void {
-	this.answer?.generateAnswerValues();
-}
-
-enterSubmission(submission: EquationAnswerFormat): void {
-	this.submission = submission;
-}
-
-verifyAnswer(): boolean {
-	if (!this.answer || !this.submission) {
-		return false;
+	constructor() {
+		this.submission = null;
+		this.answer = null;
 	}
 
-	return this.answer.verifyAnswer(this.submission);
-}
+	enterSubmission(submission: EquationAnswerFormat): void {
+		this.submission = submission;
+	}
+
+	verifyAnswer(): boolean {
+		return this.submission.verifyAnswer(this.submission);
+	}
+
 }
 
 export {

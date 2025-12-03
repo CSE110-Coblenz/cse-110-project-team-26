@@ -79,41 +79,28 @@ const GRAPH_BACKGROUND_PROPERTIES = {
 
 const PIX_PER_UNIT = 40;
 
-// Level group and elements
+// Sprite group and elements
 
-const LEVEL_GROUP_PROPERTIES = {
+const SPRITE_GROUP_PROPERTIES = {
   x: 0,
   y: 0,
   width: SIDEBAR_WIDTH,
   height: STAGE_HEIGHT * (2/7)
 };
 
-const LEVEL_BOX_PROPERTIES = {
+const SPRITE_BOX_PROPERTIES = {
   x: OFFSET,
   y: OFFSET,
   width: BOX_WIDTH,
-  height: LEVEL_GROUP_PROPERTIES.height - (OFFSET * 2),
+  height: SPRITE_GROUP_PROPERTIES.height - (OFFSET * 2),
   fill: "#FFF3F3"
-};
-
-const LEVEL_TEXT_PROPERTIES = {
-  x: OFFSET,
-  y: OFFSET,
-  width: LEVEL_BOX_PROPERTIES.width,
-  height: LEVEL_BOX_PROPERTIES.height,
-  text: "Level 1",
-  fontSize: 36,
-  fontFamily: "Arial",
-  fill: "black",
-  align: "center",
-  verticalAlign: "middle"
 };
 
 // Dialogue group and elements
 
 const DIALOGUE_GROUP_PROPERTIES = {
   x: 0,
-  y: LEVEL_GROUP_PROPERTIES.height,
+  y: SPRITE_GROUP_PROPERTIES.height,
   width: SIDEBAR_WIDTH,
   height: STAGE_HEIGHT * (3/7)
 };
@@ -193,39 +180,11 @@ const RESULTS_TEXT_PROPERTIES = {
   verticalAlign: "middle"
 };
 
-const TUTORIAL_GROUP_PROPERTIES = {
-  x: DIALOGUE_BOX_PROPERTIES.x,
-  y: DIALOGUE_BOX_PROPERTIES.height * (9/10) - OFFSET * 2,
-  width: DIALOGUE_BOX_PROPERTIES.width,
-  height: DIALOGUE_BOX_PROPERTIES.height * (1/10) + OFFSET * 2
-};
-
-const TUTORIAL_BUTTON_PROPERTIES = {
-  x: OFFSET * 0.5,
-  y: OFFSET * 0.5,
-  width: TUTORIAL_GROUP_PROPERTIES.width - OFFSET,
-  height: TUTORIAL_GROUP_PROPERTIES.height - OFFSET,
-  fill: "#110808"
-};
-
-const TUTORIAL_TEXT_PROPERTIES = {
-  x: OFFSET * 0.5,
-  y: OFFSET * 0.5,
-  width: TUTORIAL_BUTTON_PROPERTIES.width,
-  height: TUTORIAL_BUTTON_PROPERTIES.height,
-  text: "Show tutorial",
-  fontSize: 24,
-  fontFamily: "Arial",
-  fill: "white",
-  align: "center",
-  verticalAlign: "middle"
-};
-
 // Equation/Input group and elements
 
 const INPUT_AND_EQUATION_GROUP_PROPERTIES = {
   x: 0,
-  y: DIALOGUE_GROUP_PROPERTIES.height + LEVEL_GROUP_PROPERTIES.height,
+  y: DIALOGUE_GROUP_PROPERTIES.height + SPRITE_GROUP_PROPERTIES.height,
   width: SIDEBAR_WIDTH,
   height: STAGE_HEIGHT * (2/7)
 };
@@ -271,9 +230,8 @@ export {
   STATIC_GROUP_PROPERTIES,
   GRAPH_GROUP_PROPERTIES,
   GRAPH_BACKGROUND_PROPERTIES,
-  LEVEL_GROUP_PROPERTIES,
-  LEVEL_BOX_PROPERTIES,
-  LEVEL_TEXT_PROPERTIES,
+  SPRITE_GROUP_PROPERTIES,
+  SPRITE_BOX_PROPERTIES,
   DIALOGUE_GROUP_PROPERTIES,
   DIALOGUE_BOX_PROPERTIES,
   DIALOGUE_TEXT_PROPERTIES,
@@ -283,9 +241,6 @@ export {
   RESULTS_GROUP_PROPERTIES,
   RESULTS_BUTTON_PROPERTIES,
   RESULTS_TEXT_PROPERTIES,
-  TUTORIAL_GROUP_PROPERTIES,
-  TUTORIAL_BUTTON_PROPERTIES,
-  TUTORIAL_TEXT_PROPERTIES,
   INPUT_AND_EQUATION_GROUP_PROPERTIES,
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,

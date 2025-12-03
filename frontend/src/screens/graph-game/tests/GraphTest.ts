@@ -2,7 +2,7 @@ import Konva from "konva";
 import type { ScreenSwitcher, Screen } from "../../../types.ts";
 
 import { MenuTestScreenController } from "../../MenuTestScreen/MenuTestScreenController.ts";
-import { MatchingScreenController } from "../../matching-game/MatchingScreenController.ts";
+import { MatchingScreenController } from "../../MatchingScreen/MatchingScreenController.ts";
 import { MazeScreenController } from "../../maze-game/MazeScreenController.ts";
 import { GraphScreenController } from "../../graph-game/GraphScreenController.ts";
 import { TitleScreenController } from "../../title-screen/TitleScreenController.ts";
@@ -50,7 +50,7 @@ class App implements ScreenSwitcher {
 		this.matchingScreenController = new MatchingScreenController(this, this.stage);
 		this.mazeScreenController = new MazeScreenController(this);
     this.titleController = new TitleScreenController(this);
-		this.graphScreenController = new GraphScreenController(this, level, difficulty);
+		this.graphScreenController = new GraphScreenController(this, this.tutorialController, level, difficulty);
 
 		// Add all screen groups to the layer
 		// All screens exist simultaneously but only one is visible at a time
@@ -119,4 +119,4 @@ class App implements ScreenSwitcher {
 // Initialize the application
 // Levels range from 1-6. 1-5 are levels and 6 indicates a completed game
 // Difficulty ranges from 0-2, with the difficulties as easy, medium, and hard respectively
-new App("container", 4, 2);
+new App("container", 5, 2);

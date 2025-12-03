@@ -2,7 +2,6 @@ import { ScreenController } from "../../types.ts";
 import type { ScreenSwitcher } from "../../types.ts";
 import { MazeScreenModel, ProblemModel, ChoiceModel } from "./MazeModels.ts";
 import { MazeScreenView } from "./MazeScreenView.ts";
-import { MazeTutorialView } from "./MazeTutorialView.ts";
 import { GAME_DURATION } from "../../constants.ts";
 
 /**
@@ -11,26 +10,15 @@ import { GAME_DURATION } from "../../constants.ts";
 export class MazeScreenController extends ScreenController {
 	private model: MazeScreenModel;
 	private view: MazeScreenView;
-	private tutorial: MazeTutorialView;
 	private screenSwitcher: ScreenSwitcher;
     private problem : ProblemModel | null = null;
 	private gameTimer: number | null = null;
-	private tutorialShown: boolean = false;
 
 	constructor(screenSwitcher: ScreenSwitcher) {
 		super();
-		// this.screenSwitcher = screenSwitcher;
-		this.model = new MazeScreenModel();
-        this.view = new MazeScreenView((choice: ChoiceModel, x:number, y:number) => this.handleChoiceClick(choice, x, y));
-		const tutorialText = `Your rocket is running out of fuel!
-
-But don't worry - you have landed on a planet filled with resources to collect.
-
-Navigate through the cosmic maze, solve each challenge, and collect enough fuel to continue your journey.
-
-Good luck and have fun!`;
-		this.tutorial = new MazeTutorialView(() => this.handleNextClick(), tutorialText);
 		this.screenSwitcher = screenSwitcher;
+		this.model = new MazeScreenModel();
+        this.view = new MazeScreenView((choice: ChoiceModel) => this.handleChoiceClick(choice));
 	}
 
 	/**
@@ -39,16 +27,18 @@ Good luck and have fun!`;
 	startGame(): void {
 		// Reset model state
 		this.model.reset();
-		console.log("Game started. Model reset.");
-		
 
-		if (!this.tutorialShown) {
-			this.tutorial.show();
-		} else {
-			this.handleNextClick();
-			this.view.reset();
-			console.log("Tutorial already shown, starting game directly.");
-		}
+        // Generate a new problem
+        this.problem = new ProblemModel(3);
+
+		// Update view
+        this.view.updateProblem(this.problem.getProblemStatement());
+        this.view.updateChoices(this.problem.getChoices());
+		this.view.updateScore(this.model.getScore());
+		this.view.updateTimer(GAME_DURATION);
+		this.view.show();
+
+		this.startTimer();
 	}
     // Start the timer
 	private startTimer(): void {
@@ -70,99 +60,34 @@ Good luck and have fun!`;
 			this.gameTimer = null;
 		}
 	}
-	private handleNextClick(): void {
-		console.log("Next button clicked in tutorial.");
-		// Generate a new problem
-        this.problem = new ProblemModel(3);
-
-		// Update view
-        this.view.updateProblem(this.problem.getProblemStatement());
-        this.view.updateChoices(this.problem.getChoices());
-		this.view.updateScore(this.model.getScore());
-		this.view.updateTimer(GAME_DURATION);
-
-		this.startTimer();
-		this.tutorial.hide();
-		this.view.show();
-		this.tutorialShown = true;
-	}
 
 	// Handle choice click
-	private async handleChoiceClick(choice : ChoiceModel, x:number, y:number): Promise<void> {
-		console.log("Choice clicked:", choice.getText());
-		console.log("Moving player to:", x, y);
-		this.stopTimer();
-		this.view.movePlayerTo(x, y).then(() => {
-			this.view.fadeToBlack().then(async () => {
-				if (choice.getIsCorrect()) {
-					// Update model
-					this.model.incrementScore();
-					// Update view
-					this.view.updateScore(this.model.getScore());
+	private handleChoiceClick(choice : ChoiceModel): void {
+		if (choice.getIsCorrect()) {
+			// Update model
+			this.model.incrementScore();
 
-					// Ensure a problem exists and advance or create as needed
-					const prob = this.problem as ProblemModel;
-					if(prob.nextMove()){
-						this.view.updateTimer(GAME_DURATION);
-						this.view.displayMessage("Correct", () => {
-						this.view.updateProblem(prob.getProblemStatement());
-						this.view.updateChoices(prob.getChoices());
-						this.startTimer();
-						this.view.fadeFromBlack();
-						});
-					} else {
-						// If no more moves, generate a new problem
-						this.view.updateTimer(GAME_DURATION);
-						await this.model.recordAttempt(true);
-						this.view.displayMessage("Congrats", () => {
-							console.log("Solved the equation! Generating new problem.");
-							this.view.hideComponents();
-							this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
-						});
-					}
-				}
-				else {
-					// For incorrect choice, just generate new problem
-					this.view.updateTimer(GAME_DURATION);
+			// Update view
+			this.view.updateScore(this.model.getScore());
 
-					const dismissLoading = this.view.displayMessage(
-						"Incorrect",
-						undefined,
-						"Generating explanation...",
-						{ isLoading: true }
-					);
+			// Ensure a problem exists and advance or create as needed
+			const prob = this.problem ?? (this.problem = new ProblemModel(3));
+			prob.nextMove();
 
-						const explanation = await this.model.fetchExplanation(this.problem, choice);
-						await this.model.recordAttempt(false);
-						dismissLoading();
-
-						this.view.displayMessage(
-							"Incorrect",
-							() => {
-							this.problem = new ProblemModel(3);
-							this.view.updateProblem(this.problem.getProblemStatement());
-							this.view.updateChoices(this.problem.getChoices());
-							this.startTimer();
-						},
-						explanation ?? undefined,
-						{ requireContinue: true }
-					);
-
-				}})});
-	};
+			this.view.updateProblem(prob.getProblemStatement());
+			this.view.updateChoices(prob.getChoices());
+		}
+		else {
+			// For incorrect choice, just generate new problem
+			this.problem = new ProblemModel(3);
+			this.view.updateProblem(this.problem.getProblemStatement());
+			this.view.updateChoices(this.problem.getChoices());
+		}
+	}
 
 	// End the game
 	private endGame(): void {
 		this.stopTimer();
-		this.view.updateTimer(GAME_DURATION);
-		this.view.fadeToBlack().then(() => {
-			this.view.displayMessage("Timeout", () => {
-				this.problem = new ProblemModel(3);
-				this.view.updateProblem(this.problem.getProblemStatement());
-				this.view.updateChoices(this.problem.getChoices());
-				this.startTimer();	
-			});
-		});
 	}
 
 	// Get the final score
@@ -170,15 +95,10 @@ Good luck and have fun!`;
 		return this.model.getScore();
 	}
 
-	
 	/**
 	 * Get the view group
 	 */
 	getView(): MazeScreenView {
 		return this.view;
-	}
-
-	getTutorialView(): MazeTutorialView {
-		return this.tutorial;
 	}
 }

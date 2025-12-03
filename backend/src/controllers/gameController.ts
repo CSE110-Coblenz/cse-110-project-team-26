@@ -18,60 +18,10 @@ function getGenAI(): GoogleGenAI | null {
 
 
 export const handleMainProblem = async (req: Request, res: Response) => {
-	// Placeholder response; extend when main game flow is defined.
-	return res.status(501).json({ error: "Main game handler not implemented yet." });
+    // logic
 };
 export const handleMatchingProblem = async (req: Request, res: Response) => {
-	const question = req.body?.question ?? req.body?.["question"];
-	const givenAnswer = req.body?.given_answer ?? req.body?.["given answer"];
-	const correctAnswer =
-		req.body?.correct_answer ?? req.body?.["correct answer"];
-
-	if (
-		typeof question !== "string" ||
-		typeof givenAnswer !== "string" ||
-		typeof correctAnswer !== "string"
-	) {
-		return res.status(400).json({
-			error:
-				"Request body must include strings: question, given_answer, correct_answer.",
-		});
-	}
-
-	const genAI = getGenAI();
-	if (!genAI) {
-		return res.status(500).json({
-			error:
-				"Gemini API key is not configured. Set GOOGLE_API_KEY in the backend environment.",
-		});
-	}
-
-	try {
-		const prompt = buildMatchingExplanationPrompt(
-			question,
-			givenAnswer,
-			correctAnswer,
-		);
-		const result = await genAI.models.generateContent({
-			model: GEMINI_MODEL,
-			contents: [
-				{
-					role: "user",
-					parts: [{ text: prompt }],
-				},
-			],
-		});
-		const text = result.text || "No explanation returned.";
-
-		return res.json({
-			explanation: text,
-		});
-	} catch (error) {
-		console.error("handleMatchingProblem error:", error);
-		return res.status(500).json({
-			error: "Failed to generate explanation. Please try again.",
-		});
-	}
+    // logic
 };
 export const handleMazeProblem = async (req: Request, res: Response) => {
 	const latex = req.body?.latex ?? [];
@@ -154,23 +104,3 @@ function buildMazeExplanationPrompt(
 		- ...
 		`;
 	}
-
-function buildMatchingExplanationPrompt(
-	question: string,
-	givenAnswer: string,
-	correctAnswer: string,
-): string {
-	return `Explain to the user what the correct aswer is and how to arrive at it.
-
-		Question:
-		${question}
-
-		User answer:
-		${givenAnswer}
-
-		Correct answer:
-		${correctAnswer}
-
-		Be concise, use second person, and outline:
-		- The correct match and a short reasoning.`;
-		}

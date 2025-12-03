@@ -9,57 +9,40 @@ import { TutorialScreenModel } from "./TutorialScreenModel";
  */
 export class TutorialScreenController extends ScreenController {
 	private view: TutorialScreenView;
-	private model: TutorialScreenModel;
 	private screenSwitcher: ScreenSwitcher;
+  private game: string;
+  private steps: number;
+  private content: object;
 
 	constructor(screenSwitcher: ScreenSwitcher) {
 		super();
-		this.screenSwitcher = screenSwitcher;
-		this.model = new TutorialScreenModel();
+    this.screenSwitcher = screenSwitcher;
+	}
 
+  configure(screen: string, steps: number, content: object) {
+    this.model = new TutorialScreenModel(steps);
 		this.view = new TutorialScreenView({
 			onContinue: () => {
-				if (this.model.isLastStep()) {
-					// On last step, route to main game (graph game)
-					this.screenSwitcher.switchToScreen({ type: "main-game" });
-				} else {
-					// Move to next tutorial step
-					this.model.nextStep();
-					this.updateView();
-				}
-			},
-			onPrevious: () => {
-				this.model.previousStep();
-				this.updateView();
+        const isLastScreen = this.model.nextStep();
+        if(isLastScreen) {
+          this.screenSwitcher.switchToScreen({ type: screen });
+          this.model.reset();
+          this.view.updateContentText(content["step0"]);
+          this.screenSwitcher.switchToScreen({ type: screen });
+        } else {
+          this.view.updateContentText(content[`step${this.model.getCurrentStep()}`]);
+        }
 			},
 			onSkip: () => {
-				// Skip tutorial and go directly to the menu (temporary)
-				this.screenSwitcher.switchToScreen({ type: "menu" });
+				this.screenSwitcher.switchToScreen({ type: screen });
 			},
 		});
-
-		// Initialize view with first step content
-		this.updateView();
-	}
-
-	private updateView(): void {
-		const stepContent = this.model.getStepContent();
-		this.view.updateContent(
-			stepContent.title,
-			stepContent.content,
-			this.model.isFirstStep(),
-			this.model.isLastStep()
-		);
-	}
+    this.view.updateContentText(content["step0"]);
+    this.view.updateTitleText(content["title"]);
+  }
 
 	getView(): TutorialScreenView {
 		return this.view;
 	}
-
-	show(): void {
-		// Reset to first step when showing tutorial
-		this.model.reset();
-		this.updateView();
-		super.show();
-	}
 }
+
