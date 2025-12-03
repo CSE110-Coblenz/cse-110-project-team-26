@@ -3,7 +3,7 @@ import type { Screen } from "../../types";
 import { GraphScreenView } from "./GraphScreenView";
 import { GraphScreenModel } from "./GraphScreenModel";
 import { AbsoluteValue, Quadratic, type EquationAnswerFormat, type ScreenSwitcher } from "../../types";
-import { LINEAR, QUADRATIC, ABSVAL } from "../../constants";
+import { LINEAR, QUADRATIC, ABSVAL, LEVEL_COUNT } from "../../constants";
 import { DIALOGUE } from "./GraphScreenConstants";
 import { Linear } from "../../types";
 
@@ -316,7 +316,7 @@ export class GraphScreenController extends ScreenController {
     private submitEquationInput(): void {
         this.plotGraphGame(false); // isPreview = false
         if (this.model.getAnswer().verifyAnswer(this.submission)) {
-            if(this.level === LEVEL_COUNT) {
+            if(this.level >= LEVEL_COUNT) {
                 this.view.hideTutorialButton();
                 this.view.showResultsButton(() => this.switchGame("results"));
                 this.view.updateDialogue(DIALOGUE.gameOver);
