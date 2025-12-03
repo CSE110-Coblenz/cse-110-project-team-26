@@ -317,6 +317,8 @@ export class GraphScreenController extends ScreenController {
     private submitEquationInput(): void {
         this.plotGraphGame(false); // isPreview = false
         if (this.model.getAnswer().verifyAnswer(this.submission)) {
+            // correct answer api call
+            // this.type has cases of LINEAR, QUADRATIC, ABSVAL
             if(this.level === 5) {
                 this.view.showResultsButton(() => this.switchGame("results"));
                 this.view.updateDialogue(DIALOGUE.gameOver);
@@ -327,6 +329,7 @@ export class GraphScreenController extends ScreenController {
                 this.level++;
             }
         } else {
+            // incorrect answer api call
             this.view.showTransitionButton((game: string) => this.switchGame(game), "matching-game");
             this.view.updateDialogue(DIALOGUE.failure);
             console.log(DIALOGUE.failure);

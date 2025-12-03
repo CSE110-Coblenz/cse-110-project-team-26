@@ -1,10 +1,17 @@
 import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH,STAGE_HEIGHT } from "../../constants.ts";
+import type { StatsCategory } from "../statistics/StatisticsScreenModel.ts";
 import { generate_quadratic_equation_1, generate_linear_equation_1, generate_linear_equation_2, generate_quadratic_equation_2 } from "./EquationGenerator.ts";
 import galaxyBg from './assets/galaxy.jpg';
 import { createNeonMetalBox, createPlanetBox, flameBlowUp} from "./ArtEffect.ts";
 import { helpButtonGroup, instructionWindowGroup } from "./instructions.ts";
+
+type MatchingExplanationPayload = {
+    question: string;
+    given_answer: string;
+    correct_answer: string;
+};
 
 /**
  * MenuScreenView - Renders the menu screen
@@ -14,6 +21,9 @@ export class MatchingScreenView implements View {
     private stage: Konva.Stage;
 
     private box_size = 200;
+    private explanationOverlay: Konva.Rect | null = null;
+    private explanationTextNode: Konva.Text | null = null;
+    private explanationTextNodes: Konva.Text[] = [];
 
     private leftRects: Konva.Rect[] = [];
     private leftTexts: Konva.Text[] = [];
@@ -27,6 +37,7 @@ export class MatchingScreenView implements View {
     private answer_sequence: string[] = [];
     private q_a_list: [string, string][] = [];
 
+    private readonly statsCategory: StatsCategory = "Solving Linear Equations";
     private difficulty: number = 3;
     private arrowCount: number = 0;
 
@@ -149,16 +160,16 @@ export class MatchingScreenView implements View {
                 this.arrowAnimation(this.leftRects[i], this.leftTexts[i].text());
             });
             this.rightRects.push(new Konva.Rect({
-                x: STAGE_WIDTH - 180,
+                x: STAGE_WIDTH - 260,
                 y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty),
-                width: 120,
+                width: 150,
                 height: 90,
                 fill: "#969696ff",
                 stroke: "black",
                 strokeWidth: 4,
             }));
             this.rightTexts.push(new Konva.Text({
-                x: STAGE_WIDTH - 120,
+                x: STAGE_WIDTH - 185,
                 y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
                 text: this.answer_sequence[i],
                 fontSize: 18,
@@ -356,7 +367,7 @@ export class MatchingScreenView implements View {
         submitButtonGroup.add(submitButton);
         submitButtonGroup.add(submitText);
         submitButtonGroup.on("click", () => {
-            this.submitCheck();
+            void this.submitCheck();
         });
         this.group.add(submitButtonGroup);
 
@@ -497,7 +508,7 @@ export class MatchingScreenView implements View {
                         this.paired_questions.push(question);  
                         layer.batchDraw();
                         arrow = null; // Reset arrow
-                        if (this.paired_questions.length >= this.difficulty) this.submitCheck();
+                        if (this.paired_questions.length >= this.difficulty) void this.submitCheck();
                         return;
                     }
                 }
@@ -511,8 +522,9 @@ export class MatchingScreenView implements View {
     }
 
     //submit and check
-    private submitCheck(): void {
+    private async submitCheck(): Promise<void> {
         let incorrect_count = 0;
+        const explanationRequests: { index: number; request: Promise<string | null> }[] = [];
         for (let i = 0; i < this.arrows.length; i++) {
             const arrow = this.arrows[i];
             const q = this.paired_questions[i];
@@ -527,25 +539,193 @@ export class MatchingScreenView implements View {
                         arrow.fill("red");
                         arrow.stroke("red");
                         incorrect_count += 1;
-                        console.log(this.return_incorrect(q,a,this.q_a_list[j][1]));
+                        const payload = this.return_incorrect(q,a,this.q_a_list[j][1]);
+                        console.log(payload);
                         flameBlowUp(arrow.points()[0] - this.box_size / 2,arrow.points()[1],this.stage);
+                        //explanation api here
+                        explanationRequests.push({
+                            index: j,
+                            request: this.requestMatchingExplanation(payload),
+                        });
                     }
                     break;
                 }
             }
         }
+
+        if (explanationRequests.length > 0) {
+            const results = await Promise.allSettled(
+                explanationRequests.map(item => item.request),
+            );
+
+            const explanations: { index: number; text: string }[] = [];
+            results.forEach((result, idx) => {
+                const questionIndex = explanationRequests[idx].index;
+                if (result.status === "fulfilled") {
+                    explanations.push({
+                        index: questionIndex,
+                        text: result.value ?? "No explanation returned.",
+                    });
+                } else {
+                    explanations.push({
+                        index: questionIndex,
+                        text: "Failed to load explanation.",
+                    });
+                }
+            });
+
+            this.showExplanations(explanations);
+            // Remove lines after showing explanations to declutter the view.
+            this.cleanupArrows();
+        }
+
         if (incorrect_count > 0) {
-            setTimeout(() => {
-                this.new_questions();
-            }, 2000);
+            void this.recordAttempt(false);
+        } else {
+            void this.recordAttempt(true);
         }
     }
 
-    private return_incorrect(question: String, user_answer: String, correct_answer: String): any {
+    private return_incorrect(question: string, user_answer: string, correct_answer: string): MatchingExplanationPayload {
         return {
             question: question,
             given_answer: user_answer,
             correct_answer: correct_answer
+        };
+    }
+
+    private async requestMatchingExplanation(payload: MatchingExplanationPayload): Promise<string | null> {
+        try {
+            const res = await fetch("http://localhost:4000/game/matching/matchingHandleProblem", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            const data = (await res.json().catch(() => null)) as
+                | { explanation?: string; error?: string }
+                | null;
+
+            if (!res.ok) {
+                console.error("Failed to fetch matching explanation:", data?.error ?? res.statusText);
+                return data?.error ?? null;
+            }
+
+            const explanation = data?.explanation ?? "No explanation returned.";
+            console.log("Matching explanation:", explanation);
+            return explanation;
+        } catch (error) {
+            console.error("Matching explanation fetch error:", error);
+            return null;
+        }
+    }
+
+    private async showExplanations(explanations: { index: number; text: string }[]): Promise<void> {
+        this.cleanupExplanation();
+        const overlay = new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            fill: "rgba(0,0,0,0.6)",
+            listening: true,
+        });
+
+        overlay.on("click tap", () => {
+            this.cleanupExplanation();
+            this.cleanupArrows();
+            this.new_questions();
+        });
+
+        this.explanationOverlay = overlay;
+        this.group.add(overlay);
+
+        const maxWidth = STAGE_WIDTH * 0.9;
+        const startX = (STAGE_WIDTH - maxWidth) / 2;
+        const gap = 24;
+
+        const rendered = explanations
+            .sort((a, b) => a.index - b.index)
+            .map(({ index, text }) => {
+                return new Konva.Text({
+                    x: startX,
+                    width: maxWidth,
+                    text: `Q${index + 1}: ${text}`,
+                    fontSize: 32,
+                    fontFamily: "Arial",
+                    fill: "white",
+                    align: "center",
+                    padding: 12,
+                    listening: false,
+                }) as Konva.Node;
+            });
+
+        const totalHeight =
+            rendered.reduce((acc, node) => acc + node.height(), 0) +
+            gap * Math.max(0, rendered.length - 1);
+        let currentY = (STAGE_HEIGHT - totalHeight) / 2;
+
+        rendered.forEach(node => {
+            node.position({
+                x: startX,
+                y: currentY,
+            });
+            this.explanationTextNodes.push(node);
+            this.group.add(node);
+            currentY += node.height() + gap;
+        });
+
+        this.group.getLayer()?.batchDraw();
+    }
+
+    private cleanupExplanation(): void {
+        if (this.explanationOverlay) {
+            this.explanationOverlay.destroy();
+            this.explanationOverlay = null;
+        }
+        if (this.explanationTextNode) {
+            this.explanationTextNode.destroy();
+            this.explanationTextNode = null;
+        }
+        if (this.explanationTextNodes.length > 0) {
+            this.explanationTextNodes.forEach(node => node.destroy());
+            this.explanationTextNodes = [];
+        }
+    }
+
+    private async recordAttempt(isCorrect: boolean): Promise<boolean> {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            console.warn("No auth token found; skipping stats update.");
+            return false;
+        }
+
+        try {
+            const res = await fetch("http://localhost:4000/auth/stats/attempt", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    category: this.statsCategory,
+                    isCorrect,
+                }),
+            });
+
+            if (!res.ok) {
+                const data = (await res.json().catch(() => null)) as
+                    | { error?: string }
+                    | null;
+                console.error("Failed to update stats:", data?.error ?? res.statusText);
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Stats update error:", error);
+            return false;
         }
     }
 
