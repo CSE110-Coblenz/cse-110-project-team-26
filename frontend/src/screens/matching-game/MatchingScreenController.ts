@@ -15,7 +15,7 @@ export class MatchingScreenController extends ScreenController {
         super();
         this.screenSwitcher = screenSwitcher;
         this.stage = stage;
-        this.view = new MatchingScreenView(() => this.handleStartClick(), this.stage);
+        this.view = new MatchingScreenView(this.stage, 3);
     }
 
     /**

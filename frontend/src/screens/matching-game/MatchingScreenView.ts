@@ -15,42 +15,28 @@ export class MatchingScreenView implements View {
 
     private box_size = 200;
 
-    private leftRect_1: Konva.Rect;
-    private leftRect_2: Konva.Rect;
-    private leftRect_3: Konva.Rect;
-
-    private leftText_1: Konva.Text;
-    private leftText_2: Konva.Text;
-    private leftText_3: Konva.Text;
-
-    private rightRect_1: Konva.Rect;
-    private rightRect_2: Konva.Rect;
-    private rightRect_3: Konva.Rect;
-
-    private rightText_1: Konva.Text;
-    private rightText_2: Konva.Text;
-    private rightText_3: Konva.Text;
+    private leftRects: Konva.Rect[] = [];
+    private leftTexts: Konva.Text[] = [];
+    private rightRects: Konva.Rect[] = [];
+    private rightTexts: Konva.Text[] = [];
 
     private arrows: Konva.Arrow[] = [];
     private paired_questions: string[] = [];
     private paired_answers: string[] = [];
 
-    private q_a_1: ReturnType<typeof generate_linear_equation_1> = ["",""];
-    private q_a_2: ReturnType<typeof generate_linear_equation_1> = ["",""];
-    private q_a_3: ReturnType<typeof generate_linear_equation_1> = ["",""];
-
     private answer_sequence: string[] = [];
-    private q_a_list: string[][] = [];
+    private q_a_list: [string, string][] = [];
 
-    private difficulty: string = "linear 1"
+    private difficulty: number = 3;
+    private arrowCount: number = 0;
 
-    constructor(onStartClick: () => void, stage:Konva.Stage) {
+    constructor(stage:Konva.Stage, difficulty: number) {
         this.group = new Konva.Group({ visible: true });
         this.stage = stage;
 
         // ===== ADD GALAXY BACKGROUND HERE =====
         const img = new Image();
-        img.src = galaxyBg;
+        img.src = "/wires.png";
         const background = new Konva.Image({
             x: 0,
             y: 0,
@@ -60,21 +46,21 @@ export class MatchingScreenView implements View {
             listening: false,
         });
 
-        const overlay = new Konva.Rect({
+        /* const overlay = new Konva.Rect({
             x: 0,
             y: 0,
             width: STAGE_WIDTH,
             height: STAGE_HEIGHT,
             fill: 'rgba(0, 0, 50, 0.75)',  // dark overlay for text readability
             listening: false,
-        });
+        }); */
 
         // ADD THEM FIRST — THIS IS CRITICAL
         this.group.add(background);
-        this.group.add(overlay);
+        /* this.group.add(overlay); */
 
         // Add twinkling stars
-        for (let i = 0; i < 80; i++) {
+        /* for (let i = 0; i < 80; i++) {
             const star = new Konva.Circle({
                 x: Math.random() * STAGE_WIDTH,
                 y: Math.random() * STAGE_HEIGHT,
@@ -95,22 +81,19 @@ export class MatchingScreenView implements View {
             }).play();
 
             this.group.add(star);
+        } */
+        background.moveToTop();
+        
+        this.difficulty = difficulty;
+
+        // Generate 3 unique question-answer pairs
+        for (let i = 0; i < difficulty; i++) {
+            this.q_a_list[i] = generate_linear_equation_1() as [string, string];
         }
 
-        this.generate_equation()
-        
-        this.q_a_list= [
-            this.q_a_1, 
-            this.q_a_2,
-            this.q_a_3
-        ];
-
         // Collect all answer strings (q_a_x[1]) into a temp array
-        const answers = [
-            this.q_a_1[1],  // e.g., "x=5"
-            this.q_a_2[1],
-            this.q_a_3[1]
-        ];
+        const answers = this.q_a_list.map(qa => qa[1]);
+
 
         // Shuffle the array randomly
         for (let i = answers.length - 1; i > 0; i--) {
@@ -121,7 +104,7 @@ export class MatchingScreenView implements View {
         // Assign shuffled answers to private answer_sequence
         this.answer_sequence = answers;
 
-        // Title text
+        /* // Title text
         const title = new Konva.Text({
             x: STAGE_WIDTH / 2,
             y: 10,
@@ -135,119 +118,63 @@ export class MatchingScreenView implements View {
         });
         // Center the text using offsetX
         title.offsetX(title.width() / 2);
-        this.group.add(title);
+        this.group.add(title); */
 
-        // Question 1
-        this.leftRect_1 = createNeonMetalBox(150, STAGE_HEIGHT / 4 - 100, this.box_size);
-        this.leftRect_1.on('mousedown touchstart', () => {
-            this.arrowAnimation(this.leftRect_1, this.leftText_1.text());
-        });
-        this.leftText_1 = new Konva.Text({
-            x: this.leftRect_1.x() + this.leftRect_1.width() / 2,
-            y: this.leftRect_1.y() + this.leftRect_1.height() / 2,
-            text: this.q_a_1[0],
-            fontSize: 28,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-            verticalAlign: "middle",
-        });
-        this.leftText_1.offsetX(this.leftText_1.width() / 2);
-        this.leftText_1.offsetY(this.leftText_1.height() / 2);
-        this.group.add(this.leftRect_1);
-        this.group.add(this.leftText_1);
 
-        // Question 2
-        this.leftRect_2 = createNeonMetalBox(150,STAGE_HEIGHT / 2 - 100,200);
-        this.leftRect_2.on('mousedown touchstart', () => {
-            this.arrowAnimation(this.leftRect_2, this.leftText_2.text());
-        });
-        this.leftText_2 = new Konva.Text({
-            x: this.leftRect_2.x() + this.leftRect_2.width() / 2,
-            y: this.leftRect_2.y() + this.leftRect_2.height() / 2,
-            text: this.q_a_2[0],
-            fontSize: 28,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-            verticalAlign: "middle",
-        });
-        this.leftText_2.offsetX(this.leftText_2.width() / 2);
-        this.leftText_2.offsetY(this.leftText_2.height() / 2);
-        this.group.add(this.leftRect_2);
-        this.group.add(this.leftText_2);
+        // Adding question and answer rectangles and texts
+        for (let i = 0; i < difficulty; i++) {
+            this.leftRects.push(new Konva.Rect({
+                x: 60,
+                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty),
+                width: 120,
+                height: 90,
+                fill: "#969696ff",
+                stroke: "navy",
+                strokeWidth: 4,
+            }));
 
-        // Question 3
-        this.leftRect_3 = createNeonMetalBox(150, 3 * STAGE_HEIGHT / 4 - 100)
-        this.leftRect_3.on('mousedown touchstart', () => {
-            this.arrowAnimation(this.leftRect_3, this.leftText_3.text());
-        });
-        this.leftText_3 = new Konva.Text({
-            x: this.leftRect_3.x() + this.leftRect_3.width() / 2,
-            y: this.leftRect_3.y() + this.leftRect_3.height() / 2,
-            text: this.q_a_3[0],
-            fontSize: 28,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-            verticalAlign: "middle",
-        });
-        this.leftText_3.offsetX(this.leftText_3.width() / 2);
-        this.leftText_3.offsetY(this.leftText_3.height() / 2);
-        this.group.add(this.leftRect_3);
-        this.group.add(this.leftText_3);
-
-        // Answer 1
-        this.rightRect_1 = createPlanetBox(STAGE_WIDTH - 350, STAGE_HEIGHT / 4 - 100)
-        this.rightText_1 = new Konva.Text({
-            x: this.rightRect_1.x() + this.rightRect_1.width() / 2,
-            y: this.rightRect_1.y() + this.rightRect_1.height() / 2,
-            text: this.answer_sequence[0],
-            fontSize: 28,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-            verticalAlign: "middle",
-        });
-        this.rightText_1.offsetX(this.rightText_1.width() / 2);
-        this.rightText_1.offsetY(this.rightText_1.height() / 2);
-        this.group.add(this.rightRect_1);
-        this.group.add(this.rightText_1);
-
-        // Answer 2
-        this.rightRect_2 = createPlanetBox(STAGE_WIDTH - 350,STAGE_HEIGHT / 2 - 100);
-        this.rightText_2 = new Konva.Text({
-            x: this.rightRect_2.x() + this.rightRect_2.width() / 2,
-            y: this.rightRect_2.y() + this.rightRect_2.height() / 2,
-            text: this.answer_sequence[1],
-            fontSize: 28,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-            verticalAlign: "middle",
-        });
-        this.rightText_2.offsetX(this.rightText_2.width() / 2);
-        this.rightText_2.offsetY(this.rightText_2.height() / 2);
-        this.group.add(this.rightRect_2);
-        this.group.add(this.rightText_2);
-
-        // Answer 3
-        this.rightRect_3 = createPlanetBox(STAGE_WIDTH - 350, 3 * STAGE_HEIGHT / 4 - 100);
-        this.rightText_3 = new Konva.Text({
-            x: this.rightRect_3.x() + this.rightRect_3.width() / 2,
-            y: this.rightRect_3.y() + this.rightRect_3.height() / 2,
-            text: this.answer_sequence[2],
-            fontSize: 28,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-            verticalAlign: "middle",
-        });
-        this.rightText_3.offsetX(this.rightText_3.width() / 2);
-        this.rightText_3.offsetY(this.rightText_3.height() / 2);
-        this.group.add(this.rightRect_3);
-        this.group.add(this.rightText_3);
-
+            this.leftTexts.push(new Konva.Text({
+                x: 120,
+                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
+                text: this.q_a_list[i][0],
+                fontSize: 18,
+                fontFamily: "Arial",
+                fill: "white",
+                align: "center",
+                verticalAlign: "middle",
+            }));
+            this.leftTexts[i].offsetX(this.leftTexts[i].width() / 2);
+            this.leftTexts[i].offsetY(this.leftTexts[i].height() / 2);
+            this.leftRects[i].on('mousedown touchstart', () => {
+                this.arrowAnimation(this.leftRects[i], this.leftTexts[i].text());
+            });
+            this.rightRects.push(new Konva.Rect({
+                x: STAGE_WIDTH - 180,
+                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty),
+                width: 120,
+                height: 90,
+                fill: "#969696ff",
+                stroke: "black",
+                strokeWidth: 4,
+            }));
+            this.rightTexts.push(new Konva.Text({
+                x: STAGE_WIDTH - 120,
+                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
+                text: this.answer_sequence[i],
+                fontSize: 18,
+                fontFamily: "Arial",
+                fill: "white",
+                align: "center",
+                verticalAlign: "middle",
+            }));
+            this.rightTexts[i].offsetX(this.rightTexts[i].width() / 2);
+            this.rightTexts[i].offsetY(this.rightTexts[i].height() / 2);
+            this.group.add(this.leftRects[i]);
+            this.group.add(this.leftTexts[i]);
+            this.group.add(this.rightRects[i]);
+            this.group.add(this.rightTexts[i]);
+        }
+        /*
         const startButtonGroup = new Konva.Group();
         const startButton = new Konva.Rect({
             x: 0,
@@ -395,6 +322,7 @@ export class MatchingScreenView implements View {
             this.new_questions();
         });
         this.group.add(level4ButtonGroup);
+        
 
         //instruction window
         const instructionWindow: Konva.Group = instructionWindowGroup();
@@ -469,22 +397,21 @@ export class MatchingScreenView implements View {
             this.new_questions();
         });
         this.group.add(newQuestionButtonGroup);
-
+        */
         //reset button group
         const resetButtonGroup = new Konva.Group();
         const resetButton = new Konva.Rect({
-            x: STAGE_WIDTH-200,
-            y: STAGE_HEIGHT - 100,
-            width: 200,
-            height: 60,
+            x: STAGE_WIDTH/2 - 50,
+            y: STAGE_HEIGHT - 50,
+            width: 100,
+            height: 40,
             fill: "white",
-            cornerRadius: 10,
             stroke: "black",
             strokeWidth: 3,
         });
         const resetText = new Konva.Text({
-            x: STAGE_WIDTH - 100,
-            y: resetButton.y() + 15,
+            x: resetButton.x() + 50,
+            y: resetButton.y()+10,
             text: "RESET",
             fontSize: 16,
             fontFamily: "Arial",
@@ -499,13 +426,14 @@ export class MatchingScreenView implements View {
             this.cleanupQA();    
         });
         this.group.add(resetButtonGroup);
+        
     }
 
     private arrowAnimation(leftRect: Konva.Rect, question: string): void {
         if (this.paired_questions.includes(question)) {
             return;
         }
-        const mousePos = this.stage.getPointerPosition();
+        let mousePos = this.stage.getPointerPosition();
         const layer = this.stage.getLayers()[0];
         const arrowtail_x = leftRect.x() + leftRect.width() + leftRect.strokeWidth();
         const arrowtail_y = leftRect.y() + leftRect.height() / 2;
@@ -521,7 +449,7 @@ export class MatchingScreenView implements View {
             pointerWidth: 10,
             fill: 'white',
             stroke: 'white',
-            strokeWidth: 4,
+            strokeWidth: 10,
         });
         if (mousePos){
             arrow.points([arrowtail_x, arrowtail_y, mousePos.x, mousePos.y]);
@@ -532,7 +460,7 @@ export class MatchingScreenView implements View {
         // Handle dragmove on stage to update arrow head
         this.stage.on('mousemove touchmove', () => {
             if (arrow) {
-                const mousePos = this.stage.getPointerPosition();
+                mousePos = this.stage.getPointerPosition();
                 if (mousePos) {
                     // Update arrow head to cursor position, keep tail at this.leftRect center
                     arrow.points([arrowtail_x, arrowtail_y, mousePos.x, mousePos.y]);
@@ -545,47 +473,36 @@ export class MatchingScreenView implements View {
         this.stage.on('mouseup touchend', () => {
             if (arrow) {
                 const endPoint = { x: arrow.points()[2], y: arrow.points()[3] };
-                const a_1_Pos = this.rightRect_1.position();
-                const a_2_Pos = this.rightRect_2.position();
-                const a_3_Pos = this.rightRect_3.position();
+                const a_Pos: { x: number; y: number }[] = []; // Positions
+                for (let i = 0; i < this.rightRects.length; i++) {
+                    a_Pos.push(this.rightRects[i].position());
+                }
 
                 // Check if the arrow's head is within a_1 (radius + tolerance)
-                const isOnA1 = this.rightRect_1.x() <= endPoint.x && endPoint.x <= (this.rightRect_1.x() + this.rightRect_1.width()) && 
-                this.rightRect_1.y() <= endPoint.y && endPoint.y <= (this.rightRect_1.y() + this.rightRect_1.height());
-                const isOnA2 = this.rightRect_2.x() <= endPoint.x && endPoint.x <= (this.rightRect_2.x() + this.rightRect_2.width()) && 
-                this.rightRect_2.y() <= endPoint.y && endPoint.y <= (this.rightRect_2.y() + this.rightRect_2.height());
-                const isOnA3 = this.rightRect_3.x() <= endPoint.x && endPoint.x <= (this.rightRect_3.x() + this.rightRect_3.width()) && 
-                this.rightRect_3.y() <= endPoint.y && endPoint.y <= (this.rightRect_3.y() + this.rightRect_3.height());
-
-                if (isOnA1) {
-                    // Finalize arrow: Snap head to center of a
-                    arrow.points([arrowtail_x, arrowtail_y, a_1_Pos.x - 18, a_1_Pos.y + this.rightRect_1.height() / 2]);
-                    arrow.fill("white");
-                    arrow.stroke("white");
-                    this.arrows.push(arrow);
-                    this.paired_answers.push(this.rightText_1.text());
-                    this.paired_questions.push(question);  
-                } 
-                else if (isOnA2){
-                    arrow.points([arrowtail_x, arrowtail_y, a_2_Pos.x - 18, a_2_Pos.y + this.rightRect_2.height() / 2]);
-                    arrow.fill("white");
-                    arrow.stroke("white");
-                    this.arrows.push(arrow);
-                    this.paired_answers.push(this.rightText_2.text());
-                    this.paired_questions.push(question);    
+                const isOnAi : boolean[] = [];
+                for (let i = 0; i < a_Pos.length; i++) {
+                    const isOnA = this.rightRects[i].x() <= endPoint.x && endPoint.x <= (this.rightRects[i].x() + this.rightRects[i].width()) && 
+                    this.rightRects[i].y() <= endPoint.y && endPoint.y <= (this.rightRects[i].y() + this.rightRects[i].height());
+                    isOnAi.push(isOnA);
                 }
-                else if (isOnA3){
-                    arrow.points([arrowtail_x, arrowtail_y, a_3_Pos.x - 18, a_3_Pos.y + this.rightRect_2.height() / 2]);
-                    arrow.fill("white");
-                    arrow.stroke("white");
-                    this.arrows.push(arrow);
-                    this.paired_answers.push(this.rightText_3.text());
-                    this.paired_questions.push(question);    
+                // If dropped on any answer rectangle, snap arrow head to center of that rectangle
+                for (let i = 0; i < isOnAi.length; i++) {
+                    if (isOnAi[i] && !this.paired_answers.includes(this.rightTexts[i].text())) {
+                        // Finalize arrow: Snap head to center of a_i
+                        arrow.points([arrowtail_x, arrowtail_y, a_Pos[i].x, a_Pos[i].y + this.rightRects[i].height() / 2]);
+                        arrow.fill("black");
+                        arrow.stroke("black");
+                        this.arrows.push(arrow);
+                        this.paired_answers.push(this.rightTexts[i].text());
+                        this.paired_questions.push(question);  
+                        layer.batchDraw();
+                        arrow = null; // Reset arrow
+                        if (this.paired_questions.length >= this.difficulty) this.submitCheck();
+                        return;
+                    }
                 }
-                else {
-                    // Remove arrow
-                    arrow.destroy();
-                }
+                // If not dropped on any answer, remove the arrow
+                arrow.destroy();
                 // this.leftRect.moveToTop();
                 layer.batchDraw();
                 arrow = null; // Reset arrow
@@ -595,6 +512,7 @@ export class MatchingScreenView implements View {
 
     //submit and check
     private submitCheck(): void {
+        let incorrect_count = 0;
         for (let i = 0; i < this.arrows.length; i++) {
             const arrow = this.arrows[i];
             const q = this.paired_questions[i];
@@ -608,12 +526,18 @@ export class MatchingScreenView implements View {
                     else {
                         arrow.fill("red");
                         arrow.stroke("red");
+                        incorrect_count += 1;
                         console.log(this.return_incorrect(q,a,this.q_a_list[j][1]));
                         flameBlowUp(arrow.points()[0] - this.box_size / 2,arrow.points()[1],this.stage);
                     }
                     break;
                 }
             }
+        }
+        if (incorrect_count > 0) {
+            setTimeout(() => {
+                this.new_questions();
+            }, 2000);
         }
     }
 
@@ -625,7 +549,7 @@ export class MatchingScreenView implements View {
         }
     }
 
-    private generate_equation(): void {
+    /* private generate_equation(): void {
         if (this.difficulty == "linear 1") {
             this.q_a_1 = generate_linear_equation_1();
             this.q_a_2 = generate_linear_equation_1();
@@ -646,36 +570,39 @@ export class MatchingScreenView implements View {
             this.q_a_2 = generate_quadratic_equation_2();
             this.q_a_3 = generate_quadratic_equation_2();
         }
-    }
+    } */
 
     private new_questions(): void {
         this.cleanupArrows();
             this.cleanupQA(); 
-            this.generate_equation();
-            this.q_a_list = [this.q_a_1, this.q_a_2, this.q_a_3];
+            for (let i = 0; i < this.difficulty; i++) {
+                this.q_a_list[i] = generate_linear_equation_1() as [string, string];
+            }
+            
+            // Collect all answer strings (q_a_x[1]) into a temp array
+            const answers = this.q_a_list.map(qa => qa[1]);
 
-            const answers = [this.q_a_1[1], this.q_a_2[1], this.q_a_3[1]];
+
+            // Shuffle the array randomly
             for (let i = answers.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [answers[i], answers[j]] = [answers[j], answers[i]];
             }
+
+            // Assign shuffled answers to private answer_sequence
             this.answer_sequence = answers;
 
             // Update texts
-            this.leftText_1.text(this.q_a_1[0]);
-            this.leftText_2.text(this.q_a_2[0]);
-            this.leftText_3.text(this.q_a_3[0]);
+            for (let i = 0; i < this.difficulty; i++) {
+                this.leftTexts[i].text(this.q_a_list[i][0]);
+                this.rightTexts[i].text(this.answer_sequence[i]);
 
-            this.rightText_1.text(this.answer_sequence[0]);
-            this.rightText_2.text(this.answer_sequence[1]);
-            this.rightText_3.text(this.answer_sequence[2]);
-
-            // Re-center
-            [this.leftText_1, this.leftText_2, this.leftText_3,
-            this.rightText_1, this.rightText_2, this.rightText_3].forEach(t => {
-                t.offsetX(t.width() / 2);
-                t.offsetY(t.height() / 2);
-            });
+                // Re-center
+                this.leftTexts[i].offsetX(this.leftTexts[i].width() / 2);
+                this.leftTexts[i].offsetY(this.leftTexts[i].height() / 2);
+                this.rightTexts[i].offsetX(this.rightTexts[i].width() / 2);
+                this.rightTexts[i].offsetY(this.rightTexts[i].height() / 2);
+            }
 
             this.group.getLayer()?.batchDraw();
     }
