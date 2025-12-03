@@ -20,6 +20,12 @@ export class GraphScreenController extends ScreenController {
     private type: string;
     private screenSwitcher: ScreenSwitcher;
     private submission: EquationAnswerFormat;
+    private handleEscapeShortcut = (event: KeyboardEvent) => {
+        if (event.key === "Escape") {
+            event.preventDefault();
+            this.screenSwitcher.switchToScreen({ type: "statistics" });
+        }
+    };
 
     /**
      * Initializes default values for the Controller
@@ -61,6 +67,16 @@ export class GraphScreenController extends ScreenController {
      */
     getView(): GraphScreenView{
         return this.view;
+    }
+
+    show(): void {
+        document.addEventListener("keydown", this.handleEscapeShortcut);
+        this.view.show();
+    }
+
+    hide(): void {
+        document.removeEventListener("keydown", this.handleEscapeShortcut);
+        this.view.hide();
     }
 
     private handleLinearInput(input: number) {

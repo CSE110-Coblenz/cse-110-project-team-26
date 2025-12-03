@@ -101,10 +101,11 @@ Good luck and have fun!`;
 					} else {
 						// If no more moves, generate a new problem
 						this.view.updateTimer(GAME_DURATION);
+						await this.model.recordAttempt(true);
 						this.view.displayMessage("Congrats", () => {
 							console.log("Solved the equation! Generating new problem.");
 							this.view.destroy();
-							this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
+							this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "main-game" })));
 						});
 					}
 				}
@@ -135,11 +136,6 @@ Good luck and have fun!`;
 						{ requireContinue: true }
 					);
 
-					// this.view.updateTimer(GAME_DURATION);
-					// this.view.displayMessage("Congrats", () => {
-					// 	console.log("Solved the equation! Generating new problem.");
-					// 	this.view.destroy();
-					// this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
 				}})});
 	};
 
