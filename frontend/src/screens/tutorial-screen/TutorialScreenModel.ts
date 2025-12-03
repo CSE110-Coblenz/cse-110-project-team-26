@@ -34,7 +34,9 @@ export class TutorialScreenModel {
 	nextStep(): void {
 		if (this.currentStep < this.totalSteps - 1) {
 			this.currentStep++;
-		}
+		} else {
+      this.reset;
+    }
 	}
 
 	previousStep(): void {
