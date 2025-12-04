@@ -78,7 +78,6 @@ Good luck and have fun!`;
 		// Update view
         this.view.updateProblem(this.problem.getProblemStatement());
         this.view.updateChoices(this.problem.getChoices());
-		this.view.updateScore(this.model.getScore());
 		this.view.updateTimer(GAME_DURATION);
 
 		this.startTimer();
@@ -97,9 +96,6 @@ Good luck and have fun!`;
 				if (choice.getIsCorrect()) {
 					// Update model
 					this.model.incrementScore();
-					// Update view
-					this.view.updateScore(this.model.getScore());
-
 					// Ensure a problem exists and advance or create as needed
 					const prob = this.problem as ProblemModel;
 					if(prob.nextMove()){

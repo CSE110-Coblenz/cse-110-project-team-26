@@ -2,8 +2,7 @@ import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH,STAGE_HEIGHT } from "../../constants.ts";
 import { generate_quadratic_equation_1, generate_linear_equation_1, generate_linear_equation_2, generate_quadratic_equation_2 } from "./EquationGenerator.ts";
-import galaxyBg from './assets/galaxy.jpg';
-import { createNeonMetalBox, createPlanetBox, flameBlowUp} from "./ArtEffect.ts";
+import { flameBlowUp} from "./ArtEffect.ts";
 import { helpButtonGroup, instructionWindowGroup } from "./instructions.ts";
 import "../../styles.css";
 
@@ -13,8 +12,6 @@ import "../../styles.css";
 export class MatchingScreenView implements View {
     private group: Konva.Group;
     private stage: Konva.Stage;
-
-    private box_size = 200;
 
     private leftRects: Konva.Rect[] = [];
     private leftTexts: Konva.Text[] = [];
@@ -29,8 +26,8 @@ export class MatchingScreenView implements View {
     private q_a_list: [string, string][] = [];
 
     private difficulty: number = 3;
-    private arrowCount: number = 0;
     private onSubmit?: () => void;
+    private instructionWindow: Konva.Group;
 
     constructor(stage:Konva.Stage, difficulty: number, onSubmit?: () => void) {
         this.group = new Konva.Group({ visible: true });
@@ -38,7 +35,7 @@ export class MatchingScreenView implements View {
 
         // ===== ADD GALAXY BACKGROUND HERE =====
         const img = new Image();
-        img.src = "/wires.png";
+        img.src = "/backgrounds/wires.png";
         const background = new Konva.Image({
             x: 0,
             y: 0,
@@ -107,60 +104,7 @@ export class MatchingScreenView implements View {
 
 
         // Adding question and answer rectangles and texts
-        for (let i = 0; i < difficulty; i++) {
-            this.leftRects.push(new Konva.Rect({
-                x: 60,
-                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty),
-                width: 120,
-                height: 90,
-                fill: "#969696ff",
-                stroke: "white",
-                strokeWidth: 4,
-            }));
-
-            this.leftTexts.push(new Konva.Text({
-                x: 128,
-                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
-                text: i.toString(),
-                fontSize: 24,
-                fontFamily: "medodica",
-                fill: "white",
-                align: "center",
-                verticalAlign: "middle",
-            }));
-            this.leftTexts[i].offsetX(this.leftTexts[i].width() / 2);
-            this.leftTexts[i].offsetY(this.leftTexts[i].height() / 2);
-            this.leftRects[i].on('mousedown touchstart', () => {
-                this.arrowAnimation(this.leftRects[i], this.leftTexts[i].text());
-            });
-            this.rightRects.push(new Konva.Rect({
-                x: STAGE_WIDTH - 180,
-                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty),
-                width: 120,
-                height: 90,
-                fill: "#969696ff",
-                stroke: "white",
-                strokeWidth: 4,
-            }));
-            this.rightTexts.push(new Konva.Text({
-                x: STAGE_WIDTH - 116,
-                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
-                text: this.answer_sequence[i],
-                fontSize: 24,
-                fontFamily: "medodica",
-                fill: "white",
-                align: "center",
-                verticalAlign: "middle",
-            }));
-            this.rightTexts[i].offsetX(this.rightTexts[i].width() / 2);
-            this.rightTexts[i].offsetY(this.rightTexts[i].height() / 2);
-            this.group.add(this.leftRects[i]);
-            this.group.add(this.leftTexts[i]);
-            this.group.add(this.rightRects[i]);
-            this.group.add(this.rightTexts[i]);
-        }
-
-        this.new_questions();
+        
         /*
         const startButtonGroup = new Konva.Group();
         const startButton = new Konva.Rect({
@@ -312,12 +256,12 @@ export class MatchingScreenView implements View {
         */
 
         //instruction window
-        const instructionWindow: Konva.Group = instructionWindowGroup("matching-game-instructions");
-        instructionWindow.on('click tap', () => {
-            instructionWindow.hide();
+        this.instructionWindow = instructionWindowGroup("matching-game-instructions");
+        this.instructionWindow.on('click tap', () => {
+            this.instructionWindow.hide();
             this.group.getLayer()?.draw();
         });
-        this.group.add(instructionWindow);
+        this.group.add(this.instructionWindow);
         /*
         const submitButtonGroup = new Konva.Group();
         const submitButton = new Konva.Rect({
@@ -350,8 +294,8 @@ export class MatchingScreenView implements View {
         //help button group
         const helpButton = helpButtonGroup(STAGE_WIDTH/2-120, STAGE_HEIGHT - 50);
         helpButton.on('click tap', () => {
-            instructionWindow.show();
-            instructionWindow.moveToTop();   // bring to front if other objects overlap
+            this.instructionWindow.show();
+            this.instructionWindow.moveToTop();   // bring to front if other objects overlap
             this.group.getLayer()?.draw();
         });
         this.group.add(helpButton);
@@ -408,6 +352,8 @@ export class MatchingScreenView implements View {
         resetText.offsetX(resetText.width() / 2);
         resetButtonGroup.add(resetButton);
         resetButtonGroup.add(resetText);
+        resetButtonGroup.on("mouseenter", () => { resetButton.fill('#dddddd'); resetButton.getLayer()?.draw(); });
+        resetButtonGroup.on("mouseleave", () => { resetButton.fill('white'); resetButton.getLayer()?.draw(); });
         resetButtonGroup.on("click", () => {
             console.log("reset clicked");
             for (let i = 0; i < this.leftRects.length; i++) {
@@ -705,13 +651,81 @@ export class MatchingScreenView implements View {
         this.paired_answers = [];
     }
 
+    // Destroy questions and answers objects
+    private destroyQA(): void {
+        this.leftRects.forEach(r => r.destroy());
+        this.leftTexts.forEach(t => t.destroy());
+        this.rightRects.forEach(r => r.destroy());
+        this.rightTexts.forEach(t => t.destroy());
+        this.leftRects = [];
+        this.leftTexts = [];
+        this.rightRects = [];
+        this.rightTexts = [];
+    }
     // reset all states
-    reset(): void {
-        this.fadeFromBlackScreen().then(() => {
-            this.cleanupArrows();
-            this.cleanupQA();
-            this.new_questions();
-        });
+    reset(difficulty: number): void {
+        this.destroyQA();
+        // Create question and answer rectangles and texts
+        for (let i = 0; i < difficulty; i++) {
+            this.leftRects.push(new Konva.Rect({
+                x: 60,
+                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty),
+                width: 120,
+                height: 90,
+                fill: "#969696ff",
+                stroke: "white",
+                strokeWidth: 4,
+            }));
+
+            this.leftTexts.push(new Konva.Text({
+                x: 120,
+                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
+                text: i.toString(),
+                fontSize: 24,
+                fontFamily: "medodica",
+                fill: "white",
+                align: "center",
+                verticalAlign: "middle",
+            }));
+            this.leftTexts[i].offsetX(this.leftTexts[i].width() / 2);
+            this.leftTexts[i].offsetY(this.leftTexts[i].height() / 2);
+            this.leftRects[i].on('mousedown touchstart', () => {
+                this.arrowAnimation(this.leftRects[i], this.leftTexts[i].text());
+            });
+            this.rightRects.push(new Konva.Rect({
+                x: STAGE_WIDTH - 180,
+                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty),
+                width: 120,
+                height: 90,
+                fill: "#969696ff",
+                stroke: "white",
+                strokeWidth: 4,
+            }));
+            this.rightTexts.push(new Konva.Text({
+                x: STAGE_WIDTH - 116,
+                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
+                text: this.answer_sequence[i],
+                fontSize: 24,
+                fontFamily: "medodica",
+                fill: "white",
+                align: "center",
+                verticalAlign: "middle",
+            }));
+            this.rightTexts[i].offsetX(this.rightTexts[i].width() / 2);
+            this.rightTexts[i].offsetY(this.rightTexts[i].height() / 2);
+            this.group.add(this.leftRects[i]);
+            this.group.add(this.leftTexts[i]);
+            this.group.add(this.rightRects[i]);
+            this.group.add(this.rightTexts[i]);
+        }
+        console.log(this.leftRects);
+        console.log(this.rightRects);
+        console.log(this.leftTexts);
+        console.log(this.rightTexts);
+        this.difficulty = difficulty;
+        this.new_questions();
+        this.instructionWindow.moveToTop();            
+        this.fadeFromBlackScreen();
     }
 
     /**

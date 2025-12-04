@@ -15,7 +15,7 @@ export class MazeTutorialView {
             height: STAGE_HEIGHT,
             image: (() => {
                 const image = new Image();
-                image.src = "/backgroundMessage.png";
+                image.src = "/backgrounds/backgroundMessage.png";
                 return image; 
                 })(),
             //fill: "#616567ff", // Sky blue

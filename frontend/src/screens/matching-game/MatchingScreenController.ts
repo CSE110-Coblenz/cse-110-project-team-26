@@ -20,8 +20,8 @@ export class MatchingScreenController extends ScreenController {
         });    
     }
 
-    startGame(): void {
-        this.view.reset();
+    startGame(difficulty: number): void {
+        this.view.reset(difficulty);
         this.view.show();
     }
 

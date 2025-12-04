@@ -94,6 +94,15 @@ export function instructionWindowGroup(type: string): Konva.Group {
                 '• Prepare for takeoff and get ready for the next adventure!',
             ];
             break;
+        case 'maze-game-instructions':
+            lines = [
+                '• Your rocket is running out of fuel!',
+                '• But don\'t worry - you can navigate through the cosmic maze to collect resources.',
+                '• Choose the correct next step to simplify the given linear equation',
+                '• After completely simplifying the equation, you can choose the correct value for x to collect fuel!',
+                '• Be careful - you will lose your progress in the maze if you make a wrong choice!',
+            ];
+            break;
         default:
             break;
     }

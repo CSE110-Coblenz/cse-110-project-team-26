@@ -1,5 +1,22 @@
 import { ComputeEngine } from "@cortex-js/compute-engine";
-export const compute = new ComputeEngine();
+let compute = new ComputeEngine();
+
+//trial for compute engine to check if it's working
+function testComputeEngine() {
+    try {
+        let temp = compute.parse("3x+2+x");
+        if((JSON.stringify(temp).includes("Undefined")||JSON.stringify(temp).includes("Error"))){
+            throw "Compute engine error";
+        }
+    } catch (e) {
+        console.error("Compute engine error:", e);
+        compute = new ComputeEngine();
+        testComputeEngine();
+    }
+}
+testComputeEngine();
+
+export { compute };
 
 // Stage dimensions
 export const STAGE_WIDTH = 900;
