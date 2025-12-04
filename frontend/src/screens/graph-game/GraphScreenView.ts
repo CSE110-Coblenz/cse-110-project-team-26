@@ -124,6 +124,7 @@ export class GraphScreenView implements View {
             ...TRANSITION_TEXT_PROPERTIES
         });
 
+        this.addButtonAnimations(this.transitionGroup, transitionButton);
         this.transitionGroup.add(transitionButton, transitionText);
         
         this.resultsGroup = new Konva.Group({
@@ -137,7 +138,8 @@ export class GraphScreenView implements View {
         const resultsText = new Konva.Text({
             ...RESULTS_TEXT_PROPERTIES
         });
-
+        
+        this.addButtonAnimations(this.resultsGroup, resultsButton);
         this.resultsGroup.add(resultsButton, resultsText);
         
         this.tutorialGroup = new Konva.Group({
@@ -152,6 +154,7 @@ export class GraphScreenView implements View {
             ...TUTORIAL_TEXT_PROPERTIES
         });
 
+        this.addButtonAnimations(this.tutorialGroup, tutorialButton);
         this.tutorialGroup.add(tutorialButton, tutorialText);
         this.tutorialGroup.on("click", () => showTutorial());
 
@@ -322,6 +325,43 @@ export class GraphScreenView implements View {
         this.tutorialGroup.hide();
     }
 
+    addButtonAnimations(buttonGroup: Konva.Group, button: Konva.Rect) {
+        buttonGroup.offsetX(buttonGroup.width() / 2);
+        buttonGroup.offsetY(buttonGroup.height() / 2);
+        buttonGroup.x(buttonGroup.x() + buttonGroup.width() / 2);
+        buttonGroup.y(buttonGroup.y() + buttonGroup.height() / 2);
+      
+        buttonGroup.on("mouseenter", () => {
+            document.body.style.cursor = "pointer";
+            button.to({
+                duration: 0.15
+            });
+        });
+        
+        buttonGroup.on("mouseleave", () => {
+            document.body.style.cursor = "default";
+            button.to({
+                duration: 0.15
+            });
+        });
+        
+        buttonGroup.on("mousedown", () => {
+            buttonGroup.to({
+                scaleX: 0.85,
+                scaleY: 0.85,
+                duration: 0.1
+            });
+        });
+        
+        buttonGroup.on("mouseup", () => {
+            buttonGroup.to({
+                scaleX: 1,
+                scaleY: 1,
+                duration: 0.1
+            });
+        });
+    }
+
     /**
      * Creates equation/input group buttons
      */
@@ -367,13 +407,14 @@ export class GraphScreenView implements View {
                 height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
                 text: (i + 1).toString(),
                 fontSize: 24,
-                fontFamily: "Arial",
+                fontFamily: "melodica",
                 fill: "white",
                 align: "center",
                 verticalAlign: "middle"
             });
             
             buttonGroup.on("click", () => onNumberInput(i + 1));
+            this.addButtonAnimations(buttonGroup, button);
             buttonGroup.add(button);
             buttonGroup.add(buttonText);
             keypadGroup.add(buttonGroup);
@@ -401,7 +442,7 @@ export class GraphScreenView implements View {
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "0",
             fontSize: 24,
-            fontFamily: "Arial",
+            fontFamily: "melodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
@@ -417,7 +458,7 @@ export class GraphScreenView implements View {
         const minusButton = new Konva.Rect({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             fill: fill
         });
@@ -425,22 +466,24 @@ export class GraphScreenView implements View {
         const minusButtonText = new Konva.Text({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "-",
             fontSize: 24,
-            fontFamily: "Arial",
+            fontFamily: "melodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
         });
       
         zeroButtonGroup.on("click", () => onNumberInput(0));
+        this.addButtonAnimations(zeroButtonGroup, zeroButton);
         zeroButtonGroup.add(zeroButton);
         zeroButtonGroup.add(zeroButtonText);
         keypadGroup.add(zeroButtonGroup);
 
         minusButtonGroup.on("click", () => onNumberInput(-1));
+        this.addButtonAnimations(minusButtonGroup, minusButton);
         minusButtonGroup.add(minusButton);
         minusButtonGroup.add(minusButtonText);
         keypadGroup.add(minusButtonGroup)
@@ -455,7 +498,7 @@ export class GraphScreenView implements View {
         const resetButton = new Konva.Rect({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             fill: fill
         });
@@ -463,17 +506,18 @@ export class GraphScreenView implements View {
         const resetButtonText = new Konva.Text({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "reset",
             fontSize: 16,
-            fontFamily: "Arial",
+            fontFamily: "melodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
         });
       
         resetButtonGroup.on("click", onEquationReset)
+        this.addButtonAnimations(resetButtonGroup, resetButton);
         resetButtonGroup.add(resetButton);
         resetButtonGroup.add(resetButtonText);
         keypadGroup.add(resetButtonGroup);
@@ -488,7 +532,7 @@ export class GraphScreenView implements View {
         const submitButton = new Konva.Rect({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             fill: fill
         });
@@ -496,17 +540,18 @@ export class GraphScreenView implements View {
         const submitButtonText = new Konva.Text({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "submit",
             fontSize: 12,
-            fontFamily: "Arial",
+            fontFamily: "melodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
         });
       
         this.submitButtonGroup.on("click", onEquationSubmission);
+        this.addButtonAnimations(this.submitButtonGroup, submitButton);
         this.submitButtonGroup.add(submitButton);
         this.submitButtonGroup.add(submitButtonText);
         keypadGroup.add(this.submitButtonGroup);
@@ -515,13 +560,49 @@ export class GraphScreenView implements View {
     }
 
     updateLevel(level: string): void {
-        this.levelText.text(level);
-        this.staticLayer.draw();
+        if (this.levelText.getAttr("timeoutId")) {
+            clearTimeout(this.levelText.getAttr("timeoutId"));
+        }
+
+        let index = 0;
+        const speed = 70;
+
+        this.levelText.text("");
+
+        const typeWriter = () => {
+            if (index < level.length) {
+                this.levelText.text(this.levelText.text() + level.charAt(index));
+                this.staticLayer.draw();
+                index++;
+                const timeoutId = setTimeout(typeWriter, speed);
+                this.levelText.setAttr("timeoutId", timeoutId);
+            }
+        };
+
+        typeWriter();
     }
 
     updateDialogue(dialogue: string): void {
-        this.dialogueText.text(dialogue);
-        this.staticLayer.draw();
+        if (this.dialogueText.getAttr("timeoutId")) {
+            clearTimeout(this.dialogueText.getAttr("timeoutId"));
+        }
+
+        let index = 0;
+        const speed = 30;
+
+        this.dialogueText.text("");
+
+        const typeWriter = () => {
+            if (index < dialogue.length) {
+                this.dialogueText.text(this.dialogueText.text() + dialogue.charAt(index));
+                this.staticLayer.draw();
+                index++;
+                const timeoutId = setTimeout(typeWriter, speed);
+                this.dialogueText.setAttr("timeoutId", timeoutId);
+            }
+        };
+
+        typeWriter();
     }
 
     updateEquation(equation: string): void {

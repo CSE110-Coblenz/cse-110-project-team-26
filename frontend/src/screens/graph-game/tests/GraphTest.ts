@@ -119,4 +119,4 @@ class App implements ScreenSwitcher {
 // Initialize the application
 // Levels range from 1-6. 1-5 are levels and 6 indicates a completed game
 // Difficulty ranges from 0-2, with the difficulties as easy, medium, and hard respectively
-new App("container", 4, 2);
+new App("container", 5, 2);
