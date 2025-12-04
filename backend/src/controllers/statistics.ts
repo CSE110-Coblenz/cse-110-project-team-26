@@ -26,8 +26,6 @@ export const recordAttempt = async (req: Request, res: Response) => {
 
     const allowed = new Set([
       "Solving Linear Equations",
-      "Solving Quadratic Equations",
-      "One-Step Algebraic Equations",
       "Multi-Step Algebraic Equations",
       "Drawing Linear Equations",
       "Drawing Quadratic Equations",
