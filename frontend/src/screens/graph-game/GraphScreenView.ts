@@ -36,6 +36,7 @@ export class GraphScreenView implements View {
     private graphGroup: Konva.Group;
     private transitionGroup: Konva.Group;
     private resultsGroup: Konva.Group;
+    private submitButtonGroup: Konva.Group;
     private dialogueText: Konva.Text;
     private playerSprite: HTMLImageElement;
     private equationText: Konva.Text;
@@ -198,6 +199,10 @@ export class GraphScreenView implements View {
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
 
+    }
+
+    disableSubmissions(): void {
+        this.submitButtonGroup.off("click");
     }
 
     reset(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void): void {
@@ -460,7 +465,7 @@ export class GraphScreenView implements View {
         resetButtonGroup.add(resetButtonText);
         keypadGroup.add(resetButtonGroup);
 
-        const submitButtonGroup = new Konva.Group({
+        this.submitButtonGroup = new Konva.Group({
             x: (KEYPAD_GROUP_PROPERTIES.width * (1 / columns)) * (numberColumns),
             y: (KEYPAD_GROUP_PROPERTIES.height * (1 / rows)) * 2,
             width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
@@ -488,10 +493,10 @@ export class GraphScreenView implements View {
             verticalAlign: "middle"
         });
       
-        submitButtonGroup.on("click", onEquationSubmission);
-        submitButtonGroup.add(submitButton);
-        submitButtonGroup.add(submitButtonText);
-        keypadGroup.add(submitButtonGroup);
+        this.submitButtonGroup.on("click", onEquationSubmission);
+        this.submitButtonGroup.add(submitButton);
+        this.submitButtonGroup.add(submitButtonText);
+        keypadGroup.add(this.submitButtonGroup);
 
         return keypadGroup;
     }
