@@ -379,8 +379,6 @@ export class GraphScreenController extends ScreenController {
             this.view.updateDialogue(DIALOGUE[dialogueKey]);
             this.view.updateLevel(`Level ${this.level}`);
         }
-      this.view.fadeToBlack().then(() => {
-          this.screenSwitcher.switchToScreen({ type: game });
-      });
+        this.screenSwitcher.switchToScreen({ type: game });
     }
 }

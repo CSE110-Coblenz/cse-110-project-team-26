@@ -590,7 +590,7 @@ export class MatchingScreenView implements View {
         // Create question and answer rectangles and texts
         for (let i = 0; i < difficulty; i++) {
             this.leftRects.push(new Konva.Rect({
-                x: 60,
+                x: 20,
                 y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty),
                 width: 240,
                 height: 180,
@@ -600,8 +600,8 @@ export class MatchingScreenView implements View {
             }));
 
             this.leftTexts.push(new Konva.Text({
-                x: 120,
-                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
+                x: 160,
+                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+90,
                 text: i.toString(),
                 fontSize: 48,
                 fontFamily: "medodica",
@@ -615,7 +615,7 @@ export class MatchingScreenView implements View {
                 this.arrowAnimation(this.leftRects[i], this.leftTexts[i].text());
             });
             this.rightRects.push(new Konva.Rect({
-                x: STAGE_WIDTH - 180,
+                x: STAGE_WIDTH - 260,
                 y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty),
                 width: 240,
                 height: 180,
@@ -624,8 +624,8 @@ export class MatchingScreenView implements View {
                 strokeWidth: 4,
             }));
             this.rightTexts.push(new Konva.Text({
-                x: STAGE_WIDTH - 116,
-                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
+                x: STAGE_WIDTH - 140,
+                y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+90,
                 text: this.answer_sequence[i],
                 fontSize: 48,
                 fontFamily: "medodica",

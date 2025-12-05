@@ -96,8 +96,6 @@ export class GraphScreenView implements View {
             ...BACKGROUND_PROPERTIES
         });
 
-        this.dynamicLayer.add(this.transitionScreen);
-
         // Level group elements
 
         const levelGroup = new Konva.Group({
@@ -220,44 +218,6 @@ export class GraphScreenView implements View {
         this.staticGroup.add(background, levelGroup, dialogueGroup, this.inputAndEquationGroup);
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
-
-    }
-
-    // Fade to black transition
-    fadeToBlack(duration: number = 0.4): Promise<void> {
-        this.transitionScreen.moveToTop();
-            return new Promise((resolve) => {
-                new Konva.Tween({
-                    node: this.transitionScreen,
-                    opacity: 1,
-                    duration,
-                    onFinish: () => {
-                        this.fadeFromBlack();
-                        resolve();
-                    },
-                }).play();
-            });
-    }
-    // Fade from black transition
-    fadeFromBlack(duration: number = 0.5): Promise<void> {
-        // this.transitionScreen.moveToTop();
-        this.transitionScreen.opacity(1);
-        return new Promise((resolve) => {
-            new Konva.Tween({
-            node: this.transitionScreen,
-            opacity: 0,
-            duration,
-            onFinish: () => {
-                this.transitionScreen.moveToBottom();
-                this.transitionScreen.listening(false);
-                resolve();
-            },
-            }).play();
-        });
-    }
-    transitMovetoBottom(){
-        this.transitionScreen.moveToBottom();
-        this.transitionScreen.opacity(0);
     }
 
     disableSubmissions(): void {
@@ -309,7 +269,9 @@ export class GraphScreenView implements View {
         this.staticGroup.add(this.inputAndEquationGroup);
 
         this.staticLayer.add(this.staticGroup);
+        this.transitionGroup.moveToBottom();
         this.dynamicLayer.add(this.graphGroup);
+        this.dynamicLayer.hide();
     }
 
     addPOIRectangle(x: number, y: number, color: string) {
@@ -662,7 +624,7 @@ export class GraphScreenView implements View {
     }
 
     getSprite(sprite: number, x:number, y: number): number {
-        let path = "../../public/sprites/"
+        let path = "/sprites/"
         let scale = 0.75;
         let xOffset = 0;
         let yOffset = 0;
@@ -1098,12 +1060,10 @@ export class GraphScreenView implements View {
      */
     show() {
         // this.transitionScreen.moveToTop();
-        this.transitionScreen.opacity(1);
         this.staticGroup.visible(true);
         this.staticGroup.getLayer()?.draw();
         this.graphGroup.visible(true);
         this.graphGroup.getLayer()?.draw();
-        this.fadeFromBlack();
     }
 
     /**
