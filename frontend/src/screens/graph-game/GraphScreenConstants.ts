@@ -1,4 +1,5 @@
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
+import "../../styles.css";
 
 // Tutorial text
 
