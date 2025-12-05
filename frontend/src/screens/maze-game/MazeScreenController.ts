@@ -21,7 +21,7 @@ export class MazeScreenController extends ScreenController {
 		super();
 		// this.screenSwitcher = screenSwitcher;
 		this.model = new MazeScreenModel();
-        this.view = new MazeScreenView((choice: ChoiceModel, x:number, y:number) => this.handleChoiceClick(choice, x, y));
+        this.view = new MazeScreenView((choice: ChoiceModel, x:number, y:number) => this.handleChoiceClick(choice, x, y), () => this.stopTimer(), () => this.startTimer());
 		const tutorialText = `Your rocket is running out of fuel!
 
 But don't worry - you have landed on a planet filled with resources to collect.
@@ -100,9 +100,9 @@ Good luck and have fun!`;
 					const prob = this.problem as ProblemModel;
 					if(prob.nextMove()){
 						this.view.updateTimer(GAME_DURATION);
-						this.view.displayMessage("Correct", () => {
 						this.view.updateProblem(prob.getProblemStatement());
 						this.view.updateChoices(prob.getChoices());
+						this.view.displayMessage("Correct", () => {
 						this.startTimer();
 						this.view.fadeFromBlack();
 						});
@@ -113,38 +113,37 @@ Good luck and have fun!`;
 						this.view.displayMessage("Congrats", () => {
 							console.log("Solved the equation! Generating new problem.");
 							this.view.hideComponents();
-							this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
+							this.view.switchToWinBackground();
+							this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "main-game" })));
 						});
 					}
 				}
 				else {
 					// For incorrect choice, just generate new problem
 					this.view.updateTimer(GAME_DURATION);
-
 					const dismissLoading = this.view.displayMessage(
 						"Incorrect",
 						undefined,
 						"Generating explanation...",
 						{ isLoading: true }
 					);
-
-						const explanation = await this.model.fetchExplanation(this.problem, choice);
-						await this.model.recordAttempt(false);
-						dismissLoading();
-
-						this.view.displayMessage(
-							"Incorrect",
-							() => {
-							this.problem = new ProblemModel(3);
-							this.view.updateProblem(this.problem.getProblemStatement());
-							this.view.updateChoices(this.problem.getChoices());
-							this.startTimer();
-						},
-						explanation ?? undefined,
-						{ requireContinue: true }
+					const explanation = await this.model.fetchExplanation(this.problem, choice);
+					await this.model.recordAttempt(false);
+					dismissLoading();
+					this.problem = new ProblemModel(3);
+					this.view.updateProblem(this.problem.getProblemStatement());
+					this.view.updateChoices(this.problem.getChoices());
+					this.view.displayMessage(
+						"Incorrect",
+						() => {
+						this.startTimer();
+					},
+					explanation ?? undefined,
+					{ requireContinue: true }
 					);
-
-				}})});
+				}
+			})
+		});
 	};
 
 	// End the game

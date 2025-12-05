@@ -21,6 +21,7 @@ export class TutorialScreenController extends ScreenController {
 			onContinue: () => {
 				if (this.model.isLastStep()) {
 					// On last step, route to main game (graph game)
+					console.log("continue button pressed")
 					this.screenSwitcher.switchToScreen({ type: "main-game" });
 				} else {
 					// Move to next tutorial step
@@ -34,6 +35,7 @@ export class TutorialScreenController extends ScreenController {
 			},
 			onSkip: () => {
 				// Skip tutorial and go directly to the menu (temporary)
+				console.log("skip button pressed")
 				this.screenSwitcher.switchToScreen({ type: "menu" });
 			},
 		});

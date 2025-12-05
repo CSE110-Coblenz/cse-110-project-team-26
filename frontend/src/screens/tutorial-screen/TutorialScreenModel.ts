@@ -10,7 +10,7 @@ export class TutorialScreenModel {
 	private currentStep: number;
 	private totalSteps: number;
 
-	constructor(screenCount: number) {
+	constructor() {
 		this.currentStep = 0;
 		this.totalSteps = 4; // Welcome + 3 game tutorials
 	}
@@ -54,7 +54,7 @@ export class TutorialScreenModel {
 			{
 				title: "Welcome!",
 				content:
-					"Welcome to (Game Name)!\n\nThis tutorial will teach you how to play.\n\nYou are a space explorer looking to navigate the galaxy by solving graph-based puzzles. Use your skills to connect the stars and unlock new worlds!\n\nEnter values to plot paths for your spaceship to avoid obstacles and reach checkpoints for additional resources to continue your adventure!\n\nPress continue to learn more about the controls and gameplay mechanics.",
+					"Welcome to Vector Space!\n\nThis tutorial will teach you how to play.\n\nYou are a space explorer looking to navigate the galaxy by solving graph-based puzzles. Use your skills to connect the stars and unlock new worlds!\n\nEnter values to plot paths for your spaceship to avoid obstacles and reach checkpoints for additional resources to continue your adventure!\n\nPress continue to learn more about the controls and gameplay mechanics.",
 			},
 			{
 				title: "Main Game",

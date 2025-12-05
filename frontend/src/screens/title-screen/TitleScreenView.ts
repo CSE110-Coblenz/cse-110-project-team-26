@@ -23,24 +23,31 @@ export class TitleScreenView implements View {
 	constructor(callbacks: TitleScreenCallbacks) {
 		this.group = new Konva.Group({ visible: false });
 
-		const background = new Konva.Rect({
-			x: 0,
-			y: 0,
-			width: STAGE_WIDTH,
-			height: STAGE_HEIGHT,
-			fill: "#1e1e2f",
-		});
+		const background = new Konva.Image({
+					x: 0,
+					y: 0,
+					width: STAGE_WIDTH,
+					height: STAGE_HEIGHT,
+					image: (() => {
+						const img = new Image();
+						img.src = "/backgrounds/backgroundMessage.png";
+						return img;
+					})(),
+		})
 		this.group.add(background);
 
 		const titleText = new Konva.Text({
-			x: 0,
+			x: 75,
 			y: 80,
 			width: STAGE_WIDTH,
 			align: "center",
-			text: "(Game Name)",
-			fontSize: 40,
-			fontFamily: "Arial",
-			fill: "#ffffff",
+			text: "Vector Space",
+			fontSize: 150,
+			fontFamily: "medodica, sans-serif",
+			fill: "#e9f3ff",
+			shadowColor: "#0a8ea8",
+			shadowBlur: 10,
+			shadowOffset: { x: 3, y: 3 },
 		});
 		this.group.add(titleText);
 
@@ -48,47 +55,58 @@ export class TitleScreenView implements View {
 		this.formContainer.style.position = "absolute";
 		this.formContainer.style.top = "50%";
 		this.formContainer.style.left = "50%";
-		this.formContainer.style.transform = "translate(-50%, -10%)";
+		this.formContainer.style.transform = "translate(-50%, -50%)";
 		this.formContainer.style.display = "none";
 		this.formContainer.style.flexDirection = "column";
-		this.formContainer.style.padding = "24px";
-		this.formContainer.style.borderRadius = "12px";
-		this.formContainer.style.background = "rgba(0, 0, 0, 0.65)";
-		this.formContainer.style.gap = "12px";
-		this.formContainer.style.width = "320px";
+		this.formContainer.style.padding = "32px";
+		this.formContainer.style.borderRadius = "0";
+		this.formContainer.style.background = "rgba(54, 54, 54, 0.9)";
+		this.formContainer.style.border = "4px solid #0a3b52";
+		this.formContainer.style.boxShadow = "8px 8px 0 #04070f, 0 0 10px rgba(10, 59, 82, 0.7)";
+		this.formContainer.style.gap = "14px";
+		this.formContainer.style.width = "420px";
 		this.formContainer.style.zIndex = "10";
 		this.formContainer.style.color = "#fff";
+		this.formContainer.style.fontFamily = "medodica, sans-serif";
+		this.formContainer.style.textTransform = "uppercase";
 		document.body.appendChild(this.formContainer);
 
 		const heading = document.createElement("h2");
 		heading.textContent = "Sign in or Register";
 		heading.style.margin = "0";
 		heading.style.textAlign = "center";
+		heading.style.fontSize = "24px";
+		heading.style.letterSpacing = "1px";
+		heading.style.fontFamily = "medodica, sans-serif";
 		this.formContainer.appendChild(heading);
 
 		this.emailInput = document.createElement("input");
 		this.emailInput.type = "email";
 		this.emailInput.placeholder = "Email";
-		this.emailInput.style.padding = "10px";
-		this.emailInput.style.borderRadius = "6px";
-		this.emailInput.style.border = "1px solid #333";
-		this.emailInput.style.background = "#222";
+		this.emailInput.style.padding = "16px";
+		this.emailInput.style.borderRadius = "0";
+		this.emailInput.style.border = "3px solid #0a3b52";
+		this.emailInput.style.background = "#080c18";
 		this.emailInput.style.color = "#fff";
+		this.emailInput.style.fontFamily = "medodica, sans-serif";
+		this.emailInput.style.fontSize = "24px";
 		this.formContainer.appendChild(this.emailInput);
 
 		this.passwordInput = document.createElement("input");
 		this.passwordInput.type = "password";
 		this.passwordInput.placeholder = "Password";
-		this.passwordInput.style.padding = "10px";
-		this.passwordInput.style.borderRadius = "6px";
-		this.passwordInput.style.border = "1px solid #333";
-		this.passwordInput.style.background = "#222";
+		this.passwordInput.style.padding = "16px";
+		this.passwordInput.style.borderRadius = "0";
+		this.passwordInput.style.border = "3px solid #0a3b52";
+		this.passwordInput.style.background = "#080c18";
 		this.passwordInput.style.color = "#fff";
+		this.passwordInput.style.fontFamily = "medodica, sans-serif";
+		this.passwordInput.style.fontSize = "24px";
 		this.formContainer.appendChild(this.passwordInput);
 
 		const buttonRow = document.createElement("div");
 		buttonRow.style.display = "flex";
-		buttonRow.style.gap = "12px";
+		buttonRow.style.gap = "10px";
 		buttonRow.style.justifyContent = "space-between";
 		this.formContainer.appendChild(buttonRow);
 
@@ -96,11 +114,14 @@ export class TitleScreenView implements View {
 		loginButton.type = "button";
 		loginButton.textContent = "Login";
 		loginButton.style.flex = "1";
-		loginButton.style.padding = "10px";
-		loginButton.style.border = "none";
-		loginButton.style.borderRadius = "6px";
-		loginButton.style.background = "#4CAF50";
+		loginButton.style.padding = "16px";
+		loginButton.style.border = "3px solid #0a3b52";
+		loginButton.style.borderRadius = "0";
+		loginButton.style.background = "#0f3a26";
+		loginButton.style.boxShadow = "6px 6px 0 #050912";
 		loginButton.style.color = "#fff";
+		loginButton.style.fontFamily = "medodica, sans-serif";
+		loginButton.style.fontSize = "24px";
 		loginButton.style.cursor = "pointer";
 		loginButton.addEventListener("click", () =>
 			callbacks.onLogin(this.emailInput.value, this.passwordInput.value)
@@ -111,11 +132,14 @@ export class TitleScreenView implements View {
 		registerButton.type = "button";
 		registerButton.textContent = "Register";
 		registerButton.style.flex = "1";
-		registerButton.style.padding = "10px";
-		registerButton.style.border = "none";
-		registerButton.style.borderRadius = "6px";
-		registerButton.style.background = "#2196F3";
+		registerButton.style.padding = "16px";
+		registerButton.style.border = "3px solid #0a3b52";
+		registerButton.style.borderRadius = "0";
+		registerButton.style.background = "#102b52";
+		registerButton.style.boxShadow = "6px 6px 0 #050912";
 		registerButton.style.color = "#fff";
+		registerButton.style.fontFamily = "medodica, sans-serif";
+		registerButton.style.fontSize = "24px";
 		registerButton.style.cursor = "pointer";
 		registerButton.addEventListener("click", () =>
 			callbacks.onRegister(this.emailInput.value, this.passwordInput.value)
@@ -125,8 +149,9 @@ export class TitleScreenView implements View {
 		this.messageNode = document.createElement("p");
 		this.messageNode.style.margin = "0";
 		this.messageNode.style.minHeight = "20px";
-		this.messageNode.style.fontSize = "0.9rem";
+		this.messageNode.style.fontSize = "24px";
 		this.messageNode.style.textAlign = "center";
+		this.messageNode.style.fontFamily = "medodica, sans-serif";
 		this.formContainer.appendChild(this.messageNode);
 	}
 

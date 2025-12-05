@@ -14,8 +14,6 @@ const PATHS = {
   
   const CATEGORIES = [
     "Solving Linear Equations",
-    "Solving Quadratic Equations",
-    "One-Step Algebraic Equations",
     "Multi-Step Algebraic Equations",
     "Drawing Linear Equations",
     "Drawing Quadratic Equations",

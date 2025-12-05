@@ -1,5 +1,6 @@
 import Konva from "konva";
-import { generateRandomNumber, type AbsoluteValue, type EquationAnswerFormat, type Linear, type Quadratic, type View } from "../../types";
+import "../../styles.css";
+import type { AbsoluteValue, EquationAnswerFormat, Linear, Quadratic, View } from "../../types";
 import {
   OFFSET,
   BOX_WIDTH,
@@ -28,8 +29,7 @@ import {
   EQUATION_TEXT_PROPERTIES,
   PIX_PER_UNIT
 } from "./GraphScreenConstants";
-import { ABSVAL, LINEAR, QUADRATIC, X_MAX, X_MIN } from "../../constants";
-import type { Line } from "konva/lib/shapes/Line";
+import { ABSVAL, LINEAR, QUADRATIC, X_MAX, X_MIN, STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 
 /**
  * View for the Graphing game module
@@ -47,6 +47,7 @@ export class GraphScreenView implements View {
     private levelText: Konva.Text;
     private equationText: Konva.Text;
     private inputAndEquationGroup: Konva.Group;
+    private transitionScreen: Konva.Rect;
 
     private width: number = GRAPH_BACKGROUND_PROPERTIES.width;
     private height: number = GRAPH_BACKGROUND_PROPERTIES.height;
@@ -61,7 +62,18 @@ export class GraphScreenView implements View {
      * Initializes default values for the View
      */
     constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void, showTutorial: () => void) {
-        this.type = type;
+
+        // Add transition screen for fade to black
+        this.transitionScreen = new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            fill: "black",
+            opacity: 0.0,
+        });
+
+
         // Add layers for static and dynamic elements
         console.log("this.xMax: " + this.xMax);
         console.log("this.yMax: " + this.yMax);
@@ -83,6 +95,8 @@ export class GraphScreenView implements View {
         const background = new Konva.Rect({
             ...BACKGROUND_PROPERTIES
         });
+
+        this.dynamicLayer.add(this.transitionScreen);
 
         // Level group elements
 
@@ -207,6 +221,43 @@ export class GraphScreenView implements View {
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
 
+    }
+
+    // Fade to black transition
+    fadeToBlack(duration: number = 0.4): Promise<void> {
+        this.transitionScreen.moveToTop();
+            return new Promise((resolve) => {
+                new Konva.Tween({
+                    node: this.transitionScreen,
+                    opacity: 1,
+                    duration,
+                    onFinish: () => {
+                        this.fadeFromBlack();
+                        resolve();
+                    },
+                }).play();
+            });
+    }
+    // Fade from black transition
+    fadeFromBlack(duration: number = 0.5): Promise<void> {
+        // this.transitionScreen.moveToTop();
+        this.transitionScreen.opacity(1);
+        return new Promise((resolve) => {
+            new Konva.Tween({
+            node: this.transitionScreen,
+            opacity: 0,
+            duration,
+            onFinish: () => {
+                this.transitionScreen.moveToBottom();
+                this.transitionScreen.listening(false);
+                resolve();
+            },
+            }).play();
+        });
+    }
+    transitMovetoBottom(){
+        this.transitionScreen.moveToBottom();
+        this.transitionScreen.opacity(0);
     }
 
     disableSubmissions(): void {
@@ -394,8 +445,8 @@ export class GraphScreenView implements View {
                 width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
                 height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
                 text: (i + 1).toString(),
-                fontSize: 24,
-                fontFamily: "melodica",
+                fontSize: 30,
+                fontFamily: "medodica",
                 fill: "white",
                 align: "center",
                 verticalAlign: "middle"
@@ -429,8 +480,8 @@ export class GraphScreenView implements View {
             width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "0",
-            fontSize: 24,
-            fontFamily: "melodica",
+            fontSize: 30,
+            fontFamily: "medodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
@@ -457,8 +508,8 @@ export class GraphScreenView implements View {
             width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "-",
-            fontSize: 24,
-            fontFamily: "melodica",
+            fontSize: 30,
+            fontFamily: "medodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
@@ -497,8 +548,8 @@ export class GraphScreenView implements View {
             width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "reset",
-            fontSize: 16,
-            fontFamily: "melodica",
+            fontSize: 30,
+            fontFamily: "medodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
@@ -531,8 +582,8 @@ export class GraphScreenView implements View {
             width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "submit",
-            fontSize: 12,
-            fontFamily: "melodica",
+            fontSize: 30,
+            fontFamily: "medodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
@@ -957,7 +1008,8 @@ export class GraphScreenView implements View {
                 x: (position) + PIX_PER_UNIT / 10,
                 text: currX.toString(),
                 fill: 'white',
-                fontSize: 18
+                fontSize: 18,
+                fontFamily: 'medodica'
             })
     
             if (currX != this.xMin) group.add(line);
@@ -985,7 +1037,8 @@ export class GraphScreenView implements View {
                 x: (-this.xMin) * PIX_PER_UNIT - (PIX_PER_UNIT / 10),
                 text: currY.toString(),
                 fill: 'white',
-                fontSize: 18
+                fontSize: 18,
+                fontFamily: 'medodica'
             })
     
             if (currY != this.yMax) group.add(line);
@@ -1036,10 +1089,13 @@ export class GraphScreenView implements View {
      * Makes the View visible
      */
     show() {
+        // this.transitionScreen.moveToTop();
+        this.transitionScreen.opacity(1);
         this.staticGroup.visible(true);
         this.staticGroup.getLayer()?.draw();
         this.graphGroup.visible(true);
         this.graphGroup.getLayer()?.draw();
+        this.fadeFromBlack();
     }
 
     /**

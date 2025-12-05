@@ -65,16 +65,16 @@ export class ChoiceView {
  */
 export class MazeScreenView implements View {
 	private group: Konva.Group;
-	private scoreText: Konva.Text;
 	private timerText: Konva.Text;
     private problemText: Konva.Image;
     private choiceOne : ChoiceView;
     private choiceTwo : ChoiceView;
     private choiceThree : ChoiceView;
+    private bg: Konva.Image;
     private transitionScreen: Konva.Rect;
     private player: Konva.Sprite|null = null;
 
-	constructor(handler: (choice : ChoiceModel, x:number, y:number) => void) {
+	constructor(handler: (choice : ChoiceModel, x:number, y:number) => void, stopTimer ? : () => void, startTimer ? : () => void) {
 		this.group = new Konva.Group({ visible: false });
 
         // overlay for transition effect
@@ -89,7 +89,7 @@ export class MazeScreenView implements View {
         this.group.add(this.transitionScreen);
 
 		// Background
-		const bg = new Konva.Image({
+		this.bg = new Konva.Image({
 			x: 0,
 			y: 0,
 			width: STAGE_WIDTH,
@@ -100,11 +100,12 @@ export class MazeScreenView implements View {
                 return image;
             })()
 		});
-		this.group.add(bg);
+		this.group.add(this.bg);
 
         // Instruction window (hidden by default)
         const instructionWindow: Konva.Group = instructionWindowGroup("maze-game-instructions");
         instructionWindow.on('click tap', () => {
+            startTimer && startTimer();
             instructionWindow.hide();
             this.group.getLayer()?.draw();
         });
@@ -162,6 +163,7 @@ export class MazeScreenView implements View {
             instructionWindow.moveToTop();
             this.group.getLayer()?.draw();
             //need to pause the game timer here if implemented
+            stopTimer && stopTimer();
         });
         this.group.add(helpButtonGroup);
 
@@ -507,9 +509,21 @@ export class MazeScreenView implements View {
         this.choiceThree.getGroup().hide();
         this.problemText.hide();
     }
+    // Switch to win background
+    switchToWinBackground(): Promise<void> {
+        const img = new Image();
+        img.src = "/backgrounds/caveWin.png";
+        return new Promise<void>((resolve) => {
+            img.onload = () => {
+                this.bg.image(img);
+                this.bg.getLayer()?.draw();
+                resolve();
+            }
+        });;
+    }
     // Animation when winning
     playWinAnimation(): Promise<void> {
-        return this.movePlayerTo(STAGE_WIDTH / 2 - 64, STAGE_HEIGHT / 2)
+        return this.movePlayerTo(STAGE_WIDTH / 2 - 50, STAGE_HEIGHT / 2+100)
             .then(() => {
                 this.setAnimation("win");
                 return new Promise<void>(resolve => {

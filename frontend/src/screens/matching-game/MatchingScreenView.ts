@@ -1,10 +1,17 @@
 import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH,STAGE_HEIGHT } from "../../constants.ts";
+import type { StatsCategory } from "../statistics/StatisticsScreenModel.ts";
 import { generate_quadratic_equation_1, generate_linear_equation_1, generate_linear_equation_2, generate_quadratic_equation_2 } from "./EquationGenerator.ts";
 import { flameBlowUp} from "./ArtEffect.ts";
 import { helpButtonGroup, instructionWindowGroup } from "./instructions.ts";
 import "../../styles.css";
+
+type MatchingExplanationPayload = {
+    question: string;
+    given_answer: string;
+    correct_answer: string;
+};
 
 /**
  * MenuScreenView - Renders the menu screen
@@ -12,6 +19,10 @@ import "../../styles.css";
 export class MatchingScreenView implements View {
     private group: Konva.Group;
     private stage: Konva.Stage;
+
+    private explanationOverlay: Konva.Rect | null = null;
+    private explanationTextNode: Konva.Text | null = null;
+    private explanationTextNodes: Konva.Text[] = [];
 
     private leftRects: Konva.Rect[] = [];
     private leftTexts: Konva.Text[] = [];
@@ -25,6 +36,7 @@ export class MatchingScreenView implements View {
     private answer_sequence: string[] = [];
     private q_a_list: [string, string][] = [];
 
+    private readonly statsCategory: StatsCategory = "Solving Linear Equations";
     private difficulty: number = 3;
     private onSubmit?: () => void;
     private instructionWindow: Konva.Group;
@@ -45,215 +57,11 @@ export class MatchingScreenView implements View {
             listening: false,
         });
 
-        /* const overlay = new Konva.Rect({
-            x: 0,
-            y: 0,
-            width: STAGE_WIDTH,
-            height: STAGE_HEIGHT,
-            fill: 'rgba(0, 0, 50, 0.75)',  // dark overlay for text readability
-            listening: false,
-        }); */
-
-        // ADD THEM FIRST — THIS IS CRITICAL
         this.group.add(background);
-        /* this.group.add(overlay); */
-
-        // Add twinkling stars
-        /* for (let i = 0; i < 80; i++) {
-            const star = new Konva.Circle({
-                x: Math.random() * STAGE_WIDTH,
-                y: Math.random() * STAGE_HEIGHT,
-                radius: Math.random() * 2,
-                fill: 'white',
-                opacity: Math.random() * 0.8 + 0.2,
-                listening: false,
-            });
-
-            // Animate twinkling
-            new Konva.Tween({
-                node: star,
-                duration: Math.random() * 3 + 2,
-                opacity: Math.random() * 0.5 + 0.5,
-                easing: Konva.Easings.EaseInOut,
-                yoyo: true,
-                repeat: -1,
-            }).play();
-
-            this.group.add(star);
-        } */
         background.moveToTop();
         
         this.difficulty = difficulty;
         this.onSubmit = onSubmit;
-
-        /* // Title text
-        const title = new Konva.Text({
-            x: STAGE_WIDTH / 2,
-            y: 10,
-            text: "Matching Game",
-            fontSize: 48,
-            fontFamily: "Arial",
-            fill: "yellow",
-            stroke: "orange",
-            strokeWidth: 2,
-            align: "center",
-        });
-        // Center the text using offsetX
-        title.offsetX(title.width() / 2);
-        this.group.add(title); */
-
-
-        // Adding question and answer rectangles and texts
-        
-        /*
-        const startButtonGroup = new Konva.Group();
-        const startButton = new Konva.Rect({
-            x: 0,
-            y: STAGE_HEIGHT-100,
-            width: 200,
-            height: 60,
-            fill: "green",
-            cornerRadius: 10,
-            stroke: "darkgreen",
-            strokeWidth: 3,
-        });
-        const startText = new Konva.Text({
-            x: startButton.x() + 100,
-            y: startButton.y() + 15,
-            text: "SWITCH TO MENU",
-            fontSize: 16,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-        });
-        startText.offsetX(startText.width() / 2);
-        startButtonGroup.add(startButton);
-        startButtonGroup.add(startText);
-        startButtonGroup.on("click", () => {
-            this.cleanupArrows();
-            this.cleanupQA();    
-            onStartClick();          
-        });
-        this.group.add(startButtonGroup);
-
-        const level1ButtonGroup = new Konva.Group();
-        const level1Button = new Konva.Rect({
-            x: 0,
-            y: 50,
-            width: 200,
-            height: 60,
-            fill: "green",
-            cornerRadius: 10,
-            stroke: "darkgreen",
-            strokeWidth: 3,
-        });
-        const level1Text = new Konva.Text({
-            x: level1Button.x() + 100,
-            y: level1Button.y() + 15,
-            text: "LEVEL 1",
-            fontSize: 16,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-        });
-        level1Text.offsetX(level1Text.width() / 2);
-        level1ButtonGroup.add(level1Button);
-        level1ButtonGroup.add(level1Text);
-        level1ButtonGroup.on("click", () => {
-            this.difficulty = "linear 1";
-            this.new_questions()                    
-        });
-        this.group.add(level1ButtonGroup);
-
-        const level2ButtonGroup = new Konva.Group();
-        const level2Button = new Konva.Rect({
-            x: 205,
-            y: 50,
-            width: 200,
-            height: 60,
-            fill: "green",
-            cornerRadius: 10,
-            stroke: "darkgreen",
-            strokeWidth: 3,
-        });
-        const level2Text = new Konva.Text({
-            x: level2Button.x() + 100,
-            y: level2Button.y() + 15,
-            text: "LEVEL 2",
-            fontSize: 16,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-        });
-        level2Text.offsetX(level2Text.width() / 2);
-        level2ButtonGroup.add(level2Button);
-        level2ButtonGroup.add(level2Text);
-        level2ButtonGroup.on("click", () => {
-            this.difficulty = "linear 2";  // or maybe "quadratic" for level 2?
-            this.new_questions();
-        });
-        this.group.add(level2ButtonGroup);
-
-        //level3
-        const level3ButtonGroup = new Konva.Group();
-        const level3Button = new Konva.Rect({
-            x: STAGE_WIDTH - 410,
-            y: 50,
-            width: 200,
-            height: 60,
-            fill: "green",
-            cornerRadius: 10,
-            stroke: "darkgreen",
-            strokeWidth: 3,
-        });
-        const level3Text = new Konva.Text({
-            x: level3Button.x() + 100,
-            y: level3Button.y() + 15,
-            text: "LEVEL 3",
-            fontSize: 16,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-        });
-        level3Text.offsetX(level3Text.width() / 2);
-        level3ButtonGroup.add(level3Button);
-        level3ButtonGroup.add(level3Text);
-        level3ButtonGroup.on("click", () => {
-            this.difficulty = "quadratic_1"; 
-            this.new_questions();
-        });
-        this.group.add(level3ButtonGroup);
-
-        //level4
-        const level4ButtonGroup = new Konva.Group();
-        const level4Button = new Konva.Rect({
-            x: STAGE_WIDTH - 200,
-            y: 50,
-            width: 200,
-            height: 60,
-            fill: "green",
-            cornerRadius: 10,
-            stroke: "darkgreen",
-            strokeWidth: 3,
-        });
-        const level4Text = new Konva.Text({
-            x: level4Button.x() + 100,
-            y: level4Button.y() + 15,
-            text: "LEVEL 4",
-            fontSize: 16,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-        });
-        level4Text.offsetX(level4Text.width() / 2);
-        level4ButtonGroup.add(level4Button);
-        level4ButtonGroup.add(level4Text);
-        level4ButtonGroup.on("click", () => {
-            this.difficulty = "quadratic_2";  // or maybe "quadratic" for level 2?
-            this.new_questions();
-        });
-        this.group.add(level4ButtonGroup);
-        */
 
         //instruction window
         this.instructionWindow = instructionWindowGroup("matching-game-instructions");
@@ -262,35 +70,7 @@ export class MatchingScreenView implements View {
             this.group.getLayer()?.draw();
         });
         this.group.add(this.instructionWindow);
-        /*
-        const submitButtonGroup = new Konva.Group();
-        const submitButton = new Konva.Rect({
-            x: STAGE_WIDTH / 2 - 100,
-            y: STAGE_HEIGHT - 100,
-            width: 200,
-            height: 60,
-            fill: "green",
-            cornerRadius: 10,
-            stroke: "darkgreen",
-            strokeWidth: 3,
-        });
-        const submitText = new Konva.Text({
-            x: STAGE_WIDTH / 2,
-            y: submitButton.y() + 15,
-            text: "SUBMIT",
-            fontSize: 16,
-            fontFamily: "Arial",
-            fill: "white",
-            align: "center",
-        });
-        submitText.offsetX(submitText.width() / 2);
-        submitButtonGroup.add(submitButton);
-        submitButtonGroup.add(submitText);
-        submitButtonGroup.on("click", () => {
-            this.submitCheck();
-        });
-        this.group.add(submitButtonGroup);
-        */
+       
         //help button group
         const helpButton = helpButtonGroup(STAGE_WIDTH/2-120, STAGE_HEIGHT - 50);
         helpButton.on('click tap', () => {
@@ -299,36 +79,7 @@ export class MatchingScreenView implements View {
             this.group.getLayer()?.draw();
         });
         this.group.add(helpButton);
-        /*
-        //new question group
-        const newQuestionButtonGroup = new Konva.Group();
-        const newQuestionButton = new Konva.Rect({
-            x: STAGE_WIDTH / 2 + 150,
-            y: STAGE_HEIGHT - 100,
-            width: 200,
-            height: 60,
-            fill: "white",
-            cornerRadius: 10,
-            stroke: "black",
-            strokeWidth: 3,
-        });
-        const newQuestionText = new Konva.Text({
-            x: STAGE_WIDTH / 2 + 250,
-            y: newQuestionButton.y() + 15,
-            text: "NEW QUESTIONS",
-            fontSize: 16,
-            fontFamily: "Arial",
-            fill: "black",
-            align: "center",
-        });
-        newQuestionText.offsetX(newQuestionText.width() / 2);
-        newQuestionButtonGroup.add(newQuestionButton);
-        newQuestionButtonGroup.add(newQuestionText);
-        newQuestionButtonGroup.on("click", () => {
-            this.new_questions();
-        });
-        this.group.add(newQuestionButtonGroup);
-        */
+       
         //reset button group
         const resetButtonGroup = new Konva.Group();
         const resetButton = new Konva.Rect({
@@ -439,7 +190,7 @@ export class MatchingScreenView implements View {
                         this.paired_questions.push(question);  
                         layer.batchDraw();
                         arrow = null; // Reset arrow
-                        if (this.paired_questions.length >= this.difficulty) this.submitCheck();
+                        if (this.paired_questions.length >= this.difficulty) void this.submitCheck();
                         return;
                     }
                 }
@@ -453,8 +204,9 @@ export class MatchingScreenView implements View {
     }
 
     //submit and check
-    private submitCheck(): void {
+    private async submitCheck(): Promise<void> {
         let incorrect_count = 0;
+        const explanationRequests: { index: number; request: Promise<string | null> }[] = [];
         for (let i = 0; i < this.arrows.length; i++) {
             const arrow = this.arrows[i];
             const q = this.paired_questions[i];
@@ -481,17 +233,52 @@ export class MatchingScreenView implements View {
                             }, 600);
                             }, m * 1000);
                         }
+                        const payload = this.return_incorrect(q,a,this.q_a_list[j][1]);
+                        console.log(payload);
+                        explanationRequests.push({
+                            index: j,
+                            request: this.requestMatchingExplanation(payload),
+                        });
                     }
                     break;
                 }
             }
         }
+
+        if (explanationRequests.length > 0) {
+            const results = await Promise.allSettled(
+                explanationRequests.map(item => item.request),
+            );
+
+            const explanations: { index: number; text: string }[] = [];
+            results.forEach((result, idx) => {
+                const questionIndex = explanationRequests[idx].index;
+                if (result.status === "fulfilled") {
+                    explanations.push({
+                        index: questionIndex,
+                        text: result.value ?? "No explanation returned.",
+                    });
+                } else {
+                    explanations.push({
+                        index: questionIndex,
+                        text: "Failed to load explanation.",
+                    });
+                }
+            });
+
+            this.showExplanations(explanations);
+            // Remove lines after showing explanations to declutter the view.
+            this.cleanupArrows();
+        }
+
         if (incorrect_count > 0) {
+            void this.recordAttempt(false);
             setTimeout(() => {
                 // add if wrong here
                 this.new_questions();
             }, 2000);
         } else {
+            void this.recordAttempt(true);
             const instructionWindow: Konva.Group = instructionWindowGroup("matching-game-win");
             instructionWindow.on('click tap', () => {
                 instructionWindow.hide();
@@ -511,11 +298,146 @@ export class MatchingScreenView implements View {
         }
     }
 
-    private return_incorrect(question: String, user_answer: String, correct_answer: String): any {
+    private return_incorrect(question: string, user_answer: string, correct_answer: string): MatchingExplanationPayload {
         return {
             question: question,
             given_answer: user_answer,
             correct_answer: correct_answer
+        };
+    }
+
+    private async requestMatchingExplanation(payload: MatchingExplanationPayload): Promise<string | null> {
+        try {
+            const res = await fetch("http://localhost:4000/game/matching/matchingHandleProblem", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(payload),
+            });
+
+            const data = (await res.json().catch(() => null)) as
+                | { explanation?: string; error?: string }
+                | null;
+
+            if (!res.ok) {
+                console.error("Failed to fetch matching explanation:", data?.error ?? res.statusText);
+                return data?.error ?? null;
+            }
+
+            const explanation = data?.explanation ?? "No explanation returned.";
+            console.log("Matching explanation:", explanation);
+            return explanation;
+        } catch (error) {
+            console.error("Matching explanation fetch error:", error);
+            return null;
+        }
+    }
+
+    private async showExplanations(explanations: { index: number; text: string }[]): Promise<void> {
+        this.cleanupExplanation();
+        const overlay = new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            fill: "rgba(0,0,0,0.6)",
+            listening: true,
+        });
+
+        overlay.on("click tap", () => {
+            this.cleanupExplanation();
+            this.cleanupArrows();
+            this.new_questions();
+        });
+
+        this.explanationOverlay = overlay;
+        this.group.add(overlay);
+
+        const maxWidth = STAGE_WIDTH * 0.9;
+        const startX = (STAGE_WIDTH - maxWidth) / 2;
+        const gap = 24;
+
+        const rendered = explanations
+            .sort((a, b) => a.index - b.index)
+            .map(({ index, text }) => {
+                return new Konva.Text({
+                    x: startX,
+                    width: maxWidth,
+                    text: `Q${index + 1}: ${text}`,
+                    fontSize: 28,
+                    fontFamily: "medodica",
+                    fill: "white",
+                    align: "center",
+                    padding: 12,
+                    listening: false,
+                }) as Konva.Node;
+            });
+
+        const totalHeight =
+            rendered.reduce((acc, node) => acc + node.height(), 0) +
+            gap * Math.max(0, rendered.length - 1);
+        let currentY = (STAGE_HEIGHT - totalHeight) / 2;
+
+        rendered.forEach(node => {
+            node.position({
+                x: startX,
+                y: currentY,
+            });
+            this.explanationTextNodes.push(node);
+            this.group.add(node);
+            currentY += node.height() + gap;
+        });
+
+        this.group.getLayer()?.batchDraw();
+    }
+
+    private cleanupExplanation(): void {
+        if (this.explanationOverlay) {
+            this.explanationOverlay.destroy();
+            this.explanationOverlay = null;
+        }
+        if (this.explanationTextNode) {
+            this.explanationTextNode.destroy();
+            this.explanationTextNode = null;
+        }
+        if (this.explanationTextNodes.length > 0) {
+            this.explanationTextNodes.forEach(node => node.destroy());
+            this.explanationTextNodes = [];
+        }
+    }
+
+    private async recordAttempt(isCorrect: boolean): Promise<boolean> {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            console.warn("No auth token found; skipping stats update.");
+            return false;
+        }
+
+        try {
+            const res = await fetch("http://localhost:4000/auth/stats/attempt", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    category: this.statsCategory,
+                    isCorrect,
+                }),
+            });
+
+            if (!res.ok) {
+                const data = (await res.json().catch(() => null)) as
+                    | { error?: string }
+                    | null;
+                console.error("Failed to update stats:", data?.error ?? res.statusText);
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Stats update error:", error);
+            return false;
         }
     }
 
@@ -670,8 +592,8 @@ export class MatchingScreenView implements View {
             this.leftRects.push(new Konva.Rect({
                 x: 60,
                 y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty),
-                width: 120,
-                height: 90,
+                width: 240,
+                height: 180,
                 fill: "#969696ff",
                 stroke: "white",
                 strokeWidth: 4,
@@ -681,7 +603,7 @@ export class MatchingScreenView implements View {
                 x: 120,
                 y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
                 text: i.toString(),
-                fontSize: 24,
+                fontSize: 48,
                 fontFamily: "medodica",
                 fill: "white",
                 align: "center",
@@ -695,8 +617,8 @@ export class MatchingScreenView implements View {
             this.rightRects.push(new Konva.Rect({
                 x: STAGE_WIDTH - 180,
                 y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty),
-                width: 120,
-                height: 90,
+                width: 240,
+                height: 180,
                 fill: "#969696ff",
                 stroke: "white",
                 strokeWidth: 4,
@@ -705,7 +627,7 @@ export class MatchingScreenView implements View {
                 x: STAGE_WIDTH - 116,
                 y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+45,
                 text: this.answer_sequence[i],
-                fontSize: 24,
+                fontSize: 48,
                 fontFamily: "medodica",
                 fill: "white",
                 align: "center",

@@ -29,13 +29,19 @@ export class TutorialScreenView implements View {
 		this.group = new Konva.Group({ visible: false });
 
 		// Dark background matching title screen theme
-		const background = new Konva.Rect({
+		const background = new Konva.Image({
 			x: 0,
 			y: 0,
 			width: STAGE_WIDTH,
 			height: STAGE_HEIGHT,
-			fill: "#1e1e2f",
-		});
+			image: (() => {
+				const img = new Image();
+				img.src = "/backgrounds/backgroundMessage.png";
+				return img;
+			})(),
+		})
+
+
 		this.group.add(background);
 
 		// Title text (will be updated dynamically)
@@ -45,10 +51,13 @@ export class TutorialScreenView implements View {
 			width: STAGE_WIDTH,
 			align: "center",
 			text: "Tutorial",
-			fontSize: 52,
-			fontFamily: "Arial",
-			fill: "#ffffff",
+			fontSize: 100,
+			fontFamily: "medodica, sans-serif",
+			fill: "#e9f3ff",
 			fontStyle: "bold",
+			shadowColor: "#0a8ea8",
+			shadowBlur: 8,
+			shadowOffset: { x: 3, y: 3 },
 		});
 		this.group.add(this.titleText);
 
@@ -59,9 +68,9 @@ export class TutorialScreenView implements View {
 			width: STAGE_WIDTH - 100,
 			align: "center",
 			text: "",
-			fontSize: 20,
-			fontFamily: "Arial",
-			fill: "#e0e0e0",
+			fontSize: 30,
+			fontFamily: "medodica, sans-serif",
+			fill: "#d8d8d8",
 			lineHeight: 1.6,
 		});
 		this.contentText.offsetX((STAGE_WIDTH - 100) / 2);
@@ -79,7 +88,7 @@ export class TutorialScreenView implements View {
 			y: buttonY,
 			width: buttonWidth,
 			height: buttonHeight,
-			fill: "#666666",
+			fill: "#0f3a26",
 			cornerRadius: 8,
 			visible: false,
 		});
@@ -90,7 +99,7 @@ export class TutorialScreenView implements View {
 			align: "center",
 			text: "Previous",
 			fontSize: 22,
-			fontFamily: "Arial",
+			fontFamily: "medodica, sans-serif",
 			fill: "#ffffff",
 			visible: false,
 		});
@@ -102,7 +111,7 @@ export class TutorialScreenView implements View {
 			this.group.getLayer()?.draw();
 		});
 		this.previousButton.on("mouseleave", () => {
-			this.previousButton.fill("#666666");
+			this.previousButton.fill("blue");
 			this.group.getLayer()?.draw();
 		});
 
@@ -112,7 +121,7 @@ export class TutorialScreenView implements View {
 			y: buttonY,
 			width: buttonWidth,
 			height: buttonHeight,
-			fill: "#4CAF50",
+			fill: "blue",
 			cornerRadius: 8,
 		});
 		this.continueText = new Konva.Text({
@@ -122,8 +131,8 @@ export class TutorialScreenView implements View {
 			align: "center",
 			text: "Continue",
 			fontSize: 22,
-			fontFamily: "Arial",
-			fill: "#ffffff",
+			fontFamily: "medodica, sans-serif",
+			fill: "white",
 		});
 
 		this.continueButton.on("click", callbacks.onContinue);
@@ -133,7 +142,7 @@ export class TutorialScreenView implements View {
 			this.group.getLayer()?.draw();
 		});
 		this.continueButton.on("mouseleave", () => {
-			this.continueButton.fill("#4CAF50");
+			this.continueButton.fill("blue");
 			this.group.getLayer()?.draw();
 		});
 
@@ -143,7 +152,7 @@ export class TutorialScreenView implements View {
 			y: buttonY,
 			width: buttonWidth,
 			height: buttonHeight,
-			fill: "#666666",
+			fill: "blue",
 			cornerRadius: 8,
 		});
 		this.skipText = new Konva.Text({
@@ -153,7 +162,7 @@ export class TutorialScreenView implements View {
 			align: "center",
 			text: "Skip",
 			fontSize: 22,
-			fontFamily: "Arial",
+			fontFamily: "medodica, sans-serif",
 			fill: "#ffffff",
 		});
 
@@ -164,7 +173,7 @@ export class TutorialScreenView implements View {
 			this.group.getLayer()?.draw();
 		});
 		this.skipButton.on("mouseleave", () => {
-			this.skipButton.fill("#666666");
+			this.skipButton.fill("blue");
 			this.group.getLayer()?.draw();
 		});
 
@@ -219,4 +228,3 @@ export class TutorialScreenView implements View {
 		this.group.getLayer()?.draw();
 	}
 }
-

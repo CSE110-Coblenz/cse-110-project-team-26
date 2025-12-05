@@ -45,14 +45,14 @@ export function helpButtonGroup(x: number, y: number): Konva.Group {
 
 export function instructionWindowGroup(type: string): Konva.Group {
     const instructionWindowGroup = new Konva.Group({
-        x: STAGE_WIDTH / 2 - 300,   // center horizontally (600px width)
-        y: STAGE_HEIGHT / 2 - 225,  // center vertically (450px height)
+        x: STAGE_WIDTH / 2 - 450,   // center horizontally (600px width)
+        y: STAGE_HEIGHT / 2 - 325,  // center vertically (450px height)
         visible: true,
         listening: true
     });
     const bg = new Konva.Rect({
-        width: 600,
-        height: 450,
+        width: 900,
+        height: 650,
         fill: '#000000',
         opacity: 0.65,               // 50%-80% transparency range → 0.5 to 0.8
         cornerRadius: 16,
@@ -63,7 +63,7 @@ export function instructionWindowGroup(type: string): Konva.Group {
     instructionWindowGroup.add(bg);
     // Title
     const InstructionTitle = new Konva.Text({
-        x: 20,
+        x: 160,
         y: 50,
         width: 600,
         text: 'Hello there, Captain!',
@@ -111,10 +111,10 @@ export function instructionWindowGroup(type: string): Konva.Group {
     lines.forEach((line, i) => {
         const text = new Konva.Text({
             x: 60,
-            y: 100 + i * 50,
-            width: 480,
+            y: 120 + i * 75,
+            width: 800,
             text: line,
-            fontSize: 18,
+            fontSize: 30,
             fontFamily: 'medodica',
             fill: 'white',
             align: 'left'
@@ -124,11 +124,11 @@ export function instructionWindowGroup(type: string): Konva.Group {
 
     // Footer hint
     const footer = new Konva.Text({
-        x: 0,
-        y: 420,
+        x: 160,
+        y: 575,
         width: 600,
         text: 'Click here to close',
-        fontSize: 18,
+        fontSize: 30,
         fontFamily: 'medodica',
         fill: '#cccccc',
         align: 'center'

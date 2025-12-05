@@ -5,8 +5,6 @@
  */
 export type StatsCategory =
 	| "Solving Linear Equations"
-	| "Solving Quadratic Equations"
-	| "One-Step Algebraic Equations"
 	| "Multi-Step Algebraic Equations"
 	| "Drawing Linear Equations"
 	| "Drawing Quadratic Equations"
@@ -26,8 +24,6 @@ export interface UserStats {
  */
 export const ALL_CATEGORIES: StatsCategory[] = [
 	"Solving Linear Equations",
-	"Solving Quadratic Equations",
-	"One-Step Algebraic Equations",
 	"Multi-Step Algebraic Equations",
 	"Drawing Linear Equations",
 	"Drawing Quadratic Equations",
@@ -120,4 +116,3 @@ export class StatisticsScreenModel {
 		return Math.round((correct / answered) * 100);
 	}
 }
-

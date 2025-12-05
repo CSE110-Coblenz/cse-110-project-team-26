@@ -1,4 +1,5 @@
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
+import "../../styles.css";
 
 // Tutorial text
 
@@ -102,8 +103,8 @@ const LEVEL_TEXT_PROPERTIES = {
   width: LEVEL_BOX_PROPERTIES.width,
   height: LEVEL_BOX_PROPERTIES.height,
   text: "Level 1",
-  fontSize: 36,
-  fontFamily: "melodica",
+  fontSize: 60,
+  fontFamily: "medodica",
   fill: "black",
   align: "center",
   verticalAlign: "middle"
@@ -132,8 +133,8 @@ const DIALOGUE_TEXT_PROPERTIES = {
   width: DIALOGUE_BOX_PROPERTIES.width - OFFSET,
   height: DIALOGUE_BOX_PROPERTIES.height - OFFSET,
   text: DIALOGUE.level,
-  fontSize: 18,
-  fontFamily: "melodica",
+  fontSize: 22,
+  fontFamily: "medodica",
   fill: "white"
 };
 
@@ -159,7 +160,7 @@ const TRANSITION_TEXT_PROPERTIES = {
   height: TRANSITION_BUTTON_PROPERTIES.height,
   text: "Go to minigame",
   fontSize: 20,
-  fontFamily: "melodica",
+  fontFamily: "medodica",
   fill: "white",
   align: "center",
   verticalAlign: "middle"
@@ -187,7 +188,7 @@ const RESULTS_TEXT_PROPERTIES = {
   height: RESULTS_BUTTON_PROPERTIES.height,
   text: "Go to results",
   fontSize: 20,
-  fontFamily: "melodica",
+  fontFamily: "medodica",
   fill: "white",
   align: "center",
   verticalAlign: "middle"
@@ -214,8 +215,8 @@ const TUTORIAL_TEXT_PROPERTIES = {
   width: TUTORIAL_BUTTON_PROPERTIES.width,
   height: TUTORIAL_BUTTON_PROPERTIES.height,
   text: "Show tutorial",
-  fontSize: 20,
-  fontFamily: "melodica",
+  fontSize: 30,
+  fontFamily: "medodica",
   fill: "white",
   align: "center",
   verticalAlign: "middle"
@@ -251,8 +252,8 @@ const EQUATION_TEXT_PROPERTIES = {
   y: EQUATION_BOX_PROPERTIES.y,
   width: EQUATION_BOX_PROPERTIES.width,
   height: EQUATION_BOX_PROPERTIES.height,
-  fontSize: 18,
-  fontFamily: "melodica",
+  fontSize: 30,
+  fontFamily: "medodica",
   fill: "white",
   align: "center",
   verticalAlign: "middle"

@@ -2,8 +2,6 @@ import mongoose, { Schema, Document } from "mongoose";
 
 export type StatsCategory =
   | "Solving Linear Equations"
-  | "Solving Quadratic Equations"
-  | "One-Step Algebraic Equations"
   | "Multi-Step Algebraic Equations"
   | "Drawing Linear Equations"
   | "Drawing Quadratic Equations"
@@ -53,8 +51,6 @@ const UserStatsSchema = new Schema<IUserStats>(
       ),
       default: () => ({
         ["Solving Linear Equations"]: { ...bucketDefaults },
-        ["Solving Quadratic Equations"]: { ...bucketDefaults },
-        ["One-Step Algebraic Equations"]: { ...bucketDefaults },
         ["Multi-Step Algebraic Equations"]: { ...bucketDefaults },
         ["Drawing Linear Equations"]: { ...bucketDefaults },
         ["Drawing Quadratic Equations"]: { ...bucketDefaults },
