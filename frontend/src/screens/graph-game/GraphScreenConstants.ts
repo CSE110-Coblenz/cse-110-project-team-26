@@ -29,7 +29,7 @@ const DIALOGUE = {
   success: "<Dialogue>\nYou made it! Time to search for resources.",
   failure: "<Dialogue>\nOops! You ran into an obstacle and your spaceship has sustained damage. Click the button to fix your engine!",
   incomplete: "Make sure that you've filled every parameter of the equation!",
-  gameOver: "<Dialogue>\nWelcome home space traveler! You've gone quite a journey to get back to Earth. Congratulations on using your knowledge of algebra to make it back!"
+  gameOver: "<Dialogue>\nWelcome home space traveler! Congratulations on using your knowledge of algebra to make it back to Earth!"
 };
 
 // SCREEN SPECIFIC CONSTANTS
@@ -79,28 +79,41 @@ const GRAPH_BACKGROUND_PROPERTIES = {
 
 const PIX_PER_UNIT = 40;
 
-// Sprite group and elements
+// Level group and elements
 
-const SPRITE_GROUP_PROPERTIES = {
+const LEVEL_GROUP_PROPERTIES = {
   x: 0,
   y: 0,
   width: SIDEBAR_WIDTH,
   height: STAGE_HEIGHT * (2/7)
 };
 
-const SPRITE_BOX_PROPERTIES = {
+const LEVEL_BOX_PROPERTIES = {
   x: OFFSET,
   y: OFFSET,
   width: BOX_WIDTH,
-  height: SPRITE_GROUP_PROPERTIES.height - (OFFSET * 2),
+  height: LEVEL_GROUP_PROPERTIES.height - (OFFSET * 2),
   fill: "#FFF3F3"
+};
+
+const LEVEL_TEXT_PROPERTIES = {
+  x: OFFSET,
+  y: OFFSET,
+  width: LEVEL_BOX_PROPERTIES.width,
+  height: LEVEL_BOX_PROPERTIES.height,
+  text: "Level 1",
+  fontSize: 36,
+  fontFamily: "melodica",
+  fill: "black",
+  align: "center",
+  verticalAlign: "middle"
 };
 
 // Dialogue group and elements
 
 const DIALOGUE_GROUP_PROPERTIES = {
   x: 0,
-  y: SPRITE_GROUP_PROPERTIES.height,
+  y: LEVEL_GROUP_PROPERTIES.height,
   width: SIDEBAR_WIDTH,
   height: STAGE_HEIGHT * (3/7)
 };
@@ -119,16 +132,16 @@ const DIALOGUE_TEXT_PROPERTIES = {
   width: DIALOGUE_BOX_PROPERTIES.width - OFFSET,
   height: DIALOGUE_BOX_PROPERTIES.height - OFFSET,
   text: DIALOGUE.level,
-  fontSize: 24,
-  fontFamily: "Arial",
+  fontSize: 18,
+  fontFamily: "melodica",
   fill: "white"
 };
 
 const TRANSITION_GROUP_PROPERTIES = {
   x: DIALOGUE_BOX_PROPERTIES.x,
-  y: DIALOGUE_BOX_PROPERTIES.height * (9/10) - OFFSET * 2,
+  y: DIALOGUE_BOX_PROPERTIES.height * (11/12) - OFFSET * 2,
   width: DIALOGUE_BOX_PROPERTIES.width,
-  height: DIALOGUE_BOX_PROPERTIES.height * (1/10) + OFFSET * 2
+  height: DIALOGUE_BOX_PROPERTIES.height * (1/12) + OFFSET * 2
 };
 
 const TRANSITION_BUTTON_PROPERTIES = {
@@ -145,8 +158,8 @@ const TRANSITION_TEXT_PROPERTIES = {
   width: TRANSITION_BUTTON_PROPERTIES.width,
   height: TRANSITION_BUTTON_PROPERTIES.height,
   text: "Go to minigame",
-  fontSize: 24,
-  fontFamily: "Arial",
+  fontSize: 20,
+  fontFamily: "melodica",
   fill: "white",
   align: "center",
   verticalAlign: "middle"
@@ -154,9 +167,9 @@ const TRANSITION_TEXT_PROPERTIES = {
 
 const RESULTS_GROUP_PROPERTIES = {
   x: DIALOGUE_BOX_PROPERTIES.x,
-  y: DIALOGUE_BOX_PROPERTIES.height * (9/10) - OFFSET * 2,
+  y: DIALOGUE_BOX_PROPERTIES.height * (11/12) - OFFSET * 2,
   width: DIALOGUE_BOX_PROPERTIES.width,
-  height: DIALOGUE_BOX_PROPERTIES.height * (1/10) + OFFSET * 2
+  height: DIALOGUE_BOX_PROPERTIES.height * (1/12) + OFFSET * 2
 };
 
 const RESULTS_BUTTON_PROPERTIES = {
@@ -173,8 +186,36 @@ const RESULTS_TEXT_PROPERTIES = {
   width: RESULTS_BUTTON_PROPERTIES.width,
   height: RESULTS_BUTTON_PROPERTIES.height,
   text: "Go to results",
-  fontSize: 24,
-  fontFamily: "Arial",
+  fontSize: 20,
+  fontFamily: "melodica",
+  fill: "white",
+  align: "center",
+  verticalAlign: "middle"
+};
+
+const TUTORIAL_GROUP_PROPERTIES = {
+  x: DIALOGUE_BOX_PROPERTIES.x,
+  y: DIALOGUE_BOX_PROPERTIES.height * (11/12) - OFFSET * 2,
+  width: DIALOGUE_BOX_PROPERTIES.width,
+  height: DIALOGUE_BOX_PROPERTIES.height * (1/12) + OFFSET * 2
+};
+
+const TUTORIAL_BUTTON_PROPERTIES = {
+  x: OFFSET * 0.5,
+  y: OFFSET * 0.5,
+  width: TUTORIAL_GROUP_PROPERTIES.width - OFFSET,
+  height: TUTORIAL_GROUP_PROPERTIES.height - OFFSET,
+  fill: "#110808"
+};
+
+const TUTORIAL_TEXT_PROPERTIES = {
+  x: OFFSET * 0.5,
+  y: OFFSET * 0.5,
+  width: TUTORIAL_BUTTON_PROPERTIES.width,
+  height: TUTORIAL_BUTTON_PROPERTIES.height,
+  text: "Show tutorial",
+  fontSize: 20,
+  fontFamily: "melodica",
   fill: "white",
   align: "center",
   verticalAlign: "middle"
@@ -184,7 +225,7 @@ const RESULTS_TEXT_PROPERTIES = {
 
 const INPUT_AND_EQUATION_GROUP_PROPERTIES = {
   x: 0,
-  y: DIALOGUE_GROUP_PROPERTIES.height + SPRITE_GROUP_PROPERTIES.height,
+  y: DIALOGUE_GROUP_PROPERTIES.height + LEVEL_GROUP_PROPERTIES.height,
   width: SIDEBAR_WIDTH,
   height: STAGE_HEIGHT * (2/7)
 };
@@ -199,9 +240,9 @@ const INPUT_AND_EQUATION_BOX_PROPERTIES = {
 
 const EQUATION_BOX_PROPERTIES = {
   x: INPUT_AND_EQUATION_BOX_PROPERTIES.x + (OFFSET * (0.5)),
-  y: INPUT_AND_EQUATION_BOX_PROPERTIES.y + (OFFSET * (0.5)),
+  y: INPUT_AND_EQUATION_BOX_PROPERTIES.y + (OFFSET * (0.25)),
   width: BOX_WIDTH - (OFFSET),
-  height: (INPUT_AND_EQUATION_BOX_PROPERTIES.height * (1/4)) - OFFSET,
+  height: (INPUT_AND_EQUATION_BOX_PROPERTIES.height * (1/4)) - OFFSET * 0.5,
   fill: "#110808"
 };
 
@@ -210,8 +251,8 @@ const EQUATION_TEXT_PROPERTIES = {
   y: EQUATION_BOX_PROPERTIES.y,
   width: EQUATION_BOX_PROPERTIES.width,
   height: EQUATION_BOX_PROPERTIES.height,
-  fontSize: 16,
-  fontFamily: "Arial",
+  fontSize: 18,
+  fontFamily: "melodica",
   fill: "white",
   align: "center",
   verticalAlign: "middle"
@@ -230,8 +271,9 @@ export {
   STATIC_GROUP_PROPERTIES,
   GRAPH_GROUP_PROPERTIES,
   GRAPH_BACKGROUND_PROPERTIES,
-  SPRITE_GROUP_PROPERTIES,
-  SPRITE_BOX_PROPERTIES,
+  LEVEL_GROUP_PROPERTIES,
+  LEVEL_BOX_PROPERTIES,
+  LEVEL_TEXT_PROPERTIES,
   DIALOGUE_GROUP_PROPERTIES,
   DIALOGUE_BOX_PROPERTIES,
   DIALOGUE_TEXT_PROPERTIES,
@@ -241,6 +283,9 @@ export {
   RESULTS_GROUP_PROPERTIES,
   RESULTS_BUTTON_PROPERTIES,
   RESULTS_TEXT_PROPERTIES,
+  TUTORIAL_GROUP_PROPERTIES,
+  TUTORIAL_BUTTON_PROPERTIES,
+  TUTORIAL_TEXT_PROPERTIES,
   INPUT_AND_EQUATION_GROUP_PROPERTIES,
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,

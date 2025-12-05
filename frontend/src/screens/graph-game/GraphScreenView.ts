@@ -7,8 +7,9 @@ import {
   STATIC_GROUP_PROPERTIES,
   GRAPH_GROUP_PROPERTIES,
   GRAPH_BACKGROUND_PROPERTIES,
-  SPRITE_GROUP_PROPERTIES,
-  SPRITE_BOX_PROPERTIES,
+  LEVEL_GROUP_PROPERTIES,
+  LEVEL_BOX_PROPERTIES,
+  LEVEL_TEXT_PROPERTIES,
   DIALOGUE_GROUP_PROPERTIES,
   DIALOGUE_BOX_PROPERTIES,
   DIALOGUE_TEXT_PROPERTIES,
@@ -18,6 +19,9 @@ import {
   RESULTS_GROUP_PROPERTIES,
   RESULTS_BUTTON_PROPERTIES,
   RESULTS_TEXT_PROPERTIES,
+  TUTORIAL_GROUP_PROPERTIES,
+  TUTORIAL_BUTTON_PROPERTIES,
+  TUTORIAL_TEXT_PROPERTIES,
   INPUT_AND_EQUATION_GROUP_PROPERTIES,
   INPUT_AND_EQUATION_BOX_PROPERTIES,
   EQUATION_BOX_PROPERTIES,
@@ -36,9 +40,10 @@ export class GraphScreenView implements View {
     private graphGroup: Konva.Group;
     private transitionGroup: Konva.Group;
     private resultsGroup: Konva.Group;
+    private tutorialGroup: Konva.Group;
     private submitButtonGroup: Konva.Group;
     private dialogueText: Konva.Text;
-    private playerSprite: HTMLImageElement;
+    private levelText: Konva.Text;
     private equationText: Konva.Text;
     private inputAndEquationGroup: Konva.Group;
 
@@ -54,7 +59,7 @@ export class GraphScreenView implements View {
     /**
      * Initializes default values for the View
      */
-    constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void) {
+    constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void, showTutorial: () => void) {
 
         // Add layers for static and dynamic elements
         console.log(this.xMax);
@@ -71,43 +76,27 @@ export class GraphScreenView implements View {
             ...STATIC_GROUP_PROPERTIES
         });
 
-        // TEST!!!!!
-
-        //this.addPOIRectangle(4, 4, 'red');
-
-        // TEST!!!!!
-
         // Background element
     
         const background = new Konva.Rect({
             ...BACKGROUND_PROPERTIES
         });
 
-        // Sprite group elements
+        // Level group elements
 
-        const spriteGroup = new Konva.Group({
-            ...SPRITE_GROUP_PROPERTIES
+        const levelGroup = new Konva.Group({
+            ...LEVEL_GROUP_PROPERTIES
         });
 
-        const spriteBox = new Konva.Rect({
-            ...SPRITE_BOX_PROPERTIES
+        const levelBox = new Konva.Rect({
+            ...LEVEL_BOX_PROPERTIES
         });
         
-        // This is a placeholder for the sprite
-        const spriteText = new Konva.Text({
-            x: OFFSET,
-            y: OFFSET,
-            width: SPRITE_BOX_PROPERTIES.width,
-            height: SPRITE_BOX_PROPERTIES.height,
-            text: "Sprite Placeholder",
-            fontSize: 24,
-            fontFamily: "Arial",
-            fill: "black",
-            align: "center",
-            verticalAlign: "middle"
+        this.levelText = new Konva.Text({
+            ...LEVEL_TEXT_PROPERTIES
         });
 
-        spriteGroup.add(spriteBox, spriteText);
+        levelGroup.add(levelBox, this.levelText);
 
         // Dialogue group elements
 
@@ -135,6 +124,7 @@ export class GraphScreenView implements View {
             ...TRANSITION_TEXT_PROPERTIES
         });
 
+        this.addButtonAnimations(this.transitionGroup, transitionButton);
         this.transitionGroup.add(transitionButton, transitionText);
         
         this.resultsGroup = new Konva.Group({
@@ -148,10 +138,27 @@ export class GraphScreenView implements View {
         const resultsText = new Konva.Text({
             ...RESULTS_TEXT_PROPERTIES
         });
-
+        
+        this.addButtonAnimations(this.resultsGroup, resultsButton);
         this.resultsGroup.add(resultsButton, resultsText);
+        
+        this.tutorialGroup = new Konva.Group({
+            ...TUTORIAL_GROUP_PROPERTIES
+        });
 
-        dialogueGroup.add(dialogueBox, this.dialogueText, this.transitionGroup, this.resultsGroup);
+        const tutorialButton = new Konva.Rect({
+            ...TUTORIAL_BUTTON_PROPERTIES
+        });
+
+        const tutorialText = new Konva.Text({
+            ...TUTORIAL_TEXT_PROPERTIES
+        });
+
+        this.addButtonAnimations(this.tutorialGroup, tutorialButton);
+        this.tutorialGroup.add(tutorialButton, tutorialText);
+        this.tutorialGroup.on("click", () => showTutorial());
+
+        dialogueGroup.add(dialogueBox, this.dialogueText, this.transitionGroup, this.resultsGroup, this.tutorialGroup);
         this.transitionGroup.hide();
         this.resultsGroup.hide();
 
@@ -194,7 +201,7 @@ export class GraphScreenView implements View {
         // Graph group elements
 
         this.graphGroup = this.createGraphGroup();
-        this.staticGroup.add(background, spriteGroup, dialogueGroup, this.inputAndEquationGroup);
+        this.staticGroup.add(background, levelGroup, dialogueGroup, this.inputAndEquationGroup);
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
 
@@ -208,6 +215,8 @@ export class GraphScreenView implements View {
         this.inputAndEquationGroup.destroy();
         this.graphGroup.destroy();
         this.hideTransitionButton();
+        this.hideResultsButton();
+        this.showTutorialButton();
 
         this.inputAndEquationGroup = new Konva.Group({
             ...INPUT_AND_EQUATION_GROUP_PROPERTIES
@@ -299,6 +308,10 @@ export class GraphScreenView implements View {
         this.resultsGroup.on("click", () => goToResults());
     }
 
+    showTutorialButton() {
+        this.tutorialGroup.show();
+    }
+
     hideTransitionButton() {
         this.transitionGroup.hide();
     }
@@ -306,6 +319,47 @@ export class GraphScreenView implements View {
     hideResultsButton() {
         this.resultsGroup.off("click");
         this.resultsGroup.hide();
+    }
+
+    hideTutorialButton() {
+        this.tutorialGroup.hide();
+    }
+
+    addButtonAnimations(buttonGroup: Konva.Group, button: Konva.Rect) {
+        buttonGroup.offsetX(buttonGroup.width() / 2);
+        buttonGroup.offsetY(buttonGroup.height() / 2);
+        buttonGroup.x(buttonGroup.x() + buttonGroup.width() / 2);
+        buttonGroup.y(buttonGroup.y() + buttonGroup.height() / 2);
+      
+        buttonGroup.on("mouseenter", () => {
+            document.body.style.cursor = "pointer";
+            button.to({
+                duration: 0.15
+            });
+        });
+        
+        buttonGroup.on("mouseleave", () => {
+            document.body.style.cursor = "default";
+            button.to({
+                duration: 0.15
+            });
+        });
+        
+        buttonGroup.on("mousedown", () => {
+            buttonGroup.to({
+                scaleX: 0.85,
+                scaleY: 0.85,
+                duration: 0.1
+            });
+        });
+        
+        buttonGroup.on("mouseup", () => {
+            buttonGroup.to({
+                scaleX: 1,
+                scaleY: 1,
+                duration: 0.1
+            });
+        });
     }
 
     /**
@@ -353,13 +407,14 @@ export class GraphScreenView implements View {
                 height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
                 text: (i + 1).toString(),
                 fontSize: 24,
-                fontFamily: "Arial",
+                fontFamily: "melodica",
                 fill: "white",
                 align: "center",
                 verticalAlign: "middle"
             });
             
             buttonGroup.on("click", () => onNumberInput(i + 1));
+            this.addButtonAnimations(buttonGroup, button);
             buttonGroup.add(button);
             buttonGroup.add(buttonText);
             keypadGroup.add(buttonGroup);
@@ -387,7 +442,7 @@ export class GraphScreenView implements View {
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "0",
             fontSize: 24,
-            fontFamily: "Arial",
+            fontFamily: "melodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
@@ -403,7 +458,7 @@ export class GraphScreenView implements View {
         const minusButton = new Konva.Rect({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             fill: fill
         });
@@ -411,22 +466,24 @@ export class GraphScreenView implements View {
         const minusButtonText = new Konva.Text({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "-",
             fontSize: 24,
-            fontFamily: "Arial",
+            fontFamily: "melodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
         });
       
         zeroButtonGroup.on("click", () => onNumberInput(0));
+        this.addButtonAnimations(zeroButtonGroup, zeroButton);
         zeroButtonGroup.add(zeroButton);
         zeroButtonGroup.add(zeroButtonText);
         keypadGroup.add(zeroButtonGroup);
 
         minusButtonGroup.on("click", () => onNumberInput(-1));
+        this.addButtonAnimations(minusButtonGroup, minusButton);
         minusButtonGroup.add(minusButton);
         minusButtonGroup.add(minusButtonText);
         keypadGroup.add(minusButtonGroup)
@@ -441,7 +498,7 @@ export class GraphScreenView implements View {
         const resetButton = new Konva.Rect({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             fill: fill
         });
@@ -449,17 +506,18 @@ export class GraphScreenView implements View {
         const resetButtonText = new Konva.Text({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "reset",
             fontSize: 16,
-            fontFamily: "Arial",
+            fontFamily: "melodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
         });
       
         resetButtonGroup.on("click", onEquationReset)
+        this.addButtonAnimations(resetButtonGroup, resetButton);
         resetButtonGroup.add(resetButton);
         resetButtonGroup.add(resetButtonText);
         keypadGroup.add(resetButtonGroup);
@@ -474,7 +532,7 @@ export class GraphScreenView implements View {
         const submitButton = new Konva.Rect({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             fill: fill
         });
@@ -482,17 +540,18 @@ export class GraphScreenView implements View {
         const submitButtonText = new Konva.Text({
             x: 0,
             y: 0,
-            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns) - smallOffset,
+            width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "submit",
             fontSize: 12,
-            fontFamily: "Arial",
+            fontFamily: "melodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
         });
       
         this.submitButtonGroup.on("click", onEquationSubmission);
+        this.addButtonAnimations(this.submitButtonGroup, submitButton);
         this.submitButtonGroup.add(submitButton);
         this.submitButtonGroup.add(submitButtonText);
         keypadGroup.add(this.submitButtonGroup);
@@ -500,14 +559,50 @@ export class GraphScreenView implements View {
         return keypadGroup;
     }
 
-    updateSprite(sprite: HTMLImageElement): void {
-        this.playerSprite = sprite;
-        this.staticLayer.draw();
+    updateLevel(level: string): void {
+        if (this.levelText.getAttr("timeoutId")) {
+            clearTimeout(this.levelText.getAttr("timeoutId"));
+        }
+
+        let index = 0;
+        const speed = 70;
+
+        this.levelText.text("");
+
+        const typeWriter = () => {
+            if (index < level.length) {
+                this.levelText.text(this.levelText.text() + level.charAt(index));
+                this.staticLayer.draw();
+                index++;
+                const timeoutId = setTimeout(typeWriter, speed);
+                this.levelText.setAttr("timeoutId", timeoutId);
+            }
+        };
+
+        typeWriter();
     }
 
     updateDialogue(dialogue: string): void {
-        this.dialogueText.text(dialogue);
-        this.staticLayer.draw();
+        if (this.dialogueText.getAttr("timeoutId")) {
+            clearTimeout(this.dialogueText.getAttr("timeoutId"));
+        }
+
+        let index = 0;
+        const speed = 30;
+
+        this.dialogueText.text("");
+
+        const typeWriter = () => {
+            if (index < dialogue.length) {
+                this.dialogueText.text(this.dialogueText.text() + dialogue.charAt(index));
+                this.staticLayer.draw();
+                index++;
+                const timeoutId = setTimeout(typeWriter, speed);
+                this.dialogueText.setAttr("timeoutId", timeoutId);
+            }
+        };
+
+        typeWriter();
     }
 
     updateEquation(equation: string): void {
@@ -515,8 +610,8 @@ export class GraphScreenView implements View {
         this.staticLayer.draw();
     }
 
-    getSprite(): HTMLImageElement {
-        return this.playerSprite;
+    getLevel(): HTMLImageElement {
+        return this.levelText;
     }
 
     getDialogue(): Konva.Text {

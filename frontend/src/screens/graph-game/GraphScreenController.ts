@@ -3,11 +3,9 @@ import type { Screen } from "../../types";
 import { GraphScreenView } from "./GraphScreenView";
 import { GraphScreenModel } from "./GraphScreenModel";
 import { AbsoluteValue, Quadratic, type EquationAnswerFormat, type ScreenSwitcher } from "../../types";
-import { LINEAR, QUADRATIC, ABSVAL } from "../../constants";
+import { LINEAR, QUADRATIC, ABSVAL, LEVEL_COUNT } from "../../constants";
 import { DIALOGUE } from "./GraphScreenConstants";
 import { Linear } from "../../types";
-
-// REFACTOR CODE TO HAVE VARIABLE ORIGIN POINT
 
 /**
  * Controller for the Graphing game module
@@ -32,9 +30,9 @@ export class GraphScreenController extends ScreenController {
      */
     constructor(screenSwitcher: ScreenSwitcher, level: number, difficulty: number) {
         super();
+        this.screenSwitcher = screenSwitcher;
         this.level = level;
         this.difficulty = difficulty;
-        console.log("difficulty: " + difficulty);
         let type = generateRandomNumber(0, this.difficulty);
         this.model = new GraphScreenModel(type);
         this.type = this.model.getQuestionType();
@@ -53,12 +51,13 @@ export class GraphScreenController extends ScreenController {
             type,
             (input: number) => this.handleNumberInput(input),
             () => this.handleEquationReset(),
-            () => this.handleEquationSubmission(this.submission)
+            () => this.handleEquationSubmission(this.submission),
+            () => this.screenSwitcher.switchToScreen({ type: "tutorial" })
         );
         this.view.plotPOI(this.model.getAnswer());
+        this.view.updateLevel(`Level ${this.level}`);
         const dialogueKey = (`level${this.level}`) as keyof typeof DIALOGUE;
         this.view.updateDialogue(DIALOGUE[dialogueKey]);
-        this.screenSwitcher = screenSwitcher;
     }
 
     /**
@@ -318,12 +317,15 @@ export class GraphScreenController extends ScreenController {
         this.plotGraphGame(false); // isPreview = false
         if (this.model.getAnswer().verifyAnswer(this.submission)) {
             // correct answer api call
-            void this.model.recordAttempt(true, this.type);
-            if(this.level === 5) {
+            void this.model.recordAttempt(true, this.type)
+            if(this.level >= LEVEL_COUNT) {
+                this.view.hideTutorialButton();
                 this.view.showResultsButton(() => this.switchGame("results"));
                 this.view.updateDialogue(DIALOGUE.gameOver);
                 this.level++;
+                this.view.updateLevel("Game Clear!");
             } else {
+                this.view.hideTutorialButton();
                 this.view.showTransitionButton((game: string) => this.switchGame(game), "maze-game");
                 this.view.updateDialogue(DIALOGUE.success);
                 this.level++;
@@ -331,6 +333,7 @@ export class GraphScreenController extends ScreenController {
         } else {
             // incorrect answer api call
             void this.model.recordAttempt(false, this.type);
+            this.view.hideTutorialButton();
             this.view.showTransitionButton((game: string) => this.switchGame(game), "matching-game");
             this.view.updateDialogue(DIALOGUE.failure);
             console.log(DIALOGUE.failure);
@@ -364,15 +367,17 @@ export class GraphScreenController extends ScreenController {
                 type,
                 (input: number) => this.handleNumberInput(input),
                 () => this.handleEquationReset(),
-                () => this.handleEquationSubmission(this.submission)
+                () => this.handleEquationSubmission(this.submission),
         );
         this.view.plotPOI(this.model.getAnswer());
-        if(this.level === 6) this.view.updateDialogue(DIALOGUE.gameOver);
-        else {
+        if(this.level > LEVEL_COUNT) {
+            this.view.updateDialogue(DIALOGUE.gameOver);
+            this.view.updateLevel("Game Clear!");
+        } else {
             const dialogueKey = (`level${this.level}`) as keyof typeof DIALOGUE;
             this.view.updateDialogue(DIALOGUE[dialogueKey]);
+            this.view.updateLevel(`Level ${this.level}`);
         }
-        this.screenSwitcher.switchToScreen({ type: game });
         this.screenSwitcher.switchToScreen({ type: game });
     }
 }

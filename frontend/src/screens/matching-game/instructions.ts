@@ -1,5 +1,6 @@
 import Konva from "konva";
 import { STAGE_HEIGHT, STAGE_WIDTH } from "../../constants";
+import "../../styles.css";
 
 export function helpButtonGroup(x: number, y: number): Konva.Group {
         //help button
@@ -10,10 +11,9 @@ export function helpButtonGroup(x: number, y: number): Konva.Group {
         });
 
         const helpButton = new Konva.Rect({
-            width: 200,
-            height: 60,
+            width: 100,
+            height: 40,
             fill: '#333333',
-            cornerRadius: 10,
             stroke: '#ffffff',
             strokeWidth: 2,
             shadowColor: 'black',
@@ -27,8 +27,8 @@ export function helpButtonGroup(x: number, y: number): Konva.Group {
             fontFamily: 'Arial',
             fontStyle: 'bold',
             fill: 'white',
-            x: x / 10,
-            y: 12,
+            x: -25,
+            y: 2,
             width: 150,
             align: 'center'
         });
@@ -43,7 +43,7 @@ export function helpButtonGroup(x: number, y: number): Konva.Group {
         return helpButtonGroup;
 }
 
-export function instructionWindowGroup(): Konva.Group {
+export function instructionWindowGroup(type: string): Konva.Group {
     const instructionWindowGroup = new Konva.Group({
         x: STAGE_WIDTH / 2 - 300,   // center horizontally (600px width)
         y: STAGE_HEIGHT / 2 - 225,  // center vertically (450px height)
@@ -63,35 +63,59 @@ export function instructionWindowGroup(): Konva.Group {
     instructionWindowGroup.add(bg);
     // Title
     const InstructionTitle = new Konva.Text({
-        x: 0,
+        x: 20,
         y: 50,
         width: 600,
         text: 'Hello there, Captain!',
         fontSize: 34,
-        fontFamily: 'Arial',
+        fontFamily: 'medodica',
         fontStyle: 'bold',
         fill: 'white',
         align: 'center'
     });
     instructionWindowGroup.add(InstructionTitle);
     // Instruction lines
-    const lines = [
-        '• The spacecrafts are out of fuel. Each craft can only takes the specific type of resource from one planet.',
-        '• Left-click and drag to pair crafts with correct planets.',
-        '• Click Submit if you are confident with your choice. (And hopefully the crafts do not explode)',
-        '• Click New Questions if you want to challenge and proceed for more resources.',
-        '• Click Reset if you think you made a mistake.',
-        '• GLHF. (╭☞ ͡° ͜ʖ ͡° )╭☞'
-    ];
+    let lines: string[] = [];
+    switch (type) {
+        case 'matching-game-instructions':
+            lines = [
+                '• The spacecraft took a big hit! The wiring is all messed up in the control panel. We need your help to fix it!',
+                '• Match the components on the left with their correct positions on the right.',
+                '• Left-click and drag to connect components with a wire.',
+                '• Click Reset if you think you made a mistake.',
+                '• Be careful - wrong matches will cause more damage to the ship!',
+                '• GLHF. (╭☞ ͡° ͜ʖ ͡° )╭☞'
+            ];
+            break;
+        case 'matching-game-win':
+            lines = [
+                '• Amazing work, Captain! The control panel is fully repaired thanks to you.',
+                '• The spacecraft systems are back online and functioning perfectly.',
+                '• Prepare for takeoff and get ready for the next adventure!',
+            ];
+            break;
+        case 'maze-game-instructions':
+            lines = [
+                '• Your rocket is running out of fuel!',
+                '• But don\'t worry - you can navigate through the cosmic maze to collect resources.',
+                '• Choose the correct next step to simplify the given linear equation',
+                '• After completely simplifying the equation, you can choose the correct value for x to collect fuel!',
+                '• Be careful - you will lose your progress in the maze if you make a wrong choice!',
+            ];
+            break;
+        default:
+            break;
+    }
+    
 
     lines.forEach((line, i) => {
         const text = new Konva.Text({
             x: 60,
-            y: 130 + i * 50,
+            y: 100 + i * 50,
             width: 480,
             text: line,
             fontSize: 18,
-            fontFamily: 'Arial',
+            fontFamily: 'medodica',
             fill: 'white',
             align: 'left'
         });
@@ -105,7 +129,7 @@ export function instructionWindowGroup(): Konva.Group {
         width: 600,
         text: 'Click here to close',
         fontSize: 18,
-        fontFamily: 'Arial',
+        fontFamily: 'medodica',
         fill: '#cccccc',
         align: 'center'
     });

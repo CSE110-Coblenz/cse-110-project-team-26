@@ -2,6 +2,8 @@ import Konva from "konva";
 import type { View } from "../../types.ts";
 import { STAGE_WIDTH, STAGE_HEIGHT } from "../../constants.ts";
 import { ChoiceModel } from "./MazeModels.ts";
+import { instructionWindowGroup } from "../matching-game/instructions.ts";
+
 import '../../styles.css';
 
 // Component to represent a choice in the maze game
@@ -63,12 +65,12 @@ export class ChoiceView {
  */
 export class MazeScreenView implements View {
 	private group: Konva.Group;
-	private scoreText: Konva.Text;
 	private timerText: Konva.Text;
     private problemText: Konva.Image;
     private choiceOne : ChoiceView;
     private choiceTwo : ChoiceView;
     private choiceThree : ChoiceView;
+    private bg: Konva.Image;
     private transitionScreen: Konva.Rect;
     private player: Konva.Sprite|null = null;
 
@@ -87,37 +89,89 @@ export class MazeScreenView implements View {
         this.group.add(this.transitionScreen);
 
 		// Background
-		const bg = new Konva.Image({
+		this.bg = new Konva.Image({
 			x: 0,
 			y: 0,
 			width: STAGE_WIDTH,
 			height: STAGE_HEIGHT,
             image: (() => {
                 const image = new Image();
-                image.src = "/cave.png";
+                image.src = "/backgrounds/cave.png";
                 return image;
             })()
 		});
-		this.group.add(bg);
+		this.group.add(this.bg);
 
-		// Score display (top-left)
-		this.scoreText = new Konva.Text({
-			x: 20,
-			y: 20,
-			text: "Score: 0",
-			fontSize: 32,
-			fontFamily: "medodica",
-			fill: "black",
-		});
-		this.group.add(this.scoreText);
+        // Instruction window (hidden by default)
+        const instructionWindow: Konva.Group = instructionWindowGroup("maze-game-instructions");
+        instructionWindow.on('click tap', () => {
+            instructionWindow.hide();
+            this.group.getLayer()?.draw();
+        });
+        this.group.add(instructionWindow);
+        instructionWindow.hide();
+
+		// Help button (top-left)
+        const helpButtonGroup = new Konva.Group({
+            x: 20,
+            y: 20,
+        });
+
+        const helpButton = new Konva.Sprite({
+            x: -25,
+            y: -25,
+            image: (() => {
+                const image = new Image();
+                image.src = "/sprites/helpButton.png";
+                return image;
+            })(),
+            animation: 'idle',
+            animations: {
+                idle: [
+                    0, 0, 160, 160,
+                ],
+                highlighted: [
+                    160, 0, 160, 160,
+                ],
+            },
+            frameRate: 1,
+            frameIndex: 0,
+            scale: { x: 0.64, y: 0.64 },
+        });
+        
+        const helpIcon = new Konva.Text({
+            text: '?',               // or use "?" for a question mark button
+            fontSize: 36,
+            fontFamily: 'Arial',
+            fontStyle: 'bold',
+            fill: 'white',
+            x: -50,
+            y: 8,
+            width: 150,
+            align: 'center'
+        });
+
+        helpButtonGroup.add(helpButton);
+        helpButtonGroup.add(helpIcon);
+
+        // Hover effect (optional but nice)
+        helpButtonGroup.on('mouseenter', () => helpButton.animation('highlighted'));
+        helpButtonGroup.on('mouseleave', () => helpButton.animation('idle'));
+        helpButtonGroup.on('click', () => {
+            instructionWindow.show();
+            instructionWindow.moveToTop();
+            this.group.getLayer()?.draw();
+            //need to pause the game timer here if implemented
+        });
+        this.group.add(helpButtonGroup);
 
 		// Timer display (top-right)
 		this.timerText = new Konva.Text({
 			x: STAGE_WIDTH - 150,
 			y: 20,
 			text: "Time: 60",
-			fontSize: 32,
-			fontFamily: "Arial",
+			fontSize: 40,
+			fontFamily: "medodica",
 			fill: "red",
 		});
 		this.group.add(this.timerText);
@@ -151,7 +205,7 @@ export class MazeScreenView implements View {
 
         // Player circle
         const image = new Image();
-        image.src = "/mazegame.png";
+        image.src = "/sprites/mazegame.png";
         image.onload = () => {
             console.log("Sprite image loaded");
             this.player = new Konva.Sprite({
@@ -194,14 +248,6 @@ export class MazeScreenView implements View {
             this.group.add(this.player);
             this.player.start();
         };
-	}
-
-	/**
-	 * Update score display
-	 */
-	updateScore(score: number): void {
-		this.scoreText.text(`Score: ${score}`);
-		this.group.getLayer()?.draw();
 	}
 
 	/**
@@ -251,6 +297,8 @@ export class MazeScreenView implements View {
     }
     // Fade from black transition
     fadeFromBlack(duration: number = 0.5): Promise<void> {
+        this.transitionScreen.moveToTop();
+        this.transitionScreen.opacity(1);
         return new Promise((resolve) => {
             new Konva.Tween({
             node: this.transitionScreen,
@@ -328,7 +376,7 @@ export class MazeScreenView implements View {
             height: STAGE_HEIGHT,
             image: (() => {
                 const image = new Image();
-                image.src = "/backgroundMessage.png";
+                image.src = "/backgrounds/backgroundMessage.png";
                 return image;
             })()
         });
@@ -452,16 +500,28 @@ export class MazeScreenView implements View {
         return img;
     }
     // Clean up resources
-    destroy(): void {
+    hideComponents(): void {
         // remove choice groups from the scene
-        this.choiceOne.getGroup().destroy();
-        this.choiceTwo.getGroup().destroy();
-        this.choiceThree.getGroup().destroy();
-        this.problemText.destroy();
+        this.choiceOne.getGroup().hide();
+        this.choiceTwo.getGroup().hide();
+        this.choiceThree.getGroup().hide();
+        this.problemText.hide();
+    }
+    // Switch to win background
+    switchToWinBackground(): Promise<void> {
+        const img = new Image();
+        img.src = "/backgrounds/caveWin.png";
+        return new Promise<void>((resolve) => {
+            img.onload = () => {
+                this.bg.image(img);
+                this.bg.getLayer()?.draw();
+                resolve();
+            }
+        });;
     }
     // Animation when winning
     playWinAnimation(): Promise<void> {
-        return this.movePlayerTo(STAGE_WIDTH / 2 - 64, STAGE_HEIGHT / 2)
+        return this.movePlayerTo(STAGE_WIDTH / 2 - 50, STAGE_HEIGHT / 2+100)
             .then(() => {
                 this.setAnimation("win");
                 return new Promise<void>(resolve => {
@@ -469,12 +529,24 @@ export class MazeScreenView implements View {
                 });
             });
     }
+    // reset view to initial state
+    reset(): void {
+        this.resetPlayerPosition();
+        this.setAnimation("idle");
+        this.choiceOne.getGroup().show();
+        this.choiceTwo.getGroup().show();
+        this.choiceThree.getGroup().show();
+        this.problemText.show();
+    }
 	/**
 	 * Show the screen
 	 */
 	show(): void {
-		this.group.visible(true);
-		this.group.getLayer()?.draw();
+        this.transitionScreen.moveToTop();
+        this.transitionScreen.opacity(1);
+        this.group.visible(true);
+        this.group.getLayer()?.draw();
+        this.fadeFromBlack();  
 	}
 
 	/**
