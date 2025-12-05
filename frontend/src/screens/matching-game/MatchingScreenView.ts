@@ -314,6 +314,7 @@ export class MatchingScreenView implements View {
                 body: JSON.stringify(payload),
             });
 
+            // @ts-ignore
             const data = (await res.json().catch(() => null)) as
                 | { explanation?: string; error?: string }
                 | null;
@@ -427,6 +428,7 @@ export class MatchingScreenView implements View {
             });
 
             if (!res.ok) {
+                // @ts-ignore
                 const data = (await res.json().catch(() => null)) as
                     | { error?: string }
                     | null;

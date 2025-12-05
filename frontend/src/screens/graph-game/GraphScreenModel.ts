@@ -93,6 +93,7 @@ export class GraphScreenModel {
             });
 
             if (!res.ok) {
+                // @ts-ignore
                 const data = (await res.json().catch(() => null)) as
                     | { error?: string }
                     | null;
