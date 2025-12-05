@@ -239,7 +239,7 @@ export class GraphScreenView implements View {
     }
     // Fade from black transition
     fadeFromBlack(duration: number = 0.5): Promise<void> {
-        this.transitionScreen.moveToTop();
+        // this.transitionScreen.moveToTop();
         this.transitionScreen.opacity(1);
         return new Promise((resolve) => {
             new Konva.Tween({
@@ -904,7 +904,7 @@ export class GraphScreenView implements View {
      * Makes the View visible
      */
     show() {
-        this.transitionScreen.moveToTop();
+        // this.transitionScreen.moveToTop();
         this.transitionScreen.opacity(1);
         this.staticGroup.visible(true);
         this.staticGroup.getLayer()?.draw();

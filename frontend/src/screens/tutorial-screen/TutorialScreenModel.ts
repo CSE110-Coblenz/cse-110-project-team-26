@@ -10,7 +10,7 @@ export class TutorialScreenModel {
 	private currentStep: number;
 	private totalSteps: number;
 
-	constructor(screenCount: number) {
+	constructor() {
 		this.currentStep = 0;
 		this.totalSteps = 4; // Welcome + 3 game tutorials
 	}
