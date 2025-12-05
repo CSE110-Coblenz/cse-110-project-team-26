@@ -21,7 +21,7 @@ export class MazeScreenController extends ScreenController {
 		super();
 		// this.screenSwitcher = screenSwitcher;
 		this.model = new MazeScreenModel();
-        this.view = new MazeScreenView((choice: ChoiceModel, x:number, y:number) => this.handleChoiceClick(choice, x, y));
+        this.view = new MazeScreenView((choice: ChoiceModel, x:number, y:number) => this.handleChoiceClick(choice, x, y), () => this.stopTimer(), () => this.startTimer());
 		const tutorialText = `Your rocket is running out of fuel!
 
 But don't worry - you have landed on a planet filled with resources to collect.
@@ -114,7 +114,7 @@ Good luck and have fun!`;
 							console.log("Solved the equation! Generating new problem.");
 							this.view.hideComponents();
 							this.view.switchToWinBackground();
-							this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "menu" })));
+							this.view.fadeFromBlack().then(() => this.view.playWinAnimation().then(() => this.screenSwitcher.switchToScreen({ type: "main-game" })));
 						});
 					}
 				}

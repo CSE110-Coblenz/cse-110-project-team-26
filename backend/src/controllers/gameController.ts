@@ -132,6 +132,7 @@ function buildMazeExplanationPrompt(
 
 	return `Don't refrence to the user as "the student" but rather in second person. These questions are in the format of following steps of the equation,
 		so explain why the users step is incorrect and what the correct step should be. Be consistent in using PEMDAS.
+		Return the response in simple text without LaTeX formatting.
 		Problem statements (LaTeX):
 		${formatArray(latex)}
 
@@ -161,7 +162,7 @@ function buildMatchingExplanationPrompt(
 	correctAnswer: string,
 ): string {
 	return `Explain to the user what the correct aswer is and how to arrive at it.
-
+		USE SIMPLE TEXT NO LATEX.
 		Question:
 		${question}
 

@@ -407,7 +407,7 @@ export class GraphScreenView implements View {
                 width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
                 height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
                 text: (i + 1).toString(),
-                fontSize: 24,
+                fontSize: 30,
                 fontFamily: "medodica",
                 fill: "white",
                 align: "center",
@@ -442,7 +442,7 @@ export class GraphScreenView implements View {
             width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns) - smallOffset,
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "0",
-            fontSize: 24,
+            fontSize: 30,
             fontFamily: "medodica",
             fill: "white",
             align: "center",
@@ -470,7 +470,7 @@ export class GraphScreenView implements View {
             width: KEYPAD_GROUP_PROPERTIES.width * (1 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "-",
-            fontSize: 24,
+            fontSize: 30,
             fontFamily: "medodica",
             fill: "white",
             align: "center",
@@ -510,7 +510,7 @@ export class GraphScreenView implements View {
             width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "reset",
-            fontSize: 16,
+            fontSize: 30,
             fontFamily: "medodica",
             fill: "white",
             align: "center",
@@ -544,7 +544,7 @@ export class GraphScreenView implements View {
             width: KEYPAD_GROUP_PROPERTIES.width * (2 / columns),
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "submit",
-            fontSize: 12,
+            fontSize: 30,
             fontFamily: "medodica",
             fill: "white",
             align: "center",
@@ -772,7 +772,8 @@ export class GraphScreenView implements View {
                 x: position + PIX_PER_UNIT / 10,
                 text: currX.toString(),
                 fill: 'white',
-                fontSize: 18
+                fontSize: 18,
+                fontFamily: 'medodica'
             })
             currX++;
     
@@ -800,7 +801,8 @@ export class GraphScreenView implements View {
                 x: group.width() / 2 - PIX_PER_UNIT * this.xOffset,
                 text: currY.toString(),
                 fill: 'white',
-                fontSize: 18
+                fontSize: 18,
+                fontFamily: 'medodica'
             })
             currY--;
     

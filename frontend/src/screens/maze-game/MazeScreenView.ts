@@ -74,7 +74,7 @@ export class MazeScreenView implements View {
     private transitionScreen: Konva.Rect;
     private player: Konva.Sprite|null = null;
 
-	constructor(handler: (choice : ChoiceModel, x:number, y:number) => void) {
+	constructor(handler: (choice : ChoiceModel, x:number, y:number) => void, stopTimer ? : () => void, startTimer ? : () => void) {
 		this.group = new Konva.Group({ visible: false });
 
         // overlay for transition effect
@@ -105,6 +105,7 @@ export class MazeScreenView implements View {
         // Instruction window (hidden by default)
         const instructionWindow: Konva.Group = instructionWindowGroup("maze-game-instructions");
         instructionWindow.on('click tap', () => {
+            startTimer && startTimer();
             instructionWindow.hide();
             this.group.getLayer()?.draw();
         });
@@ -162,6 +163,7 @@ export class MazeScreenView implements View {
             instructionWindow.moveToTop();
             this.group.getLayer()?.draw();
             //need to pause the game timer here if implemented
+            stopTimer && stopTimer();
         });
         this.group.add(helpButtonGroup);
 

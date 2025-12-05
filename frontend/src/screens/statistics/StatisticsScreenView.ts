@@ -60,7 +60,7 @@ export class StatisticsScreenView implements View {
 			width: STAGE_WIDTH - 100,
 			align: "center",
 			text: "",
-			fontSize: 24,
+			fontSize: 40,
 			fontFamily: "medodica, sans-serif",
 			fill: "#d8d8d8",
 			lineHeight: 1.4,
@@ -72,7 +72,7 @@ export class StatisticsScreenView implements View {
 		const tableWidth = STAGE_WIDTH - 100;
 		this.tableGroup = new Konva.Group({
 			x: STAGE_WIDTH / 2,
-			y: 220,
+			y: 300,
 		});
 		this.tableGroup.offsetX(tableWidth / 2);
 		this.group.add(this.tableGroup);
@@ -99,7 +99,7 @@ export class StatisticsScreenView implements View {
 			width: STAGE_WIDTH - 100,
 			align: "center",
 			text: "Loading statistics...",
-			fontSize: 24,
+			fontSize: 40,
 			fontFamily: "medodica, sans-serif",
 			fill: "#ffffff",
 			visible: false,
@@ -131,7 +131,7 @@ export class StatisticsScreenView implements View {
 			width: buttonWidth,
 			align: "center",
 			text: "Return to Game",
-			fontSize: 22,
+			fontSize: 25,
 			fontFamily: "medodica, sans-serif",
 			fill: "#ffffff",
 		});
@@ -212,7 +212,7 @@ export class StatisticsScreenView implements View {
 			y: headerY + (headerHeight - 20) / 2,
 			width: header.width - cellPadding * 2,
 			text: header.text,
-			fontSize: 22,
+			fontSize: 40,
 			fontFamily: "medodica",
 			fill: "#ffffff",
 			fontStyle: "bold",
@@ -250,7 +250,7 @@ export class StatisticsScreenView implements View {
 				y: currentY + (rowHeight - 16) / 2,
 				width: colWidths.category - cellPadding * 2,
 				text: category,
-				fontSize: 22,
+				fontSize: 30,
 				fontFamily: "medodica",
 				fill: "#e0e0e0",
 				align: "left",
@@ -263,7 +263,7 @@ export class StatisticsScreenView implements View {
 				y: currentY + (rowHeight - 16) / 2,
 				width: colWidths.answered - cellPadding * 2,
 				text: bucket.answered.toString(),
-				fontSize: 22,
+				fontSize: 30,
 				fontFamily: "medodica",
 				fill: "#d0d0d0",
 				align: "center",
@@ -276,7 +276,7 @@ export class StatisticsScreenView implements View {
 				y: currentY + (rowHeight - 16) / 2,
 				width: colWidths.correct - cellPadding * 2,
 				text: bucket.correct.toString(),
-				fontSize: 22,
+				fontSize: 30,
 				fontFamily: "medodica",
 				fill: "#81c784",
 				align: "center",
