@@ -32,7 +32,7 @@ export class StatisticsScreenView implements View {
 			y: 0,
 			width: STAGE_WIDTH,
 			height: STAGE_HEIGHT,
-			fill: "#1e1e2f",
+			fill: "#2b2b2b",
 		});
 		this.group.add(background);
 
@@ -44,9 +44,12 @@ export class StatisticsScreenView implements View {
 			align: "center",
 			text: "Your Statistics",
 			fontSize: 48,
-			fontFamily: "Arial",
-			fill: "#ffffff",
+			fontFamily: "medodica, sans-serif",
+			fill: "#e9f3ff",
 			fontStyle: "bold",
+			shadowColor: "#0a8ea8",
+			shadowBlur: 8,
+			shadowOffset: { x: 3, y: 3 },
 		});
 		this.group.add(this.titleText);
 
@@ -58,8 +61,8 @@ export class StatisticsScreenView implements View {
 			align: "center",
 			text: "",
 			fontSize: 24,
-			fontFamily: "Arial",
-			fill: "#e0e0e0",
+			fontFamily: "medodica, sans-serif",
+			fill: "#d8d8d8",
 			lineHeight: 1.4,
 		});
 		this.totalStatsText.offsetX((STAGE_WIDTH - 100) / 2);
@@ -82,7 +85,7 @@ export class StatisticsScreenView implements View {
 			align: "center",
 			text: "",
 			fontSize: 20,
-			fontFamily: "Arial",
+			fontFamily: "medodica, sans-serif",
 			fill: "#ff8a80",
 			visible: false,
 		});
@@ -97,7 +100,7 @@ export class StatisticsScreenView implements View {
 			align: "center",
 			text: "Loading statistics...",
 			fontSize: 24,
-			fontFamily: "Arial",
+			fontFamily: "medodica, sans-serif",
 			fill: "#ffffff",
 			visible: false,
 		});
@@ -114,8 +117,13 @@ export class StatisticsScreenView implements View {
 			y: buttonY,
 			width: buttonWidth,
 			height: buttonHeight,
-			fill: "#4CAF50",
-			cornerRadius: 8,
+			fill: "#0f3a26",
+			cornerRadius: 0,
+			stroke: "#0a3b52",
+			strokeWidth: 3,
+			shadowColor: "#050912",
+			shadowBlur: 0,
+			shadowOffset: { x: 6, y: 6 },
 		});
 		this.returnText = new Konva.Text({
 			x: STAGE_WIDTH / 2 - buttonWidth / 2,
@@ -124,18 +132,18 @@ export class StatisticsScreenView implements View {
 			align: "center",
 			text: "Return to Game",
 			fontSize: 22,
-			fontFamily: "Arial",
+			fontFamily: "medodica, sans-serif",
 			fill: "#ffffff",
 		});
 
 		this.returnButton.on("click", callbacks.onReturnToGame);
 		this.returnText.on("click", callbacks.onReturnToGame);
 		this.returnButton.on("mouseenter", () => {
-			this.returnButton.fill("#45a049");
+			this.returnButton.fill("#0d301f");
 			this.group.getLayer()?.draw();
 		});
 		this.returnButton.on("mouseleave", () => {
-			this.returnButton.fill("#4CAF50");
+			this.returnButton.fill("#0f3a26");
 			this.group.getLayer()?.draw();
 		});
 
@@ -204,8 +212,8 @@ export class StatisticsScreenView implements View {
 			y: headerY + (headerHeight - 20) / 2,
 			width: header.width - cellPadding * 2,
 			text: header.text,
-			fontSize: 20,
-			fontFamily: "Arial",
+			fontSize: 22,
+			fontFamily: "medodica",
 			fill: "#ffffff",
 			fontStyle: "bold",
 			align: "left",
@@ -242,8 +250,8 @@ export class StatisticsScreenView implements View {
 				y: currentY + (rowHeight - 16) / 2,
 				width: colWidths.category - cellPadding * 2,
 				text: category,
-				fontSize: 18,
-				fontFamily: "Arial",
+				fontSize: 22,
+				fontFamily: "medodica",
 				fill: "#e0e0e0",
 				align: "left",
 			});
@@ -255,8 +263,8 @@ export class StatisticsScreenView implements View {
 				y: currentY + (rowHeight - 16) / 2,
 				width: colWidths.answered - cellPadding * 2,
 				text: bucket.answered.toString(),
-				fontSize: 18,
-				fontFamily: "Arial",
+				fontSize: 22,
+				fontFamily: "medodica",
 				fill: "#d0d0d0",
 				align: "center",
 			});
@@ -268,8 +276,8 @@ export class StatisticsScreenView implements View {
 				y: currentY + (rowHeight - 16) / 2,
 				width: colWidths.correct - cellPadding * 2,
 				text: bucket.correct.toString(),
-				fontSize: 18,
-				fontFamily: "Arial",
+				fontSize: 22,
+				fontFamily: "medodica",
 				fill: "#81c784",
 				align: "center",
 			});
