@@ -1,4 +1,5 @@
 import Konva from "konva";
+import "../../styles.css";
 import type { AbsoluteValue, EquationAnswerFormat, Linear, Quadratic, View } from "../../types";
 import {
   OFFSET,
@@ -407,7 +408,7 @@ export class GraphScreenView implements View {
                 height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
                 text: (i + 1).toString(),
                 fontSize: 24,
-                fontFamily: "melodica",
+                fontFamily: "medodica",
                 fill: "white",
                 align: "center",
                 verticalAlign: "middle"
@@ -442,7 +443,7 @@ export class GraphScreenView implements View {
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "0",
             fontSize: 24,
-            fontFamily: "melodica",
+            fontFamily: "medodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
@@ -470,7 +471,7 @@ export class GraphScreenView implements View {
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "-",
             fontSize: 24,
-            fontFamily: "melodica",
+            fontFamily: "medodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
@@ -510,7 +511,7 @@ export class GraphScreenView implements View {
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "reset",
             fontSize: 16,
-            fontFamily: "melodica",
+            fontFamily: "medodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"
@@ -544,7 +545,7 @@ export class GraphScreenView implements View {
             height: KEYPAD_GROUP_PROPERTIES.height * (1 / rows) - smallOffset,
             text: "submit",
             fontSize: 12,
-            fontFamily: "melodica",
+            fontFamily: "medodica",
             fill: "white",
             align: "center",
             verticalAlign: "middle"

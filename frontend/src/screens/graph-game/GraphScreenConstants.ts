@@ -104,7 +104,7 @@ const LEVEL_TEXT_PROPERTIES = {
   height: LEVEL_BOX_PROPERTIES.height,
   text: "Level 1",
   fontSize: 36,
-  fontFamily: "melodica",
+  fontFamily: "medodica",
   fill: "black",
   align: "center",
   verticalAlign: "middle"
@@ -134,7 +134,7 @@ const DIALOGUE_TEXT_PROPERTIES = {
   height: DIALOGUE_BOX_PROPERTIES.height - OFFSET,
   text: DIALOGUE.level,
   fontSize: 18,
-  fontFamily: "melodica",
+  fontFamily: "medodica",
   fill: "white"
 };
 
@@ -160,7 +160,7 @@ const TRANSITION_TEXT_PROPERTIES = {
   height: TRANSITION_BUTTON_PROPERTIES.height,
   text: "Go to minigame",
   fontSize: 20,
-  fontFamily: "melodica",
+  fontFamily: "medodica",
   fill: "white",
   align: "center",
   verticalAlign: "middle"
@@ -188,7 +188,7 @@ const RESULTS_TEXT_PROPERTIES = {
   height: RESULTS_BUTTON_PROPERTIES.height,
   text: "Go to results",
   fontSize: 20,
-  fontFamily: "melodica",
+  fontFamily: "medodica",
   fill: "white",
   align: "center",
   verticalAlign: "middle"
@@ -216,7 +216,7 @@ const TUTORIAL_TEXT_PROPERTIES = {
   height: TUTORIAL_BUTTON_PROPERTIES.height,
   text: "Show tutorial",
   fontSize: 20,
-  fontFamily: "melodica",
+  fontFamily: "medodica",
   fill: "white",
   align: "center",
   verticalAlign: "middle"
@@ -253,7 +253,7 @@ const EQUATION_TEXT_PROPERTIES = {
   width: EQUATION_BOX_PROPERTIES.width,
   height: EQUATION_BOX_PROPERTIES.height,
   fontSize: 18,
-  fontFamily: "melodica",
+  fontFamily: "medodica",
   fill: "white",
   align: "center",
   verticalAlign: "middle"
