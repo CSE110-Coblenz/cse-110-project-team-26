@@ -129,24 +129,26 @@ export class ProblemModel {
         }
     // Need logic to see when it is the last step
     private generateChoices(correctChoice: Step, isLastStep: boolean = false) {
-        this.choices.push(new ChoiceModel(correctChoice.description, true));
+        var newDescription= this.editDescription(correctChoice.description);
+        this.choices.push(new ChoiceModel(newDescription, true));
+
         const operations = ["Add", "Divide", "Subtract", "Multiply"] as const;
         let randomNumber1: number;
         let randomNumber2: number;
         if (!isLastStep) {
             // Second choice
-            let randomOperation = operations[Math.floor(Math.random() * operations.length)];
-            randomNumber1 = Math.floor(Math.random() * 10) + 1;
-            randomNumber2 = Math.floor(Math.random() * 10) + 1;
-            this.choices.push(new ChoiceModel(`${randomOperation} ${randomNumber1}, ${randomNumber2}`, false));
-            // Third choice
-            randomOperation = operations[Math.floor(Math.random() * operations.length)];
-            randomNumber1 = Math.floor(Math.random() * 10) + 1;
-            /* randomNumber2 = numberMatches.length
-                ? numberMatches[Math.floor(Math.random() * numberMatches.length)]
-                : String(Math.floor(Math.random() * 10) + 1); */
-            randomNumber2 = Math.floor(Math.random() * 10) + 1;
-            this.choices.push(new ChoiceModel(`${randomOperation} ${randomNumber1}, ${randomNumber2}`, false));
+            for(let i = 0; i < 2; i++){
+                let randomOperation = operations[Math.floor(Math.random() * operations.length)];
+                randomNumber1 = Math.floor(Math.random() * 10) + 1;
+                randomNumber2 = Math.floor(Math.random() * 10) + 1;
+                if(randomOperation == "Divide" || randomOperation == "Subtract"){
+                    var randChoiceDescription = this.editDescription(randomOperation.toString() + "," + randomNumber1.toString() + "," + randomNumber2.toString());
+                }
+                else{
+                    var randChoiceDescription = this.editDescription(randomOperation.toString() + " " +randomNumber1.toString() + "," + randomNumber2.toString());
+                }
+                this.choices.push(new ChoiceModel(randChoiceDescription, false));
+            }
         } else { 
             // NEED TO MAKE SURE INCORRECT CHOICES ARE NOT THE SOLUTION
             randomNumber1 = Math.floor(Math.random() * 10) + 1;
@@ -155,6 +157,34 @@ export class ProblemModel {
             this.choices.push(new ChoiceModel(`x = ${randomNumber2}`, false));
         }
         this.shuffleChoices();
+    }
+    private editDescription(description: string){ //Make text options more readable PS: Remind me to do switch cases 
+        var operation = description[0];
+        if(operation == "A" && description.includes(",") && description.includes("x")){
+            description = description.replace(","," and ");
+            return description;
+        }
+        else if(operation == "A" && description.includes(",")){
+            description = description.replace(","," and ");
+            return description;
+        }
+        else if(operation == "S"){
+            var tempArr = description.split(",");
+            description = "Subtract " + tempArr[1] + " from " + tempArr[2];
+            return description;
+        }
+        else if(operation == "D"){
+            var tempArr = description.split(",");
+            description = "Divide " + tempArr[1] + " by " + tempArr[2];
+            return description;
+        }
+        else if(operation == "M"){
+            description = description.replace(","," and ");
+            return description;
+        }
+        else{
+            return description;
+        }
     }
     // Shuffle choices to randomize their order
     private shuffleChoices() {
