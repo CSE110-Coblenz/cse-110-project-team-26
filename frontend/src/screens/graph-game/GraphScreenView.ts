@@ -29,6 +29,7 @@ import {
   EQUATION_TEXT_PROPERTIES,
   PIX_PER_UNIT
 } from "./GraphScreenConstants";
+import { generateRandomNumber } from "../../types";
 import { ABSVAL, LINEAR, QUADRATIC, X_MAX, X_MIN, STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 
 /**
@@ -57,7 +58,6 @@ export class GraphScreenView implements View {
     private xMax = this.xMin + this.xRange;
     private yMax = this.yRange / 2;
     private yMin = this.yMax - this.yRange;
-    private type: number;
     /**
      * Initializes default values for the View
      */
@@ -663,10 +663,12 @@ export class GraphScreenView implements View {
 
     getSprite(sprite: number, x:number, y: number): number {
         let path = "../../public/sprites/"
+        let scale = 0.75;
         let xOffset = 0;
         let yOffset = 0;
         let spaceTaken = 0;
         let z = 1;
+        let imageID = ""
         switch(sprite) {
             case -1:
                 path += "asteroid_1x1.png";
@@ -695,6 +697,8 @@ export class GraphScreenView implements View {
                 xOffset = 20;
                 yOffset = 20;
                 z = 999;
+                imageID = "rocket";
+                scale = 1.1
             break;
             case 4:
                 path += "blackhole.png";    
@@ -705,18 +709,21 @@ export class GraphScreenView implements View {
                 path += "planet1.png";
                 xOffset = 20;
                 yOffset = 20;
+                scale = 1.1
                 z = 999;
             break;
             case 6:
                 path += "planet2.png";
                 xOffset = 20;
                 yOffset = 20;
+                scale = 1.1
                 z = 999;
             break;
             case 7:
                 path += "planet3.png";
                 xOffset = 20;
                 yOffset = 20;
+                scale = 1.1
                 z = 999;
             break;
         }
@@ -724,8 +731,8 @@ export class GraphScreenView implements View {
         Konva.Image.fromURL(path, (image) => {
             console.log(image);
             image.scale({
-                x: 0.75,
-                y: 0.75
+                x: scale,
+                y: scale
             });
             image.offset({
                 x: xOffset,
@@ -735,6 +742,7 @@ export class GraphScreenView implements View {
             image.y(this.convertCoordToKonva(y, false));
             this.graphGroup.add(image);
             image.zIndex(z);
+            image.id(imageID);
         });
         return spaceTaken;
     }
@@ -1034,7 +1042,7 @@ export class GraphScreenView implements View {
     
             let coordinateLabel = new Konva.Text({
                 y: position,
-                x: (-this.xMin) * PIX_PER_UNIT - (PIX_PER_UNIT / 10),
+                x: (-this.xMin + 1) * PIX_PER_UNIT - (PIX_PER_UNIT / 10),
                 text: currY.toString(),
                 fill: 'white',
                 fontSize: 18,
