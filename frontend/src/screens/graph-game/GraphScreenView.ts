@@ -50,6 +50,7 @@ export class GraphScreenView implements View {
     private xMin = Math.floor(-this.xRange / 2 + 1) + this.xOffset;
     private xMax = this.xMin + this.xRange;
     private yMax = Math.floor(this.yRange / 2 - 1) + this.yOffset;
+    
     /**
      * Initializes default values for the View
      */
@@ -584,8 +585,7 @@ export class GraphScreenView implements View {
             let plotLine = new Konva.Line({
                 points: [this.convertCoordToKonva(xStart, true), this.convertCoordToKonva(yStart, false),
                         this.convertCoordToKonva(xEnd, true), this.convertCoordToKonva(yEnd, false)],
-                strokeWidth: 3,
-                lineCap: 'round',
+                strokeWidth: 1,
                 name: "PLOT"
             });
             if (isPreview) plotLine.stroke('green');

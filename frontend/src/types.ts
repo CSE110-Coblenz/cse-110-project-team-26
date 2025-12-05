@@ -205,8 +205,11 @@ export class Quadratic implements EquationAnswerFormat {
 			this.root2IsPos = true;
 			return;
 		}
-		this.root1 = generateRandomNumber(-4, 4);
-		this.root2 = generateRandomNumber(-4, 4	);
+		this.root1 = generateRandomNumber(-6, 6);
+		this.root2 = generateRandomNumber(-6, 6);
+		while (this.root2 - this.root1 < 5) {
+			this.root2 = generateRandomNumber(-6, 6);
+		}
 	}
 
 	verifyAnswer(submission: Quadratic): boolean {
