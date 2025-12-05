@@ -29,7 +29,7 @@ import {
   EQUATION_TEXT_PROPERTIES,
   PIX_PER_UNIT
 } from "./GraphScreenConstants";
-import { ABSVAL, LINEAR, QUADRATIC, X_MAX, X_MIN } from "../../constants";
+import { ABSVAL, LINEAR, QUADRATIC, X_MAX, X_MIN, STAGE_WIDTH, STAGE_HEIGHT } from "../../constants";
 
 /**
  * View for the Graphing game module
@@ -47,6 +47,7 @@ export class GraphScreenView implements View {
     private levelText: Konva.Text;
     private equationText: Konva.Text;
     private inputAndEquationGroup: Konva.Group;
+    private transitionScreen: Konva.Rect;
 
     private width: number = GRAPH_BACKGROUND_PROPERTIES.width;
     private height: number = GRAPH_BACKGROUND_PROPERTIES.height;
@@ -61,6 +62,17 @@ export class GraphScreenView implements View {
      * Initializes default values for the View
      */
     constructor(type: number, onNumberInput: (input: number) => void, onEquationReset: () => void, onEquationSubmission: () => void, showTutorial: () => void) {
+
+        // Add transition screen for fade to black
+        this.transitionScreen = new Konva.Rect({
+            x: 0,
+            y: 0,
+            width: STAGE_WIDTH,
+            height: STAGE_HEIGHT,
+            fill: "black",
+            opacity: 0.0,
+        });
+
 
         // Add layers for static and dynamic elements
         console.log(this.xMax);
@@ -82,6 +94,8 @@ export class GraphScreenView implements View {
         const background = new Konva.Rect({
             ...BACKGROUND_PROPERTIES
         });
+
+        this.dynamicLayer.add(this.transitionScreen);
 
         // Level group elements
 
@@ -206,6 +220,43 @@ export class GraphScreenView implements View {
         this.staticLayer.add(this.staticGroup);
         this.dynamicLayer.add(this.graphGroup);
 
+    }
+
+    // Fade to black transition
+    fadeToBlack(duration: number = 0.4): Promise<void> {
+        this.transitionScreen.moveToTop();
+            return new Promise((resolve) => {
+                new Konva.Tween({
+                    node: this.transitionScreen,
+                    opacity: 1,
+                    duration,
+                    onFinish: () => {
+                        this.fadeFromBlack();
+                        resolve();
+                    },
+                }).play();
+            });
+    }
+    // Fade from black transition
+    fadeFromBlack(duration: number = 0.5): Promise<void> {
+        this.transitionScreen.moveToTop();
+        this.transitionScreen.opacity(1);
+        return new Promise((resolve) => {
+            new Konva.Tween({
+            node: this.transitionScreen,
+            opacity: 0,
+            duration,
+            onFinish: () => {
+                this.transitionScreen.moveToBottom();
+                this.transitionScreen.listening(false);
+                resolve();
+            },
+            }).play();
+        });
+    }
+    transitMovetoBottom(){
+        this.transitionScreen.moveToBottom();
+        this.transitionScreen.opacity(0);
     }
 
     disableSubmissions(): void {
@@ -853,10 +904,13 @@ export class GraphScreenView implements View {
      * Makes the View visible
      */
     show() {
+        this.transitionScreen.moveToTop();
+        this.transitionScreen.opacity(1);
         this.staticGroup.visible(true);
         this.staticGroup.getLayer()?.draw();
         this.graphGroup.visible(true);
         this.graphGroup.getLayer()?.draw();
+        this.fadeFromBlack();
     }
 
     /**
