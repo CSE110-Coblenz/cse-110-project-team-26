@@ -105,10 +105,11 @@ export class Linear implements EquationAnswerFormat {
 		else this.coefficientIsPos = false;
 		this.coefficient = {
 			numerator: generateRandomNumber(1, 5),
-			denominator: generateRandomNumber(1, 5)
+			denominator: generateRandomNumber(2, 6)
 		};
 		if (!this.coefficientIsPos) this.coefficient.numerator *= -1;
-		this.intercept = generateRandomNumber(-5, 5);
+		if (this.coefficient.numerator > 3) this.intercept = generateRandomNumber(-3, 3);
+		else this.intercept = generateRandomNumber(-5, 5);
 		this.interceptIsPos = this.intercept > -1;
 		this.simplify();
 	}
@@ -204,14 +205,17 @@ export class Quadratic implements EquationAnswerFormat {
 			this.root2IsPos = true;
 			return;
 		}
-		this.root1 = generateRandomNumber(-4, 4);
-		this.root2 = generateRandomNumber(-4, 4	);
+		this.root1 = generateRandomNumber(-8, 8);
+		this.root2 = generateRandomNumber(-8, 8);
+		while (this.root2 - this.root1 <= 6) {
+			this.root2 = generateRandomNumber(-8, 8);
+		}
 	}
 
 	verifyAnswer(submission: Quadratic): boolean {
 		if (!submission.checkCompleteSubmission()) return false;
-		if ((this.root1 == submission.root1 && this.root2 == submission.root2) ||
-			(this.root2 == submission.root1 && this.root1 == submission.root2)) {
+		if ((this.root1 == -submission.root1 && this.root2 == -submission.root2) ||
+			(this.root2 == -submission.root1 && this.root1 == -submission.root2)) {
 				return true;
 			}
 		return false;
@@ -284,12 +288,14 @@ export class AbsoluteValue implements EquationAnswerFormat {
 		if (generateRandomNumber(0, 1) == 1) this.coefficientIsPos = true;
 		else this.coefficientIsPos = false;
 		this.coefficient = {
-			numerator: generateRandomNumber(1, 6),
-			denominator: generateRandomNumber(1, 6)
-		}
+			numerator: generateRandomNumber(1, 5),
+			denominator: generateRandomNumber(2, 6)
+		};
 		if (!this.coefficientIsPos) this.coefficient.numerator *= -1;
-		this.xShift = generateRandomNumber(-4, 4);
-		this.yShift = generateRandomNumber(-4, 4);
+		if (this.coefficient.numerator > 3) this.yShift = generateRandomNumber(-3, 3);
+		else this.yShift = generateRandomNumber(-4, 4);
+		if (this.coefficient.denominator > 4) this.xShift = generateRandomNumber(-3, 3);
+		else this.xShift = generateRandomNumber(-4, 4);
 		this.simplify();
 	}
 
@@ -384,10 +390,6 @@ export abstract class Question {
 constructor() {
 	this.submission = null;
 	this.answer = null;
-}
-
-generateAnswerValues(): void {
-	this.answer?.generateAnswerValues();
 }
 
 enterSubmission(submission: EquationAnswerFormat): void {

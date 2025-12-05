@@ -69,15 +69,15 @@ const GRAPH_GROUP_PROPERTIES = {
   height: STAGE_HEIGHT
 };
 
+const PIX_PER_UNIT = 30;
 const GRAPH_BACKGROUND_PROPERTIES = {
   x: OFFSET,
   y: OFFSET,
-  width: Math.floor((GRAPH_GROUP_PROPERTIES.width - (OFFSET * 2)) / 40) * 40,
-  height: Math.floor((GRAPH_GROUP_PROPERTIES.height - (OFFSET * 2)) / 40) * 40,
+  width: Math.floor((GRAPH_GROUP_PROPERTIES.width - (OFFSET * 2)) / PIX_PER_UNIT) * PIX_PER_UNIT,
+  height: Math.floor((GRAPH_GROUP_PROPERTIES.height - (OFFSET * 2)) / PIX_PER_UNIT) * PIX_PER_UNIT,
   fill: "#161313"
 };
 
-const PIX_PER_UNIT = 40;
 
 // Level group and elements
 
