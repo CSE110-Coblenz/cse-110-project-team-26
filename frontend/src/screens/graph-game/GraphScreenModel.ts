@@ -1,5 +1,6 @@
 import { Question, Linear, Quadratic, AbsoluteValue, generateRandomNumber } from "../../types";
 import type { EquationAnswerFormat } from "../../types.ts";
+import type { StatsCategory } from "../statistics/StatisticsScreenModel.ts";
 import { LINEAR, ABSVAL, QUADRATIC } from "../../constants"
 
 /**
@@ -52,6 +53,58 @@ export class GraphScreenModel {
 
     enterSubmission(submission: EquationAnswerFormat) {
         this.question.enterSubmission(submission);
+    }
+
+    private getStatsCategory(questionType: string): StatsCategory {
+        switch (questionType) {
+            case LINEAR:
+                return "Drawing Linear Equations";
+            case QUADRATIC:
+                return "Drawing Quadratic Equations";
+            case ABSVAL:
+                return "Drawing Absolute Value Equations";
+            default:
+                console.warn(`Unknown graph question type '${questionType}', defaulting stats to Drawing Linear Equations.`);
+                return "Drawing Linear Equations";
+        }
+    }
+
+    async recordAttempt(isCorrect: boolean, questionType: string): Promise<boolean> {
+        const token = localStorage.getItem("authToken");
+        if (!token) {
+            console.warn("No auth token found; skipping stats update.");
+            return false;
+        }
+
+        const category = this.getStatsCategory(questionType);
+
+        try {
+            const res = await fetch("http://localhost:4000/auth/stats/attempt", {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    "Content-Type": "application/json",
+                },
+                credentials: "include",
+                body: JSON.stringify({
+                    category,
+                    isCorrect,
+                }),
+            });
+
+            if (!res.ok) {
+                const data = (await res.json().catch(() => null)) as
+                    | { error?: string }
+                    | null;
+                console.error("Failed to update stats:", data?.error ?? res.statusText);
+                return false;
+            }
+
+            return true;
+        } catch (error) {
+            console.error("Stats update error:", error);
+            return false;
+        }
     }
 }
 

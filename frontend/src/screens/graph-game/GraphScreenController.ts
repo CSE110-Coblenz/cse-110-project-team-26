@@ -316,6 +316,8 @@ export class GraphScreenController extends ScreenController {
     private submitEquationInput(): void {
         this.plotGraphGame(false); // isPreview = false
         if (this.model.getAnswer().verifyAnswer(this.submission)) {
+            // correct answer api call
+            void this.model.recordAttempt(true, this.type)
             if(this.level >= LEVEL_COUNT) {
                 this.view.hideTutorialButton();
                 this.view.showResultsButton(() => this.switchGame("results"));
@@ -329,6 +331,8 @@ export class GraphScreenController extends ScreenController {
                 this.level++;
             }
         } else {
+            // incorrect answer api call
+            void this.model.recordAttempt(false, this.type);
             this.view.hideTutorialButton();
             this.view.showTransitionButton((game: string) => this.switchGame(game), "matching-game");
             this.view.updateDialogue(DIALOGUE.failure);

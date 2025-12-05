@@ -34,7 +34,7 @@ export class TutorialScreenView implements View {
 			y: 0,
 			width: STAGE_WIDTH,
 			height: STAGE_HEIGHT,
-			fill: "#1e1e2f",
+			fill: "#2b2b2b",
 		});
 		this.group.add(background);
 
@@ -46,9 +46,12 @@ export class TutorialScreenView implements View {
 			align: "center",
 			text: "Tutorial",
 			fontSize: 52,
-			fontFamily: "Arial",
-			fill: "#ffffff",
+			fontFamily: "medodica, sans-serif",
+			fill: "#e9f3ff",
 			fontStyle: "bold",
+			shadowColor: "#0a8ea8",
+			shadowBlur: 8,
+			shadowOffset: { x: 3, y: 3 },
 		});
 		this.group.add(this.titleText);
 
@@ -59,9 +62,9 @@ export class TutorialScreenView implements View {
 			width: STAGE_WIDTH - 100,
 			align: "center",
 			text: "",
-			fontSize: 20,
-			fontFamily: "Arial",
-			fill: "#e0e0e0",
+			fontSize: 25,
+			fontFamily: "medodica, sans-serif",
+			fill: "#d8d8d8",
 			lineHeight: 1.6,
 		});
 		this.contentText.offsetX((STAGE_WIDTH - 100) / 2);
@@ -79,7 +82,7 @@ export class TutorialScreenView implements View {
 			y: buttonY,
 			width: buttonWidth,
 			height: buttonHeight,
-			fill: "#666666",
+			fill: "#0f3a26",
 			cornerRadius: 8,
 			visible: false,
 		});
@@ -90,7 +93,7 @@ export class TutorialScreenView implements View {
 			align: "center",
 			text: "Previous",
 			fontSize: 22,
-			fontFamily: "Arial",
+			fontFamily: "medodica, sans-serif",
 			fill: "#ffffff",
 			visible: false,
 		});
@@ -112,7 +115,7 @@ export class TutorialScreenView implements View {
 			y: buttonY,
 			width: buttonWidth,
 			height: buttonHeight,
-			fill: "#4CAF50",
+			fill: "#0f3a26",
 			cornerRadius: 8,
 		});
 		this.continueText = new Konva.Text({
@@ -122,7 +125,7 @@ export class TutorialScreenView implements View {
 			align: "center",
 			text: "Continue",
 			fontSize: 22,
-			fontFamily: "Arial",
+			fontFamily: "medodica, sans-serif",
 			fill: "#ffffff",
 		});
 
@@ -143,7 +146,7 @@ export class TutorialScreenView implements View {
 			y: buttonY,
 			width: buttonWidth,
 			height: buttonHeight,
-			fill: "#666666",
+			fill: "#102b52",
 			cornerRadius: 8,
 		});
 		this.skipText = new Konva.Text({
@@ -153,7 +156,7 @@ export class TutorialScreenView implements View {
 			align: "center",
 			text: "Skip",
 			fontSize: 22,
-			fontFamily: "Arial",
+			fontFamily: "medodica, sans-serif",
 			fill: "#ffffff",
 		});
 
@@ -219,4 +222,3 @@ export class TutorialScreenView implements View {
 		this.group.getLayer()?.draw();
 	}
 }
-

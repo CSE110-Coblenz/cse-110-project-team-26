@@ -32,7 +32,7 @@ export class StatisticsScreenView implements View {
 			y: 0,
 			width: STAGE_WIDTH,
 			height: STAGE_HEIGHT,
-			fill: "#1e1e2f",
+			fill: "#2b2b2b",
 		});
 		this.group.add(background);
 
@@ -44,9 +44,12 @@ export class StatisticsScreenView implements View {
 			align: "center",
 			text: "Your Statistics",
 			fontSize: 48,
-			fontFamily: "Arial",
-			fill: "#ffffff",
+			fontFamily: "medodica, sans-serif",
+			fill: "#e9f3ff",
 			fontStyle: "bold",
+			shadowColor: "#0a8ea8",
+			shadowBlur: 8,
+			shadowOffset: { x: 3, y: 3 },
 		});
 		this.group.add(this.titleText);
 
@@ -58,15 +61,15 @@ export class StatisticsScreenView implements View {
 			align: "center",
 			text: "",
 			fontSize: 24,
-			fontFamily: "Arial",
-			fill: "#e0e0e0",
+			fontFamily: "medodica, sans-serif",
+			fill: "#d8d8d8",
 			lineHeight: 1.4,
 		});
 		this.totalStatsText.offsetX((STAGE_WIDTH - 100) / 2);
 		this.group.add(this.totalStatsText);
 
 		// Table group for statistics (centered)
-		const tableWidth = STAGE_WIDTH - 200;
+		const tableWidth = STAGE_WIDTH - 100;
 		this.tableGroup = new Konva.Group({
 			x: STAGE_WIDTH / 2,
 			y: 220,
@@ -82,7 +85,7 @@ export class StatisticsScreenView implements View {
 			align: "center",
 			text: "",
 			fontSize: 20,
-			fontFamily: "Arial",
+			fontFamily: "medodica, sans-serif",
 			fill: "#ff8a80",
 			visible: false,
 		});
@@ -97,7 +100,7 @@ export class StatisticsScreenView implements View {
 			align: "center",
 			text: "Loading statistics...",
 			fontSize: 24,
-			fontFamily: "Arial",
+			fontFamily: "medodica, sans-serif",
 			fill: "#ffffff",
 			visible: false,
 		});
@@ -114,8 +117,13 @@ export class StatisticsScreenView implements View {
 			y: buttonY,
 			width: buttonWidth,
 			height: buttonHeight,
-			fill: "#4CAF50",
-			cornerRadius: 8,
+			fill: "#0f3a26",
+			cornerRadius: 0,
+			stroke: "#0a3b52",
+			strokeWidth: 3,
+			shadowColor: "#050912",
+			shadowBlur: 0,
+			shadowOffset: { x: 6, y: 6 },
 		});
 		this.returnText = new Konva.Text({
 			x: STAGE_WIDTH / 2 - buttonWidth / 2,
@@ -124,18 +132,18 @@ export class StatisticsScreenView implements View {
 			align: "center",
 			text: "Return to Game",
 			fontSize: 22,
-			fontFamily: "Arial",
+			fontFamily: "medodica, sans-serif",
 			fill: "#ffffff",
 		});
 
 		this.returnButton.on("click", callbacks.onReturnToGame);
 		this.returnText.on("click", callbacks.onReturnToGame);
 		this.returnButton.on("mouseenter", () => {
-			this.returnButton.fill("#45a049");
+			this.returnButton.fill("#0d301f");
 			this.group.getLayer()?.draw();
 		});
 		this.returnButton.on("mouseleave", () => {
-			this.returnButton.fill("#4CAF50");
+			this.returnButton.fill("#0f3a26");
 			this.group.getLayer()?.draw();
 		});
 
@@ -152,16 +160,20 @@ export class StatisticsScreenView implements View {
 			return;
 		}
 
+		const categories = stats.categories ?? {};
+		const totalAnswered = stats.total?.answered ?? 0;
+		const totalCorrect = stats.total?.correct ?? 0;
+
 		// Update total stats
-		const totalAccuracy = getAccuracy(stats.total.answered, stats.total.correct);
+		const totalAccuracy = getAccuracy(totalAnswered, totalCorrect);
 		this.totalStatsText.text(
-			`Total Questions: ${stats.total.answered}\n` +
-				`Correct Answers: ${stats.total.correct}\n` +
+			`Total Questions: ${totalAnswered}\n` +
+				`Correct Answers: ${totalCorrect}\n` +
 				`Accuracy: ${totalAccuracy}%`
 		);
 
 		// Table dimensions
-		const tableWidth = STAGE_WIDTH - 200;
+		const tableWidth = STAGE_WIDTH - 100;
 		const rowHeight = 35;
 		const headerHeight = 40;
 		const cellPadding = 10;
@@ -169,10 +181,9 @@ export class StatisticsScreenView implements View {
 
 		// Column widths (proportional)
 		const colWidths = {
-			category: tableWidth * 0.5,
-			answered: tableWidth * 0.15,
-			correct: tableWidth * 0.15,
-			difficulty: tableWidth * 0.2,
+			category: tableWidth * 0.6,
+			answered: tableWidth * 0.2,
+			correct: tableWidth * 0.2,
 		};
 
 		// Create header row
@@ -193,21 +204,20 @@ export class StatisticsScreenView implements View {
 			{ text: "Category", x: cellPadding, width: colWidths.category },
 			{ text: "Answered", x: colWidths.category + cellPadding, width: colWidths.answered },
 			{ text: "Correct", x: colWidths.category + colWidths.answered + cellPadding, width: colWidths.correct },
-			{ text: "Difficulty Level", x: colWidths.category + colWidths.answered + colWidths.correct + cellPadding, width: colWidths.difficulty },
 		];
 
 		headers.forEach((header) => {
-			const headerText = new Konva.Text({
-				x: header.x,
-				y: headerY + (headerHeight - 20) / 2,
-				width: header.width - cellPadding * 2,
-				text: header.text,
-				fontSize: 18,
-				fontFamily: "Arial",
-				fill: "#ffffff",
-				fontStyle: "bold",
-				align: "left",
-			});
+		const headerText = new Konva.Text({
+			x: header.x,
+			y: headerY + (headerHeight - 20) / 2,
+			width: header.width - cellPadding * 2,
+			text: header.text,
+			fontSize: 22,
+			fontFamily: "medodica",
+			fill: "#ffffff",
+			fontStyle: "bold",
+			align: "left",
+		});
 			this.tableGroup.add(headerText);
 		});
 
@@ -215,7 +225,11 @@ export class StatisticsScreenView implements View {
 		let currentY = headerHeight;
 		for (const category of ALL_CATEGORIES) {
 			// Get stats for this category, defaulting to 0/0 if not present
-			const bucket = stats.categories[category] || { answered: 0, correct: 0 };
+			const bucketRaw = categories[category] || {};
+			const bucket = {
+				answered: bucketRaw.answered ?? 0,
+				correct: bucketRaw.correct ?? 0,
+			};
 
 			// Row background (alternating colors)
 			const rowIndex = ALL_CATEGORIES.indexOf(category);
@@ -236,8 +250,8 @@ export class StatisticsScreenView implements View {
 				y: currentY + (rowHeight - 16) / 2,
 				width: colWidths.category - cellPadding * 2,
 				text: category,
-				fontSize: 16,
-				fontFamily: "Arial",
+				fontSize: 22,
+				fontFamily: "medodica",
 				fill: "#e0e0e0",
 				align: "left",
 			});
@@ -249,8 +263,8 @@ export class StatisticsScreenView implements View {
 				y: currentY + (rowHeight - 16) / 2,
 				width: colWidths.answered - cellPadding * 2,
 				text: bucket.answered.toString(),
-				fontSize: 16,
-				fontFamily: "Arial",
+				fontSize: 22,
+				fontFamily: "medodica",
 				fill: "#d0d0d0",
 				align: "center",
 			});
@@ -262,25 +276,12 @@ export class StatisticsScreenView implements View {
 				y: currentY + (rowHeight - 16) / 2,
 				width: colWidths.correct - cellPadding * 2,
 				text: bucket.correct.toString(),
-				fontSize: 16,
-				fontFamily: "Arial",
+				fontSize: 22,
+				fontFamily: "medodica",
 				fill: "#81c784",
 				align: "center",
 			});
 			this.tableGroup.add(correctText);
-
-			// Difficulty level (placeholder)
-			const difficultyText = new Konva.Text({
-				x: colWidths.category + colWidths.answered + colWidths.correct + cellPadding,
-				y: currentY + (rowHeight - 16) / 2,
-				width: colWidths.difficulty - cellPadding * 2,
-				text: "-",
-				fontSize: 16,
-				fontFamily: "Arial",
-				fill: "#999999",
-				align: "center",
-			});
-			this.tableGroup.add(difficultyText);
 
 			currentY += rowHeight;
 		}
@@ -325,4 +326,3 @@ export class StatisticsScreenView implements View {
 		this.group.getLayer()?.draw();
 	}
 }
-
