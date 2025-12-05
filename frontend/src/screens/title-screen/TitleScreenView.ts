@@ -37,12 +37,12 @@ export class TitleScreenView implements View {
 		this.group.add(background);
 
 		const titleText = new Konva.Text({
-			x: 0,
+			x: 75,
 			y: 80,
 			width: STAGE_WIDTH,
 			align: "center",
 			text: "Vector Space",
-			fontSize: 48,
+			fontSize: 150,
 			fontFamily: "medodica, sans-serif",
 			fill: "#e9f3ff",
 			shadowColor: "#0a8ea8",
@@ -75,7 +75,7 @@ export class TitleScreenView implements View {
 		heading.textContent = "Sign in or Register";
 		heading.style.margin = "0";
 		heading.style.textAlign = "center";
-		heading.style.fontSize = "18px";
+		heading.style.fontSize = "24px";
 		heading.style.letterSpacing = "1px";
 		heading.style.fontFamily = "medodica, sans-serif";
 		this.formContainer.appendChild(heading);
@@ -89,7 +89,7 @@ export class TitleScreenView implements View {
 		this.emailInput.style.background = "#080c18";
 		this.emailInput.style.color = "#fff";
 		this.emailInput.style.fontFamily = "medodica, sans-serif";
-		this.emailInput.style.fontSize = "16px";
+		this.emailInput.style.fontSize = "24px";
 		this.formContainer.appendChild(this.emailInput);
 
 		this.passwordInput = document.createElement("input");
@@ -101,7 +101,7 @@ export class TitleScreenView implements View {
 		this.passwordInput.style.background = "#080c18";
 		this.passwordInput.style.color = "#fff";
 		this.passwordInput.style.fontFamily = "medodica, sans-serif";
-		this.passwordInput.style.fontSize = "16px";
+		this.passwordInput.style.fontSize = "24px";
 		this.formContainer.appendChild(this.passwordInput);
 
 		const buttonRow = document.createElement("div");
@@ -121,7 +121,7 @@ export class TitleScreenView implements View {
 		loginButton.style.boxShadow = "6px 6px 0 #050912";
 		loginButton.style.color = "#fff";
 		loginButton.style.fontFamily = "medodica, sans-serif";
-		loginButton.style.fontSize = "16px";
+		loginButton.style.fontSize = "24px";
 		loginButton.style.cursor = "pointer";
 		loginButton.addEventListener("click", () =>
 			callbacks.onLogin(this.emailInput.value, this.passwordInput.value)
@@ -139,7 +139,7 @@ export class TitleScreenView implements View {
 		registerButton.style.boxShadow = "6px 6px 0 #050912";
 		registerButton.style.color = "#fff";
 		registerButton.style.fontFamily = "medodica, sans-serif";
-		registerButton.style.fontSize = "16px";
+		registerButton.style.fontSize = "24px";
 		registerButton.style.cursor = "pointer";
 		registerButton.addEventListener("click", () =>
 			callbacks.onRegister(this.emailInput.value, this.passwordInput.value)
@@ -149,7 +149,7 @@ export class TitleScreenView implements View {
 		this.messageNode = document.createElement("p");
 		this.messageNode.style.margin = "0";
 		this.messageNode.style.minHeight = "20px";
-		this.messageNode.style.fontSize = "16px";
+		this.messageNode.style.fontSize = "24px";
 		this.messageNode.style.textAlign = "center";
 		this.messageNode.style.fontFamily = "medodica, sans-serif";
 		this.formContainer.appendChild(this.messageNode);

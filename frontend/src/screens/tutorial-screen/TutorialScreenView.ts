@@ -51,7 +51,7 @@ export class TutorialScreenView implements View {
 			width: STAGE_WIDTH,
 			align: "center",
 			text: "Tutorial",
-			fontSize: 52,
+			fontSize: 100,
 			fontFamily: "medodica, sans-serif",
 			fill: "#e9f3ff",
 			fontStyle: "bold",
@@ -68,7 +68,7 @@ export class TutorialScreenView implements View {
 			width: STAGE_WIDTH - 100,
 			align: "center",
 			text: "",
-			fontSize: 25,
+			fontSize: 30,
 			fontFamily: "medodica, sans-serif",
 			fill: "#d8d8d8",
 			lineHeight: 1.6,
@@ -111,7 +111,7 @@ export class TutorialScreenView implements View {
 			this.group.getLayer()?.draw();
 		});
 		this.previousButton.on("mouseleave", () => {
-			this.previousButton.fill("#666666");
+			this.previousButton.fill("blue");
 			this.group.getLayer()?.draw();
 		});
 
@@ -121,7 +121,7 @@ export class TutorialScreenView implements View {
 			y: buttonY,
 			width: buttonWidth,
 			height: buttonHeight,
-			fill: "#0f3a26",
+			fill: "blue",
 			cornerRadius: 8,
 		});
 		this.continueText = new Konva.Text({
@@ -132,7 +132,7 @@ export class TutorialScreenView implements View {
 			text: "Continue",
 			fontSize: 22,
 			fontFamily: "medodica, sans-serif",
-			fill: "#ffffff",
+			fill: "white",
 		});
 
 		this.continueButton.on("click", callbacks.onContinue);
@@ -142,7 +142,7 @@ export class TutorialScreenView implements View {
 			this.group.getLayer()?.draw();
 		});
 		this.continueButton.on("mouseleave", () => {
-			this.continueButton.fill("#4CAF50");
+			this.continueButton.fill("blue");
 			this.group.getLayer()?.draw();
 		});
 
@@ -152,7 +152,7 @@ export class TutorialScreenView implements View {
 			y: buttonY,
 			width: buttonWidth,
 			height: buttonHeight,
-			fill: "#102b52",
+			fill: "blue",
 			cornerRadius: 8,
 		});
 		this.skipText = new Konva.Text({
@@ -173,7 +173,7 @@ export class TutorialScreenView implements View {
 			this.group.getLayer()?.draw();
 		});
 		this.skipButton.on("mouseleave", () => {
-			this.skipButton.fill("#666666");
+			this.skipButton.fill("blue");
 			this.group.getLayer()?.draw();
 		});
 

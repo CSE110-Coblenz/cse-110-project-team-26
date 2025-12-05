@@ -25,7 +25,7 @@ export class MazeTutorialView {
             x: STAGE_WIDTH / 2 - 200,
             y: STAGE_HEIGHT / 2 - 250,
             text: "",
-            fontSize: 30,
+            fontSize: 36,
             fontFamily: "medodica",
             fill: "white",
             width: 400,
