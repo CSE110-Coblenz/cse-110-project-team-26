@@ -29,13 +29,19 @@ export class TutorialScreenView implements View {
 		this.group = new Konva.Group({ visible: false });
 
 		// Dark background matching title screen theme
-		const background = new Konva.Rect({
+		const background = new Konva.Image({
 			x: 0,
 			y: 0,
 			width: STAGE_WIDTH,
 			height: STAGE_HEIGHT,
-			fill: "#2b2b2b",
-		});
+			image: (() => {
+				const img = new Image();
+				img.src = "/backgrounds/backgroundMessage.png";
+				return img;
+			})(),
+		})
+
+
 		this.group.add(background);
 
 		// Title text (will be updated dynamically)

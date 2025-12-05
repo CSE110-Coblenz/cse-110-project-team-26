@@ -23,13 +23,17 @@ export class TitleScreenView implements View {
 	constructor(callbacks: TitleScreenCallbacks) {
 		this.group = new Konva.Group({ visible: false });
 
-		const background = new Konva.Rect({
-			x: 0,
-			y: 0,
-			width: STAGE_WIDTH,
-			height: STAGE_HEIGHT,
-			fill: "#2b2b2b",
-		});
+		const background = new Konva.Image({
+					x: 0,
+					y: 0,
+					width: STAGE_WIDTH,
+					height: STAGE_HEIGHT,
+					image: (() => {
+						const img = new Image();
+						img.src = "/backgrounds/backgroundMessage.png";
+						return img;
+					})(),
+		})
 		this.group.add(background);
 
 		const titleText = new Konva.Text({
@@ -37,7 +41,7 @@ export class TitleScreenView implements View {
 			y: 80,
 			width: STAGE_WIDTH,
 			align: "center",
-			text: "Game Name",
+			text: "Vector Space",
 			fontSize: 48,
 			fontFamily: "medodica, sans-serif",
 			fill: "#e9f3ff",
