@@ -267,11 +267,10 @@ export class GraphScreenView implements View {
 
         this.graphGroup = this.createGraphGroup();
         this.staticGroup.add(this.inputAndEquationGroup);
-
-        this.staticLayer.add(this.staticGroup);
-        this.transitionGroup.moveToBottom();
         this.dynamicLayer.add(this.graphGroup);
-        this.dynamicLayer.hide();
+        this.staticLayer.draw();
+        this.dynamicLayer.show();
+        this.dynamicLayer.draw();
     }
 
     addPOIRectangle(x: number, y: number, color: string) {
@@ -1061,9 +1060,11 @@ export class GraphScreenView implements View {
     show() {
         // this.transitionScreen.moveToTop();
         this.staticGroup.visible(true);
-        this.staticGroup.getLayer()?.draw();
         this.graphGroup.visible(true);
-        this.graphGroup.getLayer()?.draw();
+        this.staticLayer.show();
+        this.dynamicLayer.show();
+        this.staticLayer.draw();
+        this.dynamicLayer.draw();
     }
 
     /**
@@ -1071,8 +1072,10 @@ export class GraphScreenView implements View {
      */
     hide() {
         this.staticGroup.visible(false);
-        this.staticGroup.getLayer()?.draw();
         this.graphGroup.visible(false);
-        this.graphGroup.getLayer()?.draw();
+        this.staticLayer.hide();
+        this.dynamicLayer.hide();
+        this.staticLayer.draw();
+        this.dynamicLayer.draw();
     }
 }

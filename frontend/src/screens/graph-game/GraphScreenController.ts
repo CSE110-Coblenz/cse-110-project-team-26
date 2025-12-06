@@ -33,8 +33,7 @@ export class GraphScreenController extends ScreenController {
         this.screenSwitcher = screenSwitcher;
         this.level = level;
         this.difficulty = difficulty;
-        //let type = generateRandomNumber(0, this.difficulty);
-        let type = 2;
+        let type = generateRandomNumber(0, this.difficulty);
         this.model = new GraphScreenModel(type);
         this.type = this.model.getQuestionType();
         switch(this.type) {
@@ -379,6 +378,7 @@ export class GraphScreenController extends ScreenController {
             this.view.updateDialogue(DIALOGUE[dialogueKey]);
             this.view.updateLevel(`Level ${this.level}`);
         }
+        this.view.show();
         this.screenSwitcher.switchToScreen({ type: game });
     }
 }

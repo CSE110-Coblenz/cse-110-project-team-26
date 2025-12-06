@@ -602,7 +602,7 @@ export class MatchingScreenView implements View {
             }));
 
             this.leftTexts.push(new Konva.Text({
-                x: 160,
+                x: 140,
                 y: i * (STAGE_HEIGHT / difficulty)+STAGE_HEIGHT / (2+difficulty * difficulty)+90,
                 text: i.toString(),
                 fontSize: 48,
