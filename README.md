@@ -3,9 +3,12 @@
 Our project is a space-themed game to help students from middle school and early high school learn how to solve and graph polynomial equations. The frontend is split up into a main game and two minigames, and the backend has user accounts and statistics tracking.
 
 ## Video Demo
-<video width="480" controls autoplay loop>
-  <source src="./videoDemo.mp4" type="video/mp4">
-</video>
+<div align="center">
+  <video width="640" controls playsinline>
+    <source src="videoDemo.mp4" type="video/mp4">
+    Your browser does not support the video tag. You can download it <a href="videoDemo.mp4">here</a>.
+  </video>
+</div>
 
 ## Main Game
 
