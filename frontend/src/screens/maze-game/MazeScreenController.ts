@@ -91,7 +91,7 @@ Good luck and have fun!`;
 		console.log("Choice clicked:", choice.getText());
 		console.log("Moving player to:", x, y);
 		this.stopTimer();
-		this.view.movePlayerTo(x, y).then(() => {
+		this.view.movePlayerTo(x, y+50).then(() => {
 			this.view.fadeToBlack().then(async () => {
 				if (choice.getIsCorrect()) {
 					// Update model

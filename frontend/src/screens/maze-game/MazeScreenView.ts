@@ -189,9 +189,9 @@ export class MazeScreenView implements View {
         this.problemText.y((STAGE_HEIGHT - this.problemText.height() - 350) / 2);
         // Choices
         // 50 = half width of choice rectangle
-		this.choiceOne = new ChoiceView(STAGE_WIDTH/2-50, STAGE_HEIGHT/2);
-        this.choiceTwo = new ChoiceView(STAGE_WIDTH/2-350, STAGE_HEIGHT/2+20);
-        this.choiceThree = new ChoiceView(STAGE_WIDTH/2+250, STAGE_HEIGHT/2+20);
+		this.choiceOne = new ChoiceView(STAGE_WIDTH/2-50, STAGE_HEIGHT/2+30);
+        this.choiceTwo = new ChoiceView(STAGE_WIDTH/2-475, STAGE_HEIGHT/2+50);
+        this.choiceThree = new ChoiceView(STAGE_WIDTH/2+375, STAGE_HEIGHT/2+50);
         // Add to group
         this.group.add(
             this.choiceOne.getGroup(),
@@ -523,7 +523,7 @@ export class MazeScreenView implements View {
     }
     // Animation when winning
     playWinAnimation(): Promise<void> {
-        return this.movePlayerTo(STAGE_WIDTH / 2 - 50, STAGE_HEIGHT / 2+100)
+        return this.movePlayerTo(STAGE_WIDTH / 2 - 50, STAGE_HEIGHT / 2+200)
             .then(() => {
                 this.setAnimation("win");
                 return new Promise<void>(resolve => {
@@ -533,6 +533,12 @@ export class MazeScreenView implements View {
     }
     // reset view to initial state
     reset(): void {
+        const img = new Image();
+        img.src = "/backgrounds/cave.png";
+        img.onload = () => {
+            this.bg.image(img);
+            this.bg.getLayer()?.draw();
+        }
         this.resetPlayerPosition();
         this.setAnimation("idle");
         this.choiceOne.getGroup().show();
