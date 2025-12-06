@@ -2,6 +2,11 @@
 
 Our project is a space-themed game to help students from middle school and early high school learn how to solve and graph polynomial equations. The frontend is split up into a main game and two minigames, and the backend has user accounts and statistics tracking.
 
+## Video Demo
+<video width="480" controls autoplay loop>
+  <source src="CSE110 Demo Video - Team 26.mp4" type="video/mp4">
+</video>
+
 ## Main Game
 
 Users face linear, quadratic, and absolute value problems based on the difficulty. When a user is faced with a problem, they can input parameters to an equation using the game keypad. When the user hits the submit button, the graph they plotted is shown on the screen and they move on to the next minigame depending on correctness.
