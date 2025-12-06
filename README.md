@@ -4,7 +4,7 @@ Our project is a space-themed game to help students from middle school and early
 
 ## Video Demo
 <video width="480" controls autoplay loop>
-  <source src="CSE110 Demo Video - Team 26.mp4" type="video/mp4">
+  <source src="./CSE110 Demo Video - Team 26.mp4" type="video/mp4">
 </video>
 
 ## Main Game
