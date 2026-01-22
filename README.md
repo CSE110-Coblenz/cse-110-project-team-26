@@ -4,7 +4,7 @@ Our project is a space-themed game to help students from middle school and early
 
 ## Video Demo
 
-[videoDemo.mp4?raw=1](https://drive.google.com/file/d/14v49W-mvFDCD9PgYWaqvw8iwbOdDblUI/view?usp=sharing)
+https://drive.google.com/file/d/14v49W-mvFDCD9PgYWaqvw8iwbOdDblUI/view?usp=sharing
 
 ## Main Game
 
